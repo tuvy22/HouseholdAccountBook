@@ -1,0 +1,33 @@
+version: '3'
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.app
+    volumes:
+      - ./app:/go/src
+    tty: true
+    ports:
+      - 3001:3001
+  web:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.web
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+  front:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.front
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./front/src:/app/src
+      - ./front/public:/app/public
+      - ./front/next.config.js:/app/next.config.js
+      - ./tsconfig.json:/app/tsconfig.jso
+    restart: always

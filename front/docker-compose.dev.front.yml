@@ -1,0 +1,15 @@
+version: '3'
+services:
+  front:
+    container_name: front
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.dev.front
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src/app:/app/app
+      - ./public:/app/public
+    ports:
+      - '3000:3000'
