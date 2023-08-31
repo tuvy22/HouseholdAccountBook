@@ -12,6 +12,11 @@ RUN npm install
 
 COPY next.config.js .
 COPY tsconfig.json .
+COPY .eslintrc.json .
+COPY postcss.config.js .
+COPY tailwind.config.ts .
+COPY next-env.d.ts .
+
 
 # ポートを指定
 # EXPOSE 3000

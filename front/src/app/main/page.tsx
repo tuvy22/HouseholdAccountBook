@@ -19,9 +19,28 @@ interface  Expense {
   date:string
 }
 
-// 今日の日付を YYYY-MM-DD 形式で取得
-const today = new Date();
-const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+function convertToUserFriendlyMessage(error: unknown): string {
+  // エラーが文字列型である場合
+  if (typeof error === 'string') {
+    if (error === '404') {
+      return 'ページが見つかりません。';
+    }
+    if (error.startsWith('NetworkError')) {
+      return 'ネットワークエラーが発生しました。';
+    }
+  }
+  
+  // エラーがErrorオブジェクトである場合
+  if (error instanceof Error) {
+    if (error.message === 'Failed to fetch') {
+      return 'データの取得に失敗しました。';
+    }
+  }
+  
+  // それ以外の未知のエラー
+  return '予期しないエラーが発生しました。';
+}
+
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -35,21 +54,30 @@ const Expenses = () => {
   const memoRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
 
+  // 今日の日付を YYYY-MM-DD 形式で取得
+  const today = new Date();
+  const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  
+  const [defaultDate, setDefaultDate] = useState(formattedDate);  // ここでuseStateを用いて日付を管理
+  
+
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // APIエンドポイントを指定してデータを取得
         const response = await fetch('http://localhost:8080/expenses');
         if (response.ok) {
           const data = await response.json();
           setExpenses(data);
         } else {
-          setError(`Failed to fetch: ${response.statusText}`);
+          const errorData = await response.json();
+          setError(`Failed to fetch: ${errorData.message || response.statusText}`);
         }
       } catch (error) {
-        setError(`Error: ${error}`);
+        if (error instanceof Error) {
+          setError(`Error: ${error.message}`);
+        }
       } finally {
         setLoading(false);
       }
@@ -58,34 +86,64 @@ const Expenses = () => {
   }, []);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <div>Error: {convertToUserFriendlyMessage(error)}</div>;
+
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (
-      categoryRef.current && 
-      amountRef.current && 
-      memoRef.current && 
-      dateRef.current &&
+      !categoryRef.current ||
+      !amountRef.current ||
+      !memoRef.current ||
+      !dateRef.current 
+    ) {
+      return;
+    }
+
+    if (
       categoryRef.current.value &&
       amountRef.current.value &&
       dateRef.current.value
     ) {
-      const newExpense: Expense = {
-        category: categoryRef.current.value,
-        amount: amountRef.current.value,
-        memo: memoRef.current.value,
-        date: dateRef.current.value,
-      };
-      setExpenses([...expenses, newExpense]);
-      categoryRef.current.value = '';
-      amountRef.current.value = '';
-      memoRef.current.value = '';
-      dateRef.current.value = '';
+      // 数値チェック
+      const amount = parseInt(amountRef.current.value, 10);
+      if (isNaN(amount) || amount <= 0) {
+        alert("金額は0より大きい数値を入力してください。");
+        return;
+      }
+
+      // 文字列長チェック
+      const memo = memoRef.current.value;
+      if (memo.length > 255) {
+        alert("メモは255文字以下で入力してください。");
+        return;
+      }
     } else {
       // ここにエラー処理を書く
       alert('全ての項目に値を入力してください。');
+      return;
     }
+    
+    const newExpense: Expense = {
+      category: categoryRef.current.value,
+      amount: amountRef.current.value,
+      memo: memoRef.current.value,
+      date: dateRef.current.value,
+    };
+    
+    try {
+      setExpenses([...expenses, newExpense]);
+      alert('支出を登録しました。');
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(`支出の登録に失敗しました: ${error.message}`);
+      }
+    }
+
+    categoryRef.current.value = '';
+    amountRef.current.value = '';
+    memoRef.current.value = '';
+    dateRef.current.value = '';
   };
 
   return (
@@ -100,7 +158,7 @@ const Expenses = () => {
                 type="date"
                 ref={dateRef}
                 className="border rounded py-1 px-2"
-                defaultValue={formattedDate}  // ここを修正
+                defaultValue={defaultDate}
 
               />
             </div>
@@ -133,7 +191,7 @@ const Expenses = () => {
               />
             </div>
           </div>
-          <div className="flex justify-end"> {/* この行を追加 */}
+          <div className="flex justify-end"> 
             <Button type="submit" variant="filled" color="green" size="md" className="mt-4 w-full md:w-auto">
               登録
             </Button>
