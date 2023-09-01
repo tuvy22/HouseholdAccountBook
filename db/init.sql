@@ -1,11 +1,14 @@
-CREATE DATABASE IF NOT EXISTS devdb;
+CREATE DATABASE IF NOT EXISTS expenses;
 
-USE devdb;
+USE expenses;
 
 CREATE TABLE IF NOT EXISTS expenses (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    category VARCHAR(50),
-    amount DECIMAL(10, 2),
-    memo TEXT,
-    date DATE
+    id INT AUTO_INCREMENT,
+    category VARCHAR(255) NOT NULL,
+    amount VARCHAR(255) NOT NULL,
+    memo VARCHAR(255),
+    date VARCHAR(255) NOT NULL,
+    sortAt VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
 );
+

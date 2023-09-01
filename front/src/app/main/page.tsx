@@ -16,7 +16,8 @@ interface  Expense {
   category: string;
   amount: string;
   memo: string;
-  date:string
+  date:string;
+  sortAt: string;
 }
 
 function convertToUserFriendlyMessage(error: unknown): string {
@@ -69,7 +70,17 @@ const Expenses = () => {
         const response = await fetch('http://localhost:8080/expenses');
         if (response.ok) {
           const data = await response.json();
-          setExpenses(data);
+          
+          // 日付と作成日で並べ替える
+          const sortedExpenses = data.sort((a: Expense, b: Expense) => {
+            const dateComparison = b.date.localeCompare(a.date);
+            if (dateComparison !== 0) {
+              return dateComparison;
+            }
+            return b.sortAt.localeCompare(a.sortAt);
+          });
+          
+          setExpenses(sortedExpenses);
         } else {
           const errorData = await response.json();
           setError(`Failed to fetch: ${errorData.message || response.statusText}`);
@@ -84,6 +95,7 @@ const Expenses = () => {
     };
     fetchData();
   }, []);
+  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {convertToUserFriendlyMessage(error)}</div>;
@@ -120,15 +132,22 @@ const Expenses = () => {
       }
     } else {
       // ここにエラー処理を書く
-      alert('全ての項目に値を入力してください。');
+      alert('全ての必須項目に値を入力してください。');
       return;
     }
+    const userDate = dateRef.current.value; // YYYY-MM-DD 形式
+    const systemTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS 形式
+
+    // ユーザーが選択した日付とシステムの現在時間を組み合わせる
+    const combinedDateTime = `${userDate}T${systemTime}`;
+
     
     const newExpense: Expense = {
       category: categoryRef.current.value,
       amount: amountRef.current.value,
       memo: memoRef.current.value,
       date: dateRef.current.value,
+      sortAt: new Date().toISOString(),
     };
     
     try {
@@ -140,10 +159,9 @@ const Expenses = () => {
       }
     }
 
-    categoryRef.current.value = '';
     amountRef.current.value = '';
     memoRef.current.value = '';
-    dateRef.current.value = '';
+    dateRef.current.value = defaultDate;
   };
 
   return (

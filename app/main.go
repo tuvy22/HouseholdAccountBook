@@ -1,86 +1,85 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
-	// _ "github.com/go-sql-driver/mysql"
-	"github.com/gin-contrib/cors" // このパッケージをインポート
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-// type Expense struct {
-// 	Category string `json:"category"`
-// 	Amount   string `json:"amount"`
-// 	Memo     string `json:"memo"`
-// 	Date     string `json:"date"`
-// }
+type Expense struct {
+	ID       uint   `gorm:"primaryKey"`
+	Category string `json:"category"`
+	Amount   string `json:"amount"`
+	Memo     string `json:"memo"`
+	Date     string `json:"date"`
+	SortAt   string `json:"sortAt"`
+}
 
-// var db *sql.DB
-// var err error
+var db *gorm.DB
+
+func init() {
+	dsn := "root:root@tcp(db:3306)/expenses?charset=utf8mb4&parseTime=True&loc=Local"
+	var err error
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+	db.AutoMigrate(&Expense{})
+}
+
+func getExpenses(c *gin.Context) {
+	var expenses []Expense
+	db.Order("sortAt desc").Find(&expenses)
+	c.JSON(http.StatusOK, expenses)
+}
+
+func createExpense(c *gin.Context) {
+	var expense Expense
+	if err := c.ShouldBindJSON(&expense); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Create(&expense).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, expense)
+}
+
+func updateExpense(c *gin.Context) {
+	id := c.Param("id")
+	var expense Expense
+
+	if err := db.First(&expense, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Expense not found"})
+		return
+	}
+
+	var newExpense Expense
+	if err := c.ShouldBindJSON(&newExpense); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := db.Model(&expense).Updates(newExpense).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, expense)
+}
 
 func main() {
-
-	// db, err = sql.Open("mysql", "username:password@tcp(localhost:3306)/dbname")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// err = db.Ping()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
 	r := gin.Default()
 
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{"GET", "POST"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-	}))
-
-	// r.GET("/expenses", GetExpenses)
-	// r.POST("/expense", CreateExpense)
-
-	r.GET("/expenses", func(c *gin.Context) {
-		// ダミーの支出データ
-		expenses := []map[string]interface{}{
-			{"date": "2023-08-28", "category": "Food", "amount": 2000, "memo": "Lunch"},
-			{"date": "2023-08-27", "category": "Transport", "amount": 150, "memo": "Bus fare"},
-		}
-
-		// JSONとしてレスポンスを返す
-		c.JSON(200, expenses)
-	})
+	r.GET("/expenses", getExpenses)
+	r.POST("/expenses", createExpense)
+	r.PUT("/expenses/:id", updateExpense)
 
 	r.Run(":8080")
 }
-
-// func CreateExpense(c *gin.Context) {
-// 	var expense Expense
-// 	c.BindJSON(&expense)
-
-// 	_, err = db.Query("INSERT INTO expenses (category, amount, memo, date) VALUES (?, ?, ?, ?)", expense.Category, expense.Amount, expense.Memo, expense.Date)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	} else {
-// 		c.JSON(200, gin.H{
-// 			"message": "Successfully created expense!",
-// 		})
-// 	}
-// }
-
-// func GetExpenses(c *gin.Context) {
-// 	rows, err := db.Query("SELECT category, amount, memo, date from expenses")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	expenses := []Expense{}
-
-// 	for rows.Next() {
-// 		var expense Expense
-// 		rows.Scan(&expense.Category, &expense.Amount, &expense.Memo, &expense.Date)
-// 		expenses = append(expenses, expense)
-// 	}
-
-// 	c.JSON(200, expenses)
-// }
