@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -21,7 +22,7 @@ type Expense struct {
 var db *gorm.DB
 
 func init() {
-	dsn := "root:root@tcp(db:3306)/expenses?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:root@tcp(192.168.99.100:3306)/expenses?charset=utf8mb4&parseTime=True&loc=Local"
 	var err error
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -32,7 +33,7 @@ func init() {
 
 func getExpenses(c *gin.Context) {
 	var expenses []Expense
-	db.Order("sortAt desc").Find(&expenses)
+	db.Order("sort_at desc").Find(&expenses)
 	c.JSON(http.StatusOK, expenses)
 }
 
@@ -76,6 +77,11 @@ func updateExpense(c *gin.Context) {
 
 func main() {
 	r := gin.Default()
+
+	// CORS 設定
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"} // 許可するオリジン
+	r.Use(cors.New(config))
 
 	r.GET("/expenses", getExpenses)
 	r.POST("/expenses", createExpense)

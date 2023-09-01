@@ -20,6 +20,8 @@ interface  Expense {
   sortAt: string;
 }
 
+
+
 function convertToUserFriendlyMessage(error: unknown): string {
   // エラーが文字列型である場合
   if (typeof error === 'string') {
@@ -43,13 +45,13 @@ function convertToUserFriendlyMessage(error: unknown): string {
 }
 
 
-const Expenses = () => {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
 
+const Expenses = () => {
+
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState<boolean>(false); 
   const [error, setError] = useState<string | null>(null); 
 
-  
   const categoryRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
   const memoRef = useRef<HTMLInputElement>(null);
@@ -59,40 +61,39 @@ const Expenses = () => {
   const today = new Date();
   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   
-  const [defaultDate, setDefaultDate] = useState(formattedDate);  // ここでuseStateを用いて日付を管理
+  const [defaultDate, setDefaultDate] = useState(formattedDate);
   
+// データを取得する関数
+const fetchData = async () => {
+  setLoading(true);
+  try {
+    const response = await fetch('http://localhost:8080/expenses');
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data)
+      const sortedExpenses = data.sort((a: Expense, b: Expense) => {
+        const dateComparison = b.date.localeCompare(a.date);
+        if (dateComparison !== 0) {
+          return dateComparison;
+        }
+        return b.sortAt.localeCompare(a.sortAt);
+      });
+      setExpenses(sortedExpenses);
+    } else {
+      const errorData = await response.json();
+      setError(`Failed to fetch: ${errorData.message || response.statusText}`);
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      setError(`Error: ${error.message}`);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch('http://localhost:8080/expenses');
-        if (response.ok) {
-          const data = await response.json();
-          
-          // 日付と作成日で並べ替える
-          const sortedExpenses = data.sort((a: Expense, b: Expense) => {
-            const dateComparison = b.date.localeCompare(a.date);
-            if (dateComparison !== 0) {
-              return dateComparison;
-            }
-            return b.sortAt.localeCompare(a.sortAt);
-          });
-          
-          setExpenses(sortedExpenses);
-        } else {
-          const errorData = await response.json();
-          setError(`Failed to fetch: ${errorData.message || response.statusText}`);
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(`Error: ${error.message}`);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
   
@@ -101,14 +102,9 @@ const Expenses = () => {
   if (error) return <div>Error: {convertToUserFriendlyMessage(error)}</div>;
 
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit =async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      !categoryRef.current ||
-      !amountRef.current ||
-      !memoRef.current ||
-      !dateRef.current 
-    ) {
+    if (!categoryRef.current || !amountRef.current || !memoRef.current || !dateRef.current) {
       return;
     }
 
@@ -150,18 +146,30 @@ const Expenses = () => {
       sortAt: new Date().toISOString(),
     };
     
-    try {
-      setExpenses([...expenses, newExpense]);
-      alert('支出を登録しました。');
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(`支出の登録に失敗しました: ${error.message}`);
-      }
+    const response = await fetch('http://localhost:8080/expenses', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newExpense),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        alert(`支出の登録に失敗しました: ${errorData.error}`);
+        return;
     }
 
-    amountRef.current.value = '';
-    memoRef.current.value = '';
-    dateRef.current.value = defaultDate;
+    // 支出が成功した後で、データベースから全ての支出を再取得
+    fetchData();
+
+    // フォームのリセット
+    alert('支出を登録しました。');
+    if (amountRef.current && memoRef.current && dateRef.current) {
+      amountRef.current.value = '';
+      memoRef.current.value = '';
+      dateRef.current.value = defaultDate;
+    }
   };
 
   return (
