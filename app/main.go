@@ -33,7 +33,7 @@ func init() {
 
 func getExpenses(c *gin.Context) {
 	var expenses []Expense
-	db.Order("sort_at desc").Find(&expenses)
+	db.Order("Date desc, sort_at desc").Find(&expenses)
 	c.JSON(http.StatusOK, expenses)
 }
 

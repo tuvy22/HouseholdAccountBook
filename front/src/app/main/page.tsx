@@ -71,14 +71,8 @@ const fetchData = async () => {
     if (response.ok) {
       const data = await response.json();
       console.log(data)
-      const sortedExpenses = data.sort((a: Expense, b: Expense) => {
-        const dateComparison = b.date.localeCompare(a.date);
-        if (dateComparison !== 0) {
-          return dateComparison;
-        }
-        return b.sortAt.localeCompare(a.sortAt);
-      });
-      setExpenses(sortedExpenses);
+
+      setExpenses(data);
     } else {
       const errorData = await response.json();
       setError(`Failed to fetch: ${errorData.message || response.statusText}`);
