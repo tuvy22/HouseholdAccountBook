@@ -10,6 +10,8 @@ COPY ./package.json ./package-lock.json ./
 # 依存関係のインストール
 RUN npm install
 
+COPY ./src/app ./app
+COPY ./public ./public
 COPY next.config.js .
 COPY tsconfig.json .
 COPY .eslintrc.json .
@@ -22,5 +24,5 @@ COPY next-env.d.ts .
 # EXPOSE 3000
 
 # アプリを起動（Dockerイメージ起動時に実行）
-# CMD ["npm", "run", "dev"]
-RUN npm run dev
+CMD ["npm", "run", "dev"] 
+#RUN npm run dev

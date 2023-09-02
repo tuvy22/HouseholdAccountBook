@@ -7,10 +7,10 @@ import { Button } from "@material-tailwind/react";
 
 // export const revalidate = 0;
 
-export const metadata: Metadata = {
-  title: '家計簿アプリ',
-  description: '家計簿アプリです。',
-}
+// export const metadata: Metadata = {
+//   title: '家計簿アプリ',
+//   description: '家計簿アプリです。',
+// }
 
 interface  Expense {
   category: string;
@@ -169,7 +169,7 @@ const fetchData = async () => {
   return (
     <main>
       <div className="container mx-auto p-10">
-        {/* <h1 className="text-2xl font-bold mb-4">家計簿一覧</h1> */}
+        <h1 className="text-2xl font-bold mb-4">家計簿一覧</h1>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
             <div className="flex flex-col flex-grow">

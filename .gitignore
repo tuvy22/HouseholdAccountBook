@@ -33,3 +33,6 @@
 # typescript
 /fromt/*.tsbuildinfo
 /front/next-env.d.ts
+
+/app/tmp/
+*/.env

@@ -31,6 +31,15 @@ func init() {
 	db.AutoMigrate(&Expense{})
 }
 
+func getDummyData(c *gin.Context) {
+	dummyExpenses := []Expense{
+		{ID: 1, Category: "Food", Amount: "1000", Memo: "Lunch", Date: "2023-09-03", SortAt: "12:00"},
+		{ID: 2, Category: "Transport", Amount: "200", Memo: "Bus", Date: "2023-09-03", SortAt: "09:00"},
+	}
+
+	c.JSON(http.StatusOK, dummyExpenses)
+}
+
 func getExpenses(c *gin.Context) {
 	var expenses []Expense
 	db.Order("Date desc, sort_at desc").Find(&expenses)
@@ -80,9 +89,10 @@ func main() {
 
 	// CORS 設定
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"} // 許可するオリジン
+	config.AllowOrigins = []string{"http://localhost:3000", "http://192.168.99.100:3000"} // 許可するオリジン
 	r.Use(cors.New(config))
 
+	r.GET("/dummy", getDummyData)
 	r.GET("/expenses", getExpenses)
 	r.POST("/expenses", createExpense)
 	r.PUT("/expenses/:id", updateExpense)

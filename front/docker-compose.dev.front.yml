@@ -8,8 +8,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - ./src/app:/app/app
-      - ./public:/app/public
+    # volumes:
+    #   - ./src/app:/app/app
+    #   - ./public:/app/public
     ports:
       - '3000:3000'
