@@ -3,26 +3,39 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"strings"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 type Expense struct {
 	ID       uint   `gorm:"primaryKey"`
-	Category string `json:"category"`
-	Amount   string `json:"amount"`
-	Memo     string `json:"memo"`
-	Date     string `json:"date"`
-	SortAt   string `json:"sortAt"`
+	Category string `json:"category" gorm:"column:category"`
+	Amount   string `json:"amount" gorm:"column:amount"`
+	Memo     string `json:"memo" gorm:"column:memo"`
+	Date     string `json:"date" gorm:"column:date"`
+	SortAt   string `json:"sortAt" gorm:"column:sortAt"`
 }
 
 var db *gorm.DB
 
 func init() {
-	dsn := "root:root@tcp(192.168.99.100:3306)/expenses?charset=utf8mb4&parseTime=True&loc=Local"
+	// .env ファイルから環境変数をロード
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
+
+	dsn := os.Getenv("DATABASE_DSN")
+	if dsn == "" {
+		log.Fatal("DATABASE_DSN environment variable is not set")
+	}
+
 	var err error
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -52,8 +65,14 @@ func createExpense(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	log.Println(expense)
+	if expense.SortAt == "" {
+		expense.SortAt = time.Now().Format(time.RFC3339)
+	}
+	log.Println(expense)
 
 	if err := db.Create(&expense).Error; err != nil {
+		log.Println("Error Creating Expense:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -89,7 +108,8 @@ func main() {
 
 	// CORS 設定
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000", "http://192.168.99.100:3000"} // 許可するオリジン
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	config.AllowOrigins = strings.Split(allowedOrigins, ",")
 	r.Use(cors.New(config))
 
 	r.GET("/dummy", getDummyData)

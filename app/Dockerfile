@@ -2,7 +2,7 @@
 FROM golang:1.20.7-alpine3.17
 
 WORKDIR /go/src
-#COPY ./go .
+COPY . .
 
 RUN apk upgrade --update && apk --no-cache add git
 RUN go install github.com/cosmtrek/air@latest

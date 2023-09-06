@@ -5,10 +5,10 @@ FROM nginx:latest
 #COPY nginx.conf /etc/nginx/nginx.conf
 
 # Appサーバへのリバースプロキシを設定
-COPY ./web/default.conf /etc/nginx/conf.d/default.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 
 # 静的ファイルを配置するディレクトリを作成
 RUN mkdir -p /usr/share/nginx/html/web
 
 # Appサーバから提供される静的ファイルをNginxのディレクトリにコピー
-COPY ./web /usr/share/nginx/html/web
+COPY . /usr/share/nginx/html/web
