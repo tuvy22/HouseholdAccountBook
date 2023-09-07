@@ -4,8 +4,8 @@ phases:
   install:
     commands:
       - echo Installing Docker...
-      - apt-get update -y
-      - apt-get install -y docker-ce
+      - yum update -y
+      - yum install -y docker
 
   pre_build:
     commands:
@@ -39,4 +39,3 @@ phases:
       - docker push $REPOSITORY_URI_WEB:web_latest
 
       - echo Images pushed to ECR
-
