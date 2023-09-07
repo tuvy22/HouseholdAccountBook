@@ -1,0 +1,42 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 20
+    commands:
+      - echo Installing Docker...
+
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      - REPOSITORY_URI_DB=123456789012.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/housebook_db
+      - REPOSITORY_URI_APP=123456789012.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/housebook_app
+      - REPOSITORY_URI_FRONT=123456789012.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/housebook_front
+      - REPOSITORY_URI_WEB=123456789012.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/housebook_web
+
+  build:
+    commands:
+      - echo Build phase...
+      - docker build -t do -f do/Dockerfile .
+      - docker build -t app -f app/Dockerfile .
+      - docker build -t front -f front/Dockerfile .
+      - docker build -t web -f web/Dockerfile .
+
+  post_build:
+    commands:
+      - echo Pushing the Docker images...
+      - docker tag do:latest $REPOSITORY_URI_DB:do_latest
+      - docker tag app:latest $REPOSITORY_URI:app_latest
+      - docker tag front:latest $REPOSITORY_URI:front_latest
+      - docker tag web:latest $REPOSITORY_URI:web_latest
+
+      - docker push $REPOSITORY_URI:do_latest
+      - docker push $REPOSITORY_URI:app_latest
+      - docker push $REPOSITORY_URI:front_latest
+      - docker push $REPOSITORY_URI:web_latest
+
+      - echo Images pushed to ECR
+
