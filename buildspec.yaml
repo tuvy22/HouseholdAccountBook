@@ -11,11 +11,12 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - $(aws ecr get-login --region ap-northeast-1 --no-include-email)
+      - $(aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com)
       - REPOSITORY_URI_DB=289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_db
       - REPOSITORY_URI_APP=289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_app
       - REPOSITORY_URI_FRONT=289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front
       - REPOSITORY_URI_WEB=289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web
+
 
   build:
     commands:
