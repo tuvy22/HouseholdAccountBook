@@ -21,7 +21,7 @@ phases:
   build:
     commands:
       - echo Build phase...
-      - docker build -t db -f db/Dockerfile .
+      - docker build -t db -f db/Dockerfile db/.
       - docker build -t app -f app/Dockerfile .
       - docker build -t front -f front/Dockerfile .
       - docker build -t web -f web/Dockerfile .
