@@ -22,9 +22,9 @@ phases:
     commands:
       - echo Build phase...
       - docker build -t db -f db/Dockerfile db/.
-      - docker build -t app -f app/Dockerfile .
-      - docker build -t front -f front/Dockerfile .
-      - docker build -t web -f web/Dockerfile .
+      - docker build -t app -f app/Dockerfile app/.
+      - docker build -t front -f front/Dockerfile front/.
+      - docker build -t web -f web/Dockerfile web/.
 
   post_build:
     commands:
