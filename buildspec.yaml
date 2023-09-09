@@ -7,7 +7,7 @@ phases:
       - yum update -y
       - yum install -y docker
       - dockerd &
-      - sleep 20 
+      - sleep 100
 
   pre_build:
     commands:
@@ -38,6 +38,12 @@ phases:
       - docker tag app:latest $REPOSITORY_URI_APP:app_latest
       - docker tag front:latest $REPOSITORY_URI_FRONT:front_latest
       - docker tag web:latest $REPOSITORY_URI_WEB:web_latest
+      
+      # プッシュ前にイメージが存在することを確認
+      - docker images | grep $REPOSITORY_URI_DB:db_latest 
+      - docker images | grep $REPOSITORY_URI_APP:app_latest
+      - docker images | grep $REPOSITORY_URI_FRONT:front_latest
+      - docker images | grep $REPOSITORY_URI_WEB:web_latest
 
       - docker push $REPOSITORY_URI_DB:db_latest
       - docker push $REPOSITORY_URI_APP:app_latest
