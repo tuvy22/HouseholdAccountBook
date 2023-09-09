@@ -6,7 +6,7 @@ phases:
       - echo Installing Docker...
       - yum update -y
       - yum install -y docker
-      - systemctl start docker
+      - service docker start
       - docker --version
 
   pre_build:
