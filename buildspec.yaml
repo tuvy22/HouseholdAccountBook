@@ -6,8 +6,8 @@ phases:
       - echo Installing Docker...
       - yum update -y
       - yum install -y docker
-      - systemctl start docker
-      - docker --version
+      - dockerd &
+      - sleep 20 
 
   pre_build:
     commands:
