@@ -34,18 +34,18 @@ phases:
   post_build:
     commands:
       - echo Pushing the Docker images...
-      - docker tag db:latest $REPOSITORY_URI_DB:db_latest
+      - docker tag db:latest "$REPOSITORY_URI_DB:db_latest"
       - docker tag app:latest $REPOSITORY_URI_APP:app_latest
       - docker tag front:latest $REPOSITORY_URI_FRONT:front_latest
       - docker tag web:latest $REPOSITORY_URI_WEB:web_latest
       
       # プッシュ前にイメージが存在することを確認
-      - docker images | grep $REPOSITORY_URI_DB:db_latest 
+      - docker images | "grep $REPOSITORY_URI_DB:db_latest" 
       - docker images | grep $REPOSITORY_URI_APP:app_latest
       - docker images | grep $REPOSITORY_URI_FRONT:front_latest
       - docker images | grep $REPOSITORY_URI_WEB:web_latest
 
-      - docker push $REPOSITORY_URI_DB:db_latest
+      - docker push "$REPOSITORY_URI_DB:db_latest"
       - docker push $REPOSITORY_URI_APP:app_latest
       - docker push $REPOSITORY_URI_FRONT:front_latest
       - docker push $REPOSITORY_URI_WEB:web_latest
