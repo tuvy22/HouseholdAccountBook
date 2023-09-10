@@ -1,13 +1,13 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - echo Installing Docker...
-      - yum update -y
-      - yum install -y docker
-      - dockerd &
-      - sleep 100
+  # install:
+  #   commands:
+  #     - echo Installing Docker...
+  #     - yum update -y
+  #     - yum install -y docker
+  #     - dockerd &
+  #     - sleep 100
 
   pre_build:
     commands:
