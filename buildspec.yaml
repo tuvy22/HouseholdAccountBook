@@ -10,12 +10,22 @@ phases:
 
   build:
     commands:
+      - docker build -t housebook_db db/.
+      - docker build -t housebook_app app/.
       - docker build -t housebook_front front/.
+      - docker build -t housebook_web web/.
+
+      - docker tag housebook_db:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_db:latest
+      - docker tag housebook_app:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_app:latest
       - docker tag housebook_front:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front:latest
+      - docker tag housebook_web:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest
       
 
   post_build:
     commands:
+      - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_db:latest
+      - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_app:latest
       - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front:latest
+      - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest
 
 
