@@ -27,7 +27,7 @@ phases:
     commands:
       - echo Build phase...
       # - docker build -t db:latest -f db/Dockerfile db/.
-      - docker build -t housebook_db -f db/.
+      - docker build -t housebook_db db/.
       # - docker build -t app -f app/Dockerfile app/.
       # - docker build -t front -f front/Dockerfile front/.
       # - docker build -t web -f web/Dockerfile web/.
