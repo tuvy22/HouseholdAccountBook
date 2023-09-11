@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS expenses (
     amount VARCHAR(255) NOT NULL,
     memo VARCHAR(255),
     date VARCHAR(255) NOT NULL,
-    sortAt VARCHAR(255) NOT NULL,
+    sort_at VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 

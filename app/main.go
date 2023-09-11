@@ -20,7 +20,7 @@ type Expense struct {
 	Amount   string `json:"amount" gorm:"column:amount"`
 	Memo     string `json:"memo" gorm:"column:memo"`
 	Date     string `json:"date" gorm:"column:date"`
-	SortAt   string `json:"sortAt" gorm:"column:sortAt"`
+	SortAt   string `json:"sortAt" gorm:"column:sort_at"`
 }
 
 var db *gorm.DB
