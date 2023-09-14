@@ -1,6 +1,7 @@
 "use client"
 import type { Metadata } from 'next'
 import React, { useEffect, useRef, useState } from 'react';
+import Head from 'next/head';
 import { Button } from "@material-tailwind/react";
 
 
@@ -168,6 +169,10 @@ const fetchData = async () => {
 
   return (
     <main>
+      <Head>
+        <title>家計簿アプリ</title>
+        <meta name="description" content="家計簿アプリです。" />
+      </Head>
       <div className="container mx-auto p-10">
         <h1 className="text-2xl font-bold mb-4">家計簿一覧</h1>
         <form onSubmit={handleSubmit}>

@@ -18,6 +18,8 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
+    volumes:
+      - .:/app/go/src
     ports:
       - 8080:8080
     depends_on:
@@ -28,6 +30,9 @@ services:
     build:
       context: ./front
       dockerfile: Dockerfile
+    volumes:
+      - /front/src/app:/app/app
+      - /front/public:/app/public
     ports:
       - '80:3000'
     depends_on:
