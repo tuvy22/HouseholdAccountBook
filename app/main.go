@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -22,6 +24,13 @@ type Expense struct {
 	Date     string `json:"date" gorm:"column:date"`
 	SortAt   string `json:"sortAt" gorm:"column:sort_at"`
 }
+
+type Credentials struct {
+	UserID   string `json:"userId"`
+	Password string `json:"password"`
+}
+
+var jwtKey = []byte("a1s2d3f4g5")
 
 var db *gorm.DB
 
@@ -51,6 +60,38 @@ func getDummyData(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dummyExpenses)
+}
+
+func auth(c *gin.Context) {
+	var creds Credentials
+	if err := c.ShouldBindJSON(&creds); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	storedUserID := "12345"
+	storedPassword := "asdfg"
+
+	if creds.UserID != storedUserID || creds.Password != storedPassword {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	// JWTトークンの生成
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": creds.UserID,
+		"exp":     time.Now().Add(time.Hour * 72).Unix(),
+	})
+
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+		return
+	}
+
+	// クッキーにトークンを保存(L)
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie("jwt", tokenString, 3600, "/", os.Getenv("ALLOWED_ORIGINS"), true, false)
 }
 
 func getExpenses(c *gin.Context) {
@@ -103,6 +144,38 @@ func updateExpense(c *gin.Context) {
 	c.JSON(http.StatusOK, expense)
 }
 
+func checkToken() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString, err := c.Cookie("jwt")
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token not found"})
+			return
+		}
+
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return jwtKey, nil
+		})
+
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			return
+		}
+
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			userID := claims["user_id"]
+			c.Set("user_id", userID)
+		} else {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func main() {
 	r := gin.Default()
 
@@ -110,12 +183,23 @@ func main() {
 	config := cors.DefaultConfig()
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 	config.AllowOrigins = strings.Split(allowedOrigins, ",")
+	config.AllowCredentials = true
 	r.Use(cors.New(config))
 
 	r.GET("/dummy", getDummyData)
-	r.GET("/expenses", getExpenses)
-	r.POST("/expenses", createExpense)
-	r.PUT("/expenses/:id", updateExpense)
+	r.POST("/auth", auth)
+
+	authorized := r.Group("/")
+	authorized.Use(checkToken())
+
+	authorized.GET("/expenses", getExpenses)
+	authorized.POST("/expenses", createExpense)
+	authorized.PUT("/expenses/:id", updateExpense)
+
+	// r.GET("/check-token", checkToken(), func(c *gin.Context) {
+	// 	userID := c.MustGet("user_id").(string)
+	// 	c.JSON(http.StatusOK, gin.H{"user_id": userID, "message": "Hello from protected route"})
+	// })
 
 	r.Run(":8080")
 }
