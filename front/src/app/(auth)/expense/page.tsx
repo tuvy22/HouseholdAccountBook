@@ -4,15 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import { Button } from "@material-tailwind/react";
 
-
-
-// export const revalidate = 0;
-
-// export const metadata: Metadata = {
-//   title: '家計簿アプリ',
-//   description: '家計簿アプリです。',
-// }
-
 interface  Expense {
 category: string;
   amount: string;
@@ -20,42 +11,6 @@ category: string;
   date:string;
   sortAt: string;
 }
-
-// export async function getServerSideProps(context: { req: any; }) {
-//   const { req } = context;
-//   const jwtToken = req.cookies.jwt; // この部分は使用しているcookieパッケージに依存します
-
-//   // JWTが存在しない場合、ログインページにリダイレクト
-//   if (!jwtToken) {
-//     return {
-//       redirect: {
-//         destination: "/login",
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   // JWTの有効性を確認するためのAPIエンドポイントにリクエストを送信
-//   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/check-token`, {
-//     headers: {
-//       'Authorization': `Bearer ${jwtToken}`,
-//     },
-//   });
-
-//   if (response.status !== 200) {
-//     // JWTが無効の場合、ログインページにリダイレクト
-//     return {
-//       redirect: {
-//         destination: "/login",
-//         permanent: false,
-//       },
-//     };
-//   }
-//   return {
-//     props: {}, // ページに渡すprops
-//   };
-// }
-
 
 function convertToUserFriendlyMessage(error: unknown): string {
   // エラーが文字列型である場合
