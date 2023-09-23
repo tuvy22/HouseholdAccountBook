@@ -53,15 +53,6 @@ func init() {
 	db.AutoMigrate(&Expense{})
 }
 
-func getDummyData(c *gin.Context) {
-	dummyExpenses := []Expense{
-		{ID: 1, Category: "Food", Amount: "1000", Memo: "Lunch", Date: "2023-09-03", SortAt: "12:00"},
-		{ID: 2, Category: "Transport", Amount: "200", Memo: "Bus", Date: "2023-09-03", SortAt: "09:00"},
-	}
-
-	c.JSON(http.StatusOK, dummyExpenses)
-}
-
 func auth(c *gin.Context) {
 	var creds Credentials
 	if err := c.ShouldBindJSON(&creds); err != nil {
@@ -144,6 +135,10 @@ func updateExpense(c *gin.Context) {
 	c.JSON(http.StatusOK, expense)
 }
 
+func checkAuth(c *gin.Context) {
+	c.JSON(http.StatusOK, "")
+}
+
 func checkToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString, err := c.Cookie("jwt")
@@ -186,20 +181,15 @@ func main() {
 	config.AllowCredentials = true
 	r.Use(cors.New(config))
 
-	r.GET("/dummy", getDummyData)
 	r.POST("/auth", auth)
 
 	authorized := r.Group("/")
 	authorized.Use(checkToken())
 
+	authorized.GET("/check-auth", checkAuth)
 	authorized.GET("/expenses", getExpenses)
 	authorized.POST("/expenses", createExpense)
 	authorized.PUT("/expenses/:id", updateExpense)
-
-	// r.GET("/check-token", checkToken(), func(c *gin.Context) {
-	// 	userID := c.MustGet("user_id").(string)
-	// 	c.JSON(http.StatusOK, gin.H{"user_id": userID, "message": "Hello from protected route"})
-	// })
 
 	r.Run(":8080")
 }
