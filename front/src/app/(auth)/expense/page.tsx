@@ -4,24 +4,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import { Button } from "@material-tailwind/react";
 
-
-
-// export const revalidate = 0;
-
-// export const metadata: Metadata = {
-//   title: '家計簿アプリ',
-//   description: '家計簿アプリです。',
-// }
-
 interface  Expense {
-  category: string;
+category: string;
   amount: string;
   memo: string;
   date:string;
   sortAt: string;
 }
-
-
 
 function convertToUserFriendlyMessage(error: unknown): string {
   // エラーが文字列型である場合
@@ -169,11 +158,7 @@ const fetchData = async () => {
 
   return (
     <main>
-      <Head>
-        <title>家計簿アプリ</title>
-        <meta name="description" content="家計簿アプリです。" />
-      </Head>
-      <div className="container mx-auto p-10">
+      <div className="container mx-auto p-10 max-w-screen-2xl">
         <h1 className="text-2xl font-bold mb-4">家計簿一覧</h1>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">

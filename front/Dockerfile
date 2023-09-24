@@ -12,10 +12,8 @@ RUN npm install
 
 COPY . .
 
+# アプリケーションをビルド
+RUN npm run build
 
-# ポートを指定
-# EXPOSE 3000
-
-# アプリを起動（Dockerイメージ起動時に実行）
-CMD ["npm", "run", "dev"] 
-#RUN npm run dev
+# アプリを起動
+CMD ["npm", "start"]
