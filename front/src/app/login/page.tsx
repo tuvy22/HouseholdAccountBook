@@ -12,7 +12,7 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth`, { userId, password });
+      const response = await axios.post(`/auth`, { userId, password });
       setError('');
       router.push("/expense");
     } catch (error) {
