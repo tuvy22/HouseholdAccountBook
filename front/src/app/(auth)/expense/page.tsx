@@ -57,7 +57,7 @@ const Expenses = () => {
 const fetchData = async () => {
   setLoading(true);
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/expenses`);
+    const response = await fetch(`/expenses`);
     if (response.ok) {
       const data = await response.json();
       console.log(data)
@@ -130,7 +130,7 @@ const fetchData = async () => {
       sortAt: new Date().toISOString(),
     };
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/expenses`, {
+    const response = await fetch(`/expenses`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
