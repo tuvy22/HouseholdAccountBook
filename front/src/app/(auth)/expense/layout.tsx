@@ -6,14 +6,14 @@ export const metadata: Metadata = {
   description: '家計簿一覧です。',
 }
 
-export default function RootLayout({
+export default function ExpenseLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja">
-      <body>{children}</body>
-    </html>
+    <>
+      {children}
+    </>
   )
 }

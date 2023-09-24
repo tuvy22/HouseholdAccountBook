@@ -6,14 +6,12 @@ export const metadata: Metadata = {
   description: 'ログイン画面です。',
 }
 
-export default function RootLayout({
+export default function LoginLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja">
-      <body>{children}</body>
-    </html>
+    <>{children}</>
   )
 }

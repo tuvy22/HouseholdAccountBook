@@ -1,3 +1,4 @@
+import LogoutHeader from '@/components/LogoutHeader';
 import { cookies } from 'next/headers';
 import { redirect } from "next/navigation"
 
@@ -28,7 +29,7 @@ export async function auth() {
       return true;
   }
 
-export default async function RootLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode
@@ -37,8 +38,9 @@ export default async function RootLayout({
     redirect(`/login`);
   };
   return (
-    <html lang="ja">
-      <body>{children}</body>
-    </html>
+    <>
+      <LogoutHeader/>
+      {children}
+    </>
   )
 }

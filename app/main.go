@@ -60,8 +60,8 @@ func auth(c *gin.Context) {
 		return
 	}
 
-	storedUserID := "12345"
-	storedPassword := "asdfg"
+	storedUserID := os.Getenv("ID")
+	storedPassword := os.Getenv("PASS")
 
 	if creds.UserID != storedUserID || creds.Password != storedPassword {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
@@ -83,6 +83,13 @@ func auth(c *gin.Context) {
 	// クッキーにトークンを保存(L)
 	c.SetSameSite(http.SameSiteNoneMode)
 	c.SetCookie("jwt", tokenString, 3600, "/", os.Getenv("ALLOWED_ORIGINS"), true, false)
+}
+
+func authDel(c *gin.Context) {
+	// トークンを持つクッキーの有効期限を過去の日時に設定して削除
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie("jwt", "", -1, "/", os.Getenv("ALLOWED_ORIGINS"), true, false)
+	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 
 func getExpenses(c *gin.Context) {
@@ -185,6 +192,8 @@ func main() {
 
 	authorized := r.Group("/")
 	authorized.Use(checkToken())
+
+	authorized.POST("/auth-del", authDel)
 
 	authorized.GET("/check-auth", checkAuth)
 	authorized.GET("/expenses", getExpenses)
