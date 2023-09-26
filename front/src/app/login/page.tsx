@@ -29,7 +29,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded shadow-md w-80">
-        <h2 className="text-2xl mb-6 text-center">Login</h2>
+        <h2 className="text-2xl mb-6 text-center">ログイン</h2>
         <form onSubmit={handleLogin}>
             <input
                 type="text"
@@ -47,7 +47,7 @@ const Login = () => {
             />
             <div className="flex justify-end"> 
               <Button type="submit" variant="filled" color="green" size="md" className="mt-4 w-full md:w-auto">
-                Login
+                ログイン
               </Button>
             </div>
         </form>
