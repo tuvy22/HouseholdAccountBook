@@ -28,4 +28,7 @@ phases:
       - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front:latest
       - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest
 
+artifacts:
+  files: '**/*'
+  base-directory: 'dist'
 
