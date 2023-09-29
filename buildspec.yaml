@@ -29,8 +29,5 @@ phases:
       - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest
 
 artifacts:
-  files: '**/*'
-  base-directory: $CODEBUILD_SRC_DIR
-  name: housebook
-  descard-paths: no
-
+  files:
+    - imagedefinitions.json
