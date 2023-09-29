@@ -30,5 +30,7 @@ phases:
 
 artifacts:
   files: '**/*'
-  base-directory: 'dist'
+  base-directory: $CODEBUILD_SRC_DIR
+  name: housebook
+  descard-paths: no
 

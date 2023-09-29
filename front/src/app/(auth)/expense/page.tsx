@@ -1,8 +1,9 @@
 "use client"
-import type { Metadata } from 'next'
+
 import React, { useEffect, useRef, useState } from 'react';
-import Head from 'next/head';
 import { Button } from "@material-tailwind/react";
+import { PopoverAnimation } from '@/components/Popover';
+
 
 interface  Expense {
 category: string;
@@ -46,6 +47,11 @@ const Expenses = () => {
   const amountRef = useRef<HTMLInputElement>(null);
   const memoRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
+
+  // 現在表示されているメモのインデックスを追跡するための状態
+  const [visibleMemoIndex, setVisibleMemoIndex] = useState<number | null>(null);
+
+
 
   // 今日の日付を YYYY-MM-DD 形式で取得
   const today = new Date();
@@ -208,23 +214,53 @@ const fetchData = async () => {
           </div>
         </form>
         {expenses.length > 0 ? (
-          <div className="shadow overflow-hidden border-b border-gray-200 md:rounded-lg mt-6">
+          <div className="shadow overflow-hidden border-b border-gray-200 md:rounded-lg mt-6 overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日付</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">支払い</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">区分</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">金額</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">メモ</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {expenses.map((expense, index) => (
-                  <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
-                    <td className="px-6 py-4 whitespace-nowrap">{expense.date}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{expense.category}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{expense.amount}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{expense.memo}</td>
+
+              {visibleMemoIndex !== null && (
+                <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50" onClick={() => setVisibleMemoIndex(null)}>
+                  <div className="bg-white p-4 max-w-md w-full rounded-md">
+                    <button
+                      onClick={() => setVisibleMemoIndex(null)}
+                      className="float-right"
+                    >
+                      ✖️
+                    </button>
+                    <div className="mt-4 break-words">
+                      {expenses[visibleMemoIndex].memo}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {expenses.map((expense, index) => (
+                   <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
+                    <td className="px-6 py-4">{expense.date}</td>
+                    <td className="px-6 py-4">XXXXXX</td>
+                    <td className="px-6 py-4">{expense.category}</td>
+                    <td className="px-6 py-4">{expense.amount}</td>
+                    <td className="px-6 py-4">
+                      <div className="hidden md:block"> {/* デスクトップサイズでの  表示 */}
+                        {expense.memo}
+                      </div>
+                      <div className="md:hidden"> {/* スマホサイズでの表示 */}
+                        {expense.memo.length>=10 ? (
+                          <PopoverAnimation content={expense.memo} buttonText="表示"/>
+                        ):(
+                          expense.memo
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
