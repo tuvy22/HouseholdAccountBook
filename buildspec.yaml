@@ -1,12 +1,9 @@
 version: 0.2
 
 phases:
-
-
   pre_build:
     commands:
       - aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com
-
 
   build:
     commands:
@@ -19,7 +16,11 @@ phases:
       - docker tag housebook_app:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_app:latest
       - docker tag housebook_front:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front:latest
       - docker tag housebook_web:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest
-      
+
+      - printf '{"ImageURI":"289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_db:latest"}' > db/imageDetail.json
+      - printf '{"ImageURI":"289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_app:latest"}' > app/imageDetail.json
+      - printf '{"ImageURI":"289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front:latest"}' > front/imageDetail.json
+      - printf '{"ImageURI":"289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest"}' > web/imageDetail.json
 
   post_build:
     commands:
@@ -28,13 +29,10 @@ phases:
       - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front:latest
       - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest
 
-      - printf '{"ImageURI":"289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_db:latest"}' > imageDetail.json
-      - printf '{"ImageURI":"289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_app:latest"}' > imageDetail.json
-      - printf '{"ImageURI":"289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front:latest"}' > imageDetail.json
-      - printf '{"ImageURI":"289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest"}' > imageDetail.json
-
-
 artifacts:
   files:
-    - imageDetail.json
+    - db/imageDetail.json
+    - app/imageDetail.json
+    - front/imageDetail.json
+    - web/imageDetail.json
     - appspec.yaml
