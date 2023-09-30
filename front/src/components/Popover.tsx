@@ -4,14 +4,14 @@ import {
   PopoverContent,
   Button,
 } from "@material-tailwind/react";
- 
+
 export function PopoverAnimation({
   content,
   buttonText,
 }: {
   content: string;
   buttonText: string;
-}){
+}) {
   return (
     <Popover
       animate={{
@@ -20,13 +20,11 @@ export function PopoverAnimation({
       }}
     >
       <PopoverHandler>
-      <Button type="submit" variant="filled" color="green" size="sm">
-        {buttonText}
-      </Button>
+        <Button type="submit" variant="filled" color="green" size="sm">
+          {buttonText}
+        </Button>
       </PopoverHandler>
-      <PopoverContent>
-        {content}
-      </PopoverContent>
+      <PopoverContent>{content}</PopoverContent>
     </Popover>
   );
 }

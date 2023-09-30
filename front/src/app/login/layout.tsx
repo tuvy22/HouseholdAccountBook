@@ -1,17 +1,14 @@
-
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'ログイン',
-  description: 'ログイン画面です。',
-}
+  title: "ログイン",
+  description: "ログイン画面です。",
+};
 
 export default function LoginLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return (
-    <>{children}</>
-  )
+  return <>{children}</>;
 }

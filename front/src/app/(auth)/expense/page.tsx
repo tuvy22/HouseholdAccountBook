@@ -1,47 +1,43 @@
-"use client"
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@material-tailwind/react";
-import { PopoverAnimation } from '@/components/Popover';
+import { PopoverAnimation } from "@/components/Popover";
 
-
-interface  Expense {
-category: string;
+interface Expense {
+  category: string;
   amount: string;
   memo: string;
-  date:string;
+  date: string;
   sortAt: string;
 }
 
 function convertToUserFriendlyMessage(error: unknown): string {
   // エラーが文字列型である場合
-  if (typeof error === 'string') {
-    if (error === '404') {
-      return 'ページが見つかりません。';
+  if (typeof error === "string") {
+    if (error === "404") {
+      return "ページが見つかりません。";
     }
-    if (error.startsWith('NetworkError')) {
-      return 'ネットワークエラーが発生しました。';
+    if (error.startsWith("NetworkError")) {
+      return "ネットワークエラーが発生しました。";
     }
   }
-  
+
   // エラーがErrorオブジェクトである場合
   if (error instanceof Error) {
-    if (error.message === 'Failed to fetch') {
-      return 'データの取得に失敗しました。';
+    if (error.message === "Failed to fetch") {
+      return "データの取得に失敗しました。";
     }
   }
-  
+
   // それ以外の未知のエラー
-  return '予期しないエラーが発生しました。';
+  return "予期しないエラーが発生しました。";
 }
 
-
-
 const Expenses = () => {
-
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [loading, setLoading] = useState<boolean>(false); 
-  const [error, setError] = useState<string | null>(null); 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const categoryRef = useRef<HTMLSelectElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
@@ -51,50 +47,54 @@ const Expenses = () => {
   // 現在表示されているメモのインデックスを追跡するための状態
   const [visibleMemoIndex, setVisibleMemoIndex] = useState<number | null>(null);
 
-
-
   // 今日の日付を YYYY-MM-DD 形式で取得
   const today = new Date();
-  const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  
+  const formattedDate = `${today.getFullYear()}-${String(
+    today.getMonth() + 1
+  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
   const [defaultDate, setDefaultDate] = useState(formattedDate);
-  
-// データを取得する関数
-const fetchData = async () => {
-  setLoading(true);
-  try {
-    const response = await fetch(`/expenses`);
-    if (response.ok) {
-      const data = await response.json();
-      console.log(data)
 
-      setExpenses(data);
-    } else {
-      const errorData = await response.json();
-      setError(`Failed to fetch: ${errorData.message || response.statusText}`);
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      setError(`Error: ${error.message}`);
-    }
-  } finally {
-    setLoading(false);
-  }
-};
+  // データを取得する関数
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/expenses`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
 
+        setExpenses(data);
+      } else {
+        const errorData = await response.json();
+        setError(
+          `Failed to fetch: ${errorData.message || response.statusText}`
+        );
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(`Error: ${error.message}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchData();
   }, []);
-  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {convertToUserFriendlyMessage(error)}</div>;
 
-  
-  const handleSubmit =async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!categoryRef.current || !amountRef.current || !memoRef.current || !dateRef.current) {
+    if (
+      !categoryRef.current ||
+      !amountRef.current ||
+      !memoRef.current ||
+      !dateRef.current
+    ) {
       return;
     }
 
@@ -118,7 +118,7 @@ const fetchData = async () => {
       }
     } else {
       // ここにエラー処理を書く
-      alert('全ての必須項目に値を入力してください。');
+      alert("全ての必須項目に値を入力してください。");
       return;
     }
     const userDate = dateRef.current.value; // YYYY-MM-DD 形式
@@ -127,7 +127,6 @@ const fetchData = async () => {
     // ユーザーが選択した日付とシステムの現在時間を組み合わせる
     const combinedDateTime = `${userDate}T${systemTime}`;
 
-    
     const newExpense: Expense = {
       category: categoryRef.current.value,
       amount: amountRef.current.value,
@@ -135,29 +134,29 @@ const fetchData = async () => {
       date: dateRef.current.value,
       sortAt: new Date().toISOString(),
     };
-    
+
     const response = await fetch(`/expenses`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newExpense),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newExpense),
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        alert(`支出の登録に失敗しました: ${errorData.error}`);
-        return;
+      const errorData = await response.json();
+      alert(`支出の登録に失敗しました: ${errorData.error}`);
+      return;
     }
 
     // 支出が成功した後で、データベースから全ての支出を再取得
     fetchData();
 
     // フォームのリセット
-    alert('支出を登録しました。');
+    alert("支出を登録しました。");
     if (amountRef.current && memoRef.current && dateRef.current) {
-      amountRef.current.value = '';
-      memoRef.current.value = '';
+      amountRef.current.value = "";
+      memoRef.current.value = "";
       dateRef.current.value = defaultDate;
     }
   };
@@ -169,21 +168,21 @@ const fetchData = async () => {
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
             <div className="flex flex-col flex-grow">
-            <label className="mb-1">日付<span className="text-red-500">*</span></label>
+              <label className="mb-1">
+                日付<span className="text-red-500">*</span>
+              </label>
               <input
                 type="date"
                 ref={dateRef}
                 className="border rounded py-1 px-2"
                 defaultValue={defaultDate}
-
               />
             </div>
             <div className="flex flex-col flex-grow">
-              <label className="mb-1">区分<span className="text-red-500">*</span></label>
-              <select
-                ref={categoryRef}
-                className="border rounded py-1 px-2"
-              >
+              <label className="mb-1">
+                区分<span className="text-red-500">*</span>
+              </label>
+              <select ref={categoryRef} className="border rounded py-1 px-2">
                 <option value="">選択してください</option>
                 <option value="a">a</option>
                 <option value="b">b</option>
@@ -191,7 +190,9 @@ const fetchData = async () => {
               </select>
             </div>
             <div className="flex flex-col  flex-grow">
-              <label className="mb-1">金額<span className="text-red-500">*</span></label>
+              <label className="mb-1">
+                金額<span className="text-red-500">*</span>
+              </label>
               <input
                 type="number"
                 ref={amountRef}
@@ -207,8 +208,14 @@ const fetchData = async () => {
               />
             </div>
           </div>
-          <div className="flex justify-end"> 
-            <Button type="submit" variant="filled" color="green" size="md" className="mt-4 w-full md:w-auto">
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              variant="filled"
+              color="green"
+              size="md"
+              className="mt-4 w-full md:w-auto"
+            >
               登録
             </Button>
           </div>
@@ -218,16 +225,29 @@ const fetchData = async () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日付</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">支払い</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">区分</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">金額</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">メモ</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    日付
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    支払い
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    区分
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    金額
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    メモ
+                  </th>
                 </tr>
               </thead>
 
               {visibleMemoIndex !== null && (
-                <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50" onClick={() => setVisibleMemoIndex(null)}>
+                <div
+                  className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50"
+                  onClick={() => setVisibleMemoIndex(null)}
+                >
                   <div className="bg-white p-4 max-w-md w-full rounded-md">
                     <button
                       onClick={() => setVisibleMemoIndex(null)}
@@ -242,21 +262,31 @@ const fetchData = async () => {
                 </div>
               )}
 
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {expenses.map((expense, index) => (
-                   <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {expenses.map((expense, index) => (
+                  <tr
+                    key={index}
+                    className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
+                  >
                     <td className="px-6 py-4">{expense.date}</td>
                     <td className="px-6 py-4">XXXXXX</td>
                     <td className="px-6 py-4">{expense.category}</td>
                     <td className="px-6 py-4">{expense.amount}</td>
                     <td className="px-6 py-4">
-                      <div className="hidden md:block"> {/* デスクトップサイズでの  表示 */}
+                      <div className="hidden md:block">
+                        {" "}
+                        {/* デスクトップサイズでの  表示 */}
                         {expense.memo}
                       </div>
-                      <div className="md:hidden"> {/* スマホサイズでの表示 */}
-                        {expense.memo.length>=10 ? (
-                          <PopoverAnimation content={expense.memo} buttonText="表示"/>
-                        ):(
+                      <div className="md:hidden">
+                        {" "}
+                        {/* スマホサイズでの表示 */}
+                        {expense.memo.length >= 10 ? (
+                          <PopoverAnimation
+                            content={expense.memo}
+                            buttonText="表示"
+                          />
+                        ) : (
                           expense.memo
                         )}
                       </div>
@@ -271,9 +301,7 @@ const fetchData = async () => {
         )}
       </div>
     </main>
-
   );
 };
 
 export default Expenses;
-
