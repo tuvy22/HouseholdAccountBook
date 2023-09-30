@@ -3,13 +3,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@material-tailwind/react";
 import { PopoverAnimation } from "@/components/Popover";
+import { useForm } from "react-hook-form";
 
 interface Expense {
+  date: string;
   category: string;
   amount: string;
   memo: string;
-  date: string;
+
   sortAt: string;
+}
+interface IFormInput {
+  date: string;
+  category: string;
+  amount: string;
+  memo: string;
 }
 
 function convertToUserFriendlyMessage(error: unknown): string {
@@ -39,10 +47,12 @@ const Expenses = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const categoryRef = useRef<HTMLSelectElement>(null);
-  const amountRef = useRef<HTMLInputElement>(null);
-  const memoRef = useRef<HTMLInputElement>(null);
-  const dateRef = useRef<HTMLInputElement>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<IFormInput>();
 
   // 現在表示されているメモのインデックスを追跡するための状態
   const [visibleMemoIndex, setVisibleMemoIndex] = useState<number | null>(null);
@@ -87,51 +97,18 @@ const Expenses = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {convertToUserFriendlyMessage(error)}</div>;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (
-      !categoryRef.current ||
-      !amountRef.current ||
-      !memoRef.current ||
-      !dateRef.current
-    ) {
-      return;
-    }
-
-    if (
-      categoryRef.current.value &&
-      amountRef.current.value &&
-      dateRef.current.value
-    ) {
-      // 数値チェック
-      const amount = parseInt(amountRef.current.value, 10);
-      if (isNaN(amount) || amount <= 0) {
-        alert("金額は0より大きい数値を入力してください。");
-        return;
-      }
-
-      // 文字列長チェック
-      const memo = memoRef.current.value;
-      if (memo.length > 255) {
-        alert("メモは255文字以下で入力してください。");
-        return;
-      }
-    } else {
-      // ここにエラー処理を書く
-      alert("全ての必須項目に値を入力してください。");
-      return;
-    }
-    const userDate = dateRef.current.value; // YYYY-MM-DD 形式
+  const onSubmit = async (data: IFormInput) => {
+    const userDate = data.date; // YYYY-MM-DD 形式
     const systemTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS 形式
 
     // ユーザーが選択した日付とシステムの現在時間を組み合わせる
     const combinedDateTime = `${userDate}T${systemTime}`;
 
     const newExpense: Expense = {
-      category: categoryRef.current.value,
-      amount: amountRef.current.value,
-      memo: memoRef.current.value,
-      date: dateRef.current.value,
+      category: data.category,
+      amount: data.amount,
+      memo: data.memo,
+      date: data.date,
       sortAt: new Date().toISOString(),
     };
 
@@ -152,20 +129,19 @@ const Expenses = () => {
     // 支出が成功した後で、データベースから全ての支出を再取得
     fetchData();
 
-    // フォームのリセット
-    alert("支出を登録しました。");
-    if (amountRef.current && memoRef.current && dateRef.current) {
-      amountRef.current.value = "";
-      memoRef.current.value = "";
-      dateRef.current.value = defaultDate;
-    }
+    reset({
+      date: defaultDate,
+      category: "",
+      amount: "",
+      memo: "",
+    });
   };
 
   return (
     <main>
       <div className="container mx-auto p-10 max-w-screen-2xl">
         <h1 className="text-2xl font-bold mb-4">家計簿一覧</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
             <div className="flex flex-col flex-grow">
               <label className="mb-1">
@@ -173,21 +149,32 @@ const Expenses = () => {
               </label>
               <input
                 type="date"
-                ref={dateRef}
+                //ref={dateRef}
                 className="border rounded py-1 px-2"
                 defaultValue={defaultDate}
+                {...register("date", { required: true })}
               />
+              {errors.date && (
+                <div className="text-red-500">日付は必須項目です。</div>
+              )}
             </div>
+
             <div className="flex flex-col flex-grow">
               <label className="mb-1">
                 区分<span className="text-red-500">*</span>
               </label>
-              <select ref={categoryRef} className="border rounded py-1 px-2">
+              <select
+                className="border rounded py-1 px-2"
+                {...register("category", { required: true })}
+              >
                 <option value="">選択してください</option>
                 <option value="a">a</option>
                 <option value="b">b</option>
                 <option value="c">c</option>
               </select>
+              {errors.category && (
+                <div className="text-red-500">区分は必須項目です。</div>
+              )}
             </div>
             <div className="flex flex-col  flex-grow">
               <label className="mb-1">
@@ -195,17 +182,30 @@ const Expenses = () => {
               </label>
               <input
                 type="number"
-                ref={amountRef}
                 className="border rounded py-1 px-2"
+                {...register("amount", { required: true, min: 1 })}
               />
+              {errors?.amount?.type === "required" && (
+                <div className="text-red-500">金額は必須項目です。</div>
+              )}
+              {errors?.amount?.type === "min" && (
+                <div className="text-red-500">
+                  金額は0より大きい数値を入力してください。
+                </div>
+              )}
             </div>
             <div className="flex flex-col grow-[2]">
               <label className="mb-1">メモ</label>
               <input
                 type="text"
-                ref={memoRef}
                 className="border rounded py-1 px-2"
+                {...register("memo", { maxLength: 50 })}
               />
+              {errors.memo?.type === "maxLength" && (
+                <div className="text-red-500">
+                  メモは50文字以下で入力してください。
+                </div>
+              )}
             </div>
           </div>
           <div className="flex justify-end">
@@ -242,25 +242,6 @@ const Expenses = () => {
                   </th>
                 </tr>
               </thead>
-
-              {visibleMemoIndex !== null && (
-                <div
-                  className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50"
-                  onClick={() => setVisibleMemoIndex(null)}
-                >
-                  <div className="bg-white p-4 max-w-md w-full rounded-md">
-                    <button
-                      onClick={() => setVisibleMemoIndex(null)}
-                      className="float-right"
-                    >
-                      ✖️
-                    </button>
-                    <div className="mt-4 break-words">
-                      {expenses[visibleMemoIndex].memo}
-                    </div>
-                  </div>
-                </div>
-              )}
 
               <tbody className="bg-white divide-y divide-gray-200">
                 {expenses.map((expense, index) => (
