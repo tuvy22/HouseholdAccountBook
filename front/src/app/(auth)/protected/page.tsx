@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 
 const ProtectedPage: React.FC = () => {
   const [message, setMessage] = useState("");

@@ -3,17 +3,28 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Button } from "@material-tailwind/react";
+import { useForm } from "react-hook-form";
+
+interface IFormInput {
+  id: string;
+  password: string;
+}
 
 const Login = () => {
-  const [userId, setUserId] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormInput>();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: IFormInput) => {
+    let userId: string = data.id;
+    let password: string = data.password;
     setLoading(true);
+
     try {
       const response = await axios.post(`/auth`, { userId, password });
       setError("");
@@ -30,20 +41,18 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded shadow-md w-80">
         <h2 className="text-2xl mb-6 text-center">ログイン</h2>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"
             placeholder="ユーザID"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
             className="mb-4 w-full px-3 py-2 border rounded"
+            {...register("id")}
           />
           <input
             type="password"
             placeholder="パスワード"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             className="mb-4 w-full px-3 py-2 border rounded"
+            {...register("password")}
           />
           <div className="flex justify-end">
             <Button

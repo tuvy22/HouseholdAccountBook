@@ -10,7 +10,6 @@ interface Expense {
   category: string;
   amount: string;
   memo: string;
-
   sortAt: string;
 }
 interface IFormInput {
