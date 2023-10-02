@@ -3,6 +3,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Typography } from "@material-tailwind/react";
 
 const LogoutHeader = () => {
   const [error, setError] = useState<string | null>(null);
@@ -18,12 +19,14 @@ const LogoutHeader = () => {
       }
     } catch (error) {
       setError("ログアウト時にエラーが発生しました。");
-      console.log(error);
     }
   };
 
   return (
-    <div className="flex justify-end p-4 bg-gray-800 text-white">
+    <div className="flex justify-between p-4 bg-gray-800 text-white">
+      <Typography variant="h2" className="text-2xl font-bold">
+        家計簿一覧
+      </Typography>
       <div>
         <button onClick={handleLogout} className="hover:underline px-4">
           ログアウト

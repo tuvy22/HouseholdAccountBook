@@ -4,6 +4,14 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Button } from "@material-tailwind/react";
 import { useForm } from "react-hook-form";
+import {
+  Spinner,
+  Input,
+  Card,
+  CardHeader,
+  CardBody,
+  Typography,
+} from "@material-tailwind/react";
 
 interface IFormInput {
   id: string;
@@ -39,35 +47,50 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded shadow-md w-80">
-        <h2 className="text-2xl mb-6 text-center">ログイン</h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input
-            type="text"
-            placeholder="ユーザID"
-            className="mb-4 w-full px-3 py-2 border rounded"
-            {...register("id")}
-          />
-          <input
-            type="password"
-            placeholder="パスワード"
-            className="mb-4 w-full px-3 py-2 border rounded"
-            {...register("password")}
-          />
-          <div className="flex justify-end">
+      <Card className="w-full max-w-[20rem]">
+        <Typography variant="h2" className="text-center pt-5 text-xl">
+          ログイン
+        </Typography>
+        <CardBody>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-3"
+          >
+            <Input
+              label="ユーザID"
+              type="text"
+              variant="standard"
+              size="lg"
+              crossOrigin={undefined}
+              icon={<i className="fas fa-heart" />}
+              {...register("id")}
+            />
+
+            <Input
+              label="パスワード"
+              type="password"
+              variant="standard"
+              size="lg"
+              crossOrigin={undefined}
+              icon={<i className="fas fa-heart" />}
+              {...register("password")}
+            />
+
             <Button
               type="submit"
               variant="filled"
               color="green"
-              size="md"
-              className="mt-4 w-full md:w-auto"
+              size="lg"
+              className="mt-6 w-full"
             >
-              ログイン
+              {loading ? <Spinner className="m-auto" /> : <>ログイン</>}
             </Button>
-          </div>
-        </form>
-        {error && <div className="text-red-500 text-center mt-4">{error}</div>}
-      </div>
+          </form>
+          {error && (
+            <div className="text-red-500 text-center mt-4">{error}</div>
+          )}
+        </CardBody>
+      </Card>
     </div>
   );
 };

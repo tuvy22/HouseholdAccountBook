@@ -1,6 +1,4 @@
-import LogoutHeader from "@/components/LogoutHeader";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import LogoutHeader from "@/app/components/LogoutHeader";
 
 export default async function AuthLayout({
   children,
