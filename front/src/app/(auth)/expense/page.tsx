@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { ExpenseTable } from "@/app/(auth)/expense/ExpenseTable";
-import { Expense } from "@/app/types/types";
+import { Expense } from "@/app/util/types";
 import { ExpenseForm } from "./ExpenseForm";
 
 function convertToUserFriendlyMessage(error: unknown): string {

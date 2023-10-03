@@ -1,43 +1,35 @@
 "use client";
 
-import { Expense } from "@/app/types/types";
+import { Expense } from "@/app/util/types";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button, Select, Option, Input } from "@material-tailwind/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Schema, schema } from "./schema";
+import { today } from "../../util/util";
 
-interface FormProps {
-  fetchData: () => void;
-}
-
-export function ExpenseForm({ fetchData }: FormProps) {
-  interface IFormInput {
-    date: string;
-    category: string;
-    amount: string;
-    memo: string;
-  }
-
+export function ExpenseForm({ fetchData }: { fetchData: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const {
     control,
     register,
     handleSubmit,
-    formState: { errors },
     reset,
-  } = useForm<IFormInput>();
+    formState: { errors },
+  } = useForm<Schema>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      date: today(),
+      category: "",
+      amount: undefined,
+      memo: "",
+    },
+  });
 
   // 現在表示されているメモのインデックスを追跡するための状態
   const [visibleMemoIndex, setVisibleMemoIndex] = useState<number | null>(null);
 
-  // 今日の日付を YYYY-MM-DD 形式で取得
-  const today = new Date();
-  const formattedDate = `${today.getFullYear()}-${String(
-    today.getMonth() + 1
-  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-
-  const [defaultDate, setDefaultDate] = useState(formattedDate);
-
-  const onSubmit = async (data: IFormInput) => {
+  const onSubmit = async (data: Schema) => {
     const userDate = data.date; // YYYY-MM-DD 形式
     const systemTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS 形式
 
@@ -70,9 +62,9 @@ export function ExpenseForm({ fetchData }: FormProps) {
     fetchData();
 
     reset({
-      date: defaultDate,
+      date: today(),
       category: "",
-      amount: "",
+      amount: undefined,
       memo: "",
     });
   };
@@ -84,13 +76,12 @@ export function ExpenseForm({ fetchData }: FormProps) {
           <Input
             label="日付 (必須)"
             type="date"
-            defaultValue={defaultDate}
             size="lg"
             crossOrigin={undefined}
-            {...register("date", { required: true })}
+            {...register("date")}
           />
           {errors.date && (
-            <div className="text-red-500">日付は必須項目です。</div>
+            <div className="text-red-500">{errors.date.message}</div>
           )}
         </div>
 
@@ -98,10 +89,8 @@ export function ExpenseForm({ fetchData }: FormProps) {
           <Controller
             name="category"
             control={control}
-            rules={{ required: true }}
             render={({ field }) => (
               <Select label="区分 (必須)" size="lg" {...field}>
-                <Option value="">選択してください</Option>
                 <Option value="a">a</Option>
                 <Option value="b">b</Option>
                 <Option value="c">c</Option>
@@ -109,7 +98,7 @@ export function ExpenseForm({ fetchData }: FormProps) {
             )}
           />
           {errors.category && (
-            <div className="text-red-500">区分は必須項目です。</div>
+            <div className="text-red-500">{errors.category.message}</div>
           )}
         </div>
         <div className="flex flex-col  flex-grow">
@@ -118,15 +107,10 @@ export function ExpenseForm({ fetchData }: FormProps) {
             type="number"
             size="lg"
             crossOrigin={undefined}
-            {...register("amount", { required: true, min: 1 })}
+            {...register("amount")}
           />
-          {errors?.amount?.type === "required" && (
-            <div className="text-red-500">金額は必須項目です。</div>
-          )}
-          {errors?.amount?.type === "min" && (
-            <div className="text-red-500">
-              金額は0より大きい数値を入力してください。
-            </div>
+          {errors.amount && (
+            <div className="text-red-500">{errors.amount.message}</div>
           )}
         </div>
         <div className="flex flex-col grow-[2]">
@@ -135,12 +119,10 @@ export function ExpenseForm({ fetchData }: FormProps) {
             type="text"
             size="lg"
             crossOrigin={undefined}
-            {...register("memo", { maxLength: 50 })}
+            {...register("memo")}
           />
-          {errors.memo?.type === "maxLength" && (
-            <div className="text-red-500">
-              メモは50文字以下で入力してください。
-            </div>
+          {errors.memo && (
+            <div className="text-red-500">{errors.memo.message}</div>
           )}
         </div>
       </div>

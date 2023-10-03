@@ -1,5 +1,5 @@
 import { PopoverAnimation } from "@/app/components/Popover";
-import { Expense } from "@/app/types/types";
+import { Expense } from "@/app/util/types";
 import { Card, Typography } from "@material-tailwind/react";
 
 const TABLE_HEAD = ["日付", "支払い", "区分", "金額", "メモ"];

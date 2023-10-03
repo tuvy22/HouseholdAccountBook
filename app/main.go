@@ -19,7 +19,7 @@ import (
 type Expense struct {
 	ID       uint   `gorm:"primaryKey"`
 	Category string `json:"category" gorm:"column:category"`
-	Amount   string `json:"amount" gorm:"column:amount"`
+	Amount   int    `json:"amount" gorm:"column:amount"`
 	Memo     string `json:"memo" gorm:"column:memo"`
 	Date     string `json:"date" gorm:"column:date"`
 	SortAt   string `json:"sortAt" gorm:"column:sort_at"`
