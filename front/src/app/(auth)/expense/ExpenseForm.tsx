@@ -6,10 +6,13 @@ import { useForm, Controller } from "react-hook-form";
 import { Button, Select, Option, Input } from "@material-tailwind/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, schema } from "./schema";
-import { today } from "../../util/util";
+import { useRouter } from "next/navigation";
+import { getToday } from "../../util/util";
+import { revalidateTag } from "next/cache";
 
-export function ExpenseForm({ fetchData }: { fetchData: () => void }) {
-  const [error, setError] = useState<string | null>(null);
+export const ExpenseForm = () => {
+  const today = getToday();
+
   const {
     control,
     register,
@@ -19,15 +22,16 @@ export function ExpenseForm({ fetchData }: { fetchData: () => void }) {
   } = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: {
-      date: today(),
+      date: today,
       category: "",
-      amount: undefined,
+      amount: "",
       memo: "",
     },
   });
 
   // 現在表示されているメモのインデックスを追跡するための状態
   const [visibleMemoIndex, setVisibleMemoIndex] = useState<number | null>(null);
+  const router = useRouter();
 
   const onSubmit = async (data: Schema) => {
     const userDate = data.date; // YYYY-MM-DD 形式
@@ -38,7 +42,7 @@ export function ExpenseForm({ fetchData }: { fetchData: () => void }) {
 
     const newExpense: Expense = {
       category: data.category,
-      amount: data.amount,
+      amount: parseInt(data.amount),
       memo: data.memo,
       date: data.date,
       sortAt: new Date().toISOString(),
@@ -55,18 +59,19 @@ export function ExpenseForm({ fetchData }: { fetchData: () => void }) {
     if (!response.ok) {
       const errorData = await response.json();
       alert(`支出の登録に失敗しました: ${errorData.error}`);
+      router.push("/login");
       return;
     }
-
-    // 支出が成功した後で、データベースから全ての支出を再取得
-    fetchData();
-
     reset({
-      date: today(),
+      date: today,
       category: "",
-      amount: undefined,
+      amount: "",
       memo: "",
     });
+
+    //リフレッシュ
+    router.refresh();
+    //revalidateTag("aaa");
   };
 
   return (
@@ -139,4 +144,4 @@ export function ExpenseForm({ fetchData }: { fetchData: () => void }) {
       </div>
     </form>
   );
-}
+};

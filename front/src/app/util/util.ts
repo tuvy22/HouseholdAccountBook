@@ -1,4 +1,4 @@
-export const today = (): string => { 
+export const getToday = (): string => { 
   // 今日の日付を YYYY-MM-DD 形式で取得
   const today = new Date();
   const formattedDate = `${today.getFullYear()}-${String(

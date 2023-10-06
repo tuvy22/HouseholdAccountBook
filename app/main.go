@@ -177,6 +177,20 @@ func checkToken() gin.HandlerFunc {
 		c.Next()
 	}
 }
+func localhostOnly() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// リクエストのIPアドレスを取得
+		ip := c.ClientIP()
+
+		// IPアドレスがlocalhost (127.0.0.1) または ::1 (IPv6のlocalhost) でない場合、アクセスを拒否
+		if !strings.HasPrefix(ip, "127.0.0.1") && !strings.HasPrefix(ip, "::1") {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "Access forbidden: only localhost can access."})
+			return
+		}
+
+		c.Next()
+	}
+}
 
 func main() {
 	r := gin.Default()
@@ -190,13 +204,14 @@ func main() {
 
 	r.POST("/auth", auth)
 
+	localhost := r.Group("/")
+	localhost.Use(localhostOnly())
+	localhost.GET("/expenses", getExpenses)
+
 	authorized := r.Group("/")
 	authorized.Use(checkToken())
-
 	authorized.POST("/auth-del", authDel)
-
 	authorized.GET("/check-auth", checkAuth)
-	authorized.GET("/expenses", getExpenses)
 	authorized.POST("/expenses", createExpense)
 	authorized.PUT("/expenses/:id", updateExpense)
 
