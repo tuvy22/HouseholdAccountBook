@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typography } from "@material-tailwind/react";
 
-const LogoutHeader = () => {
+const LogoutHeader = ({ userId }: { userId: string }) => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -23,12 +23,20 @@ const LogoutHeader = () => {
   };
 
   return (
-    <div className="flex justify-between p-4 bg-gray-800 text-white">
+    <div className="flex items-center justify-between px-4 bg-gray-800 text-white h-14">
       <Typography variant="h2" className="text-2xl font-bold">
         家計簿一覧
       </Typography>
-      <div>
-        <button onClick={handleLogout} className="hover:underline px-4">
+      <div className="flex items-center h-full">
+        <span className="mr-4">
+          こんにちは&nbsp;
+          <span className="text-lg font-semibold">{userId}</span>
+          さん
+        </span>
+        <button
+          onClick={handleLogout}
+          className="px-4 h-full hover:underline hover:bg-gray-700"
+        >
           ログアウト
         </button>
       </div>

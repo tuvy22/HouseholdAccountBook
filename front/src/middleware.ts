@@ -11,7 +11,6 @@ export async function middleware(request: NextRequest) {
     }
 
     const cookie = `${jwtToken.name}=${jwtToken.value}`;
-    console.log("MW:"+cookie);
     const options: RequestInit = {
         headers: {
         cookie,
