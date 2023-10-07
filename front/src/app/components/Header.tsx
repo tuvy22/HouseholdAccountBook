@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typography } from "@material-tailwind/react";
 
-const LogoutHeader = ({ userId }: { userId: string }) => {
+const Header = ({ userId }: { userId: string }) => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -45,4 +45,4 @@ const LogoutHeader = ({ userId }: { userId: string }) => {
   );
 };
 
-export default LogoutHeader;
+export default Header;

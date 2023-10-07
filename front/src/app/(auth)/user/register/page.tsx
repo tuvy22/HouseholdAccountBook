@@ -53,7 +53,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <>
       {registerComplete && (
         <div className="mt-2">
           <AlertAnimate />
@@ -116,7 +116,7 @@ const Register = () => {
           </CardBody>
         </Card>
       </div>
-    </div>
+    </>
   );
 };
 

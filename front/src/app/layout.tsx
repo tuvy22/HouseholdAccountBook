@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import UserProvider from "./context/UserProvider";
+import Footer from "./components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,14 +16,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const userInfo = {
-    name: "",
-    age: 0,
-  };
   return (
     <html lang="ja">
       <body className={inter.className}>
-        <UserProvider>{children}</UserProvider>
+        <UserProvider>
+          <div className="flex flex-col min-h-screen">
+            {children}
+            <Footer />
+          </div>
+        </UserProvider>
       </body>
     </html>
   );

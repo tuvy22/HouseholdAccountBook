@@ -1,4 +1,4 @@
-import LogoutHeader from "@/app/components/LogoutHeader";
+import Header from "@/app/components/Header";
 import { cookies } from "next/headers";
 
 export default async function AuthLayout({
@@ -10,8 +10,10 @@ export default async function AuthLayout({
   const userId = cookieStore.get("userId")?.value ?? "";
   return (
     <>
-      <LogoutHeader userId={userId} />
-      {children}
+      <Header userId={userId} />
+      <main className="flex-grow flex items-center justify-center bg-gray-50">
+        {children}
+      </main>
     </>
   );
 }
