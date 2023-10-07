@@ -12,8 +12,6 @@ import {
   CardBody,
   Typography,
 } from "@material-tailwind/react";
-import { useUser } from "../context/UserProvider";
-import { UserInfo } from "../context/context";
 
 interface IFormInput {
   id: string;
@@ -29,7 +27,6 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
-  const { setUser } = useUser();
 
   const onSubmit = async (data: IFormInput) => {
     let userId: string = data.id;
@@ -39,12 +36,7 @@ const Login = () => {
     try {
       const response = await axios.post(`/auth`, { userId, password });
       setError("");
-      const userInfo: UserInfo = {
-        id: userId,
-        name: "bbbbbb",
-      };
 
-      setUser(userInfo);
       router.push("/expense");
     } catch (error) {
       setError("IDまたはパスワードが間違っています。");

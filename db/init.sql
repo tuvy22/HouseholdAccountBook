@@ -12,3 +12,10 @@ CREATE TABLE IF NOT EXISTS expenses (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS users (
+    id VARCHAR(10),
+    Password VARCHAR(255),
+    name VARCHAR(255)
+    PRIMARY KEY (id)
+);
+

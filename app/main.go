@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go-prj/pass"
 	"log"
 	"net/http"
 	"os"
@@ -24,13 +25,18 @@ type Expense struct {
 	Date     string `json:"date" gorm:"column:date"`
 	SortAt   string `json:"sortAt" gorm:"column:sort_at"`
 }
+type User struct {
+	ID       string `json:"id" gorm:"primaryKey"`
+	Password string `json:"password" gorm:"column:Password"`
+	Name     string `json:"name" gorm:"column:name"`
+}
 
 type Credentials struct {
 	UserID   string `json:"userId"`
 	Password string `json:"password"`
 }
 
-var jwtKey = []byte("a1s2d3f4g5")
+var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 var db *gorm.DB
 
@@ -51,6 +57,7 @@ func init() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 	db.AutoMigrate(&Expense{})
+	db.AutoMigrate(&User{})
 }
 
 func auth(c *gin.Context) {
@@ -64,14 +71,21 @@ func auth(c *gin.Context) {
 	storedPassword := os.Getenv("PASS")
 
 	if creds.UserID != storedUserID || creds.Password != storedPassword {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-		return
+		user, err := getUserByID(creds.UserID)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+			return
+		}
+		if !pass.CheckPassword(user.Password, creds.Password) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		}
+
 	}
 
 	// JWTトークンの生成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": creds.UserID,
-		"exp":     time.Now().Add(time.Hour * 72).Unix(),
+		"exp":     time.Now().Add(time.Hour * 3).Unix(),
 	})
 
 	tokenString, err := token.SignedString(jwtKey)
@@ -86,6 +100,34 @@ func auth(c *gin.Context) {
 	c.SetCookie("userId", creds.UserID, 3600, "/", os.Getenv("ALLOWED_ORIGINS"), true, false)
 }
 
+func idRegister(c *gin.Context) {
+	var inputUser User
+	if err := c.ShouldBindJSON(&inputUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	log.Println(inputUser)
+	hashPassword, err := pass.HashPassword(inputUser.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	user := User{
+		ID:       inputUser.ID,
+		Password: hashPassword,
+		Name:     inputUser.Name,
+	}
+
+	if err := db.Create(&user).Error; err != nil {
+		log.Println("Error Creating Expense:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+
+}
+
 func authDel(c *gin.Context) {
 	// トークンを持つクッキーの有効期限を過去の日時に設定して削除
 	c.SetSameSite(http.SameSiteNoneMode)
@@ -98,6 +140,19 @@ func getExpenses(c *gin.Context) {
 	var expenses []Expense
 	db.Order("Date desc, sort_at desc").Find(&expenses)
 	c.JSON(http.StatusOK, expenses)
+}
+func getUserByID(id string) (*User, error) {
+	var user User
+
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, gorm.ErrRecordNotFound
+		} else {
+			return nil, err
+		}
+	}
+
+	return &user, nil
 }
 
 func createExpense(c *gin.Context) {
@@ -205,6 +260,7 @@ func main() {
 	r.Use(cors.New(config))
 
 	r.POST("/auth", auth)
+	r.POST("/user/register", idRegister)
 
 	localhost := r.Group("/")
 	localhost.Use(localhostOnly())
