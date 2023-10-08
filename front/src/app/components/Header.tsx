@@ -25,7 +25,7 @@ const Header = ({ userId }: { userId: string }) => {
   return (
     <div className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white h-14">
       <Typography variant="h2" className="text-2xl font-bold">
-        家計簿一覧
+        家計簿Web
       </Typography>
       <div className="flex items-center h-full">
         <span className="mr-4">

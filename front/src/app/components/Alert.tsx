@@ -1,7 +1,14 @@
 import React from "react";
 import { Alert, Button } from "@material-tailwind/react";
+import { colors } from "@material-tailwind/react/types/generic";
 
-export function AlertAnimate() {
+export function AlertAnimate({
+  color,
+  value,
+}: {
+  color: colors;
+  value: string;
+}) {
   const [open, setOpen] = React.useState(true);
 
   return (
@@ -9,13 +16,13 @@ export function AlertAnimate() {
       <Alert
         open={open}
         onClose={() => setOpen(false)}
-        color="green"
+        color={color}
         animate={{
           mount: { y: 0 },
           unmount: { y: 100 },
         }}
       >
-        登録が完了しました。
+        {value}
       </Alert>
     </>
   );

@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className={inter.className}>
         <UserProvider>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-col justify-between min-h-screen">
             {children}
             <Footer />
           </div>

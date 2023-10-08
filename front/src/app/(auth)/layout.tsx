@@ -11,9 +11,7 @@ export default async function AuthLayout({
   return (
     <>
       <Header userId={userId} />
-      <main className="flex-grow flex items-center justify-center bg-gray-50">
-        {children}
-      </main>
+      <main className="flex-grow flex flex-col bg-gray-50">{children}</main>
     </>
   );
 }

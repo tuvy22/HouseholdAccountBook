@@ -23,8 +23,7 @@ interface IFormInput {
 const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [registerComplete, setRegisterComplete] = useState(false);
-  const router = useRouter();
+  const [registerCompleteCount, setRegisterCompleteCount] = useState(0);
   const {
     register,
     handleSubmit,
@@ -43,7 +42,7 @@ const Register = () => {
         password,
         name,
       });
-      setRegisterComplete(true);
+      setRegisterCompleteCount(registerCompleteCount + 1);
       setError("");
     } catch (error) {
       setError("ユーザーの登録に失敗しました。");
@@ -54,9 +53,13 @@ const Register = () => {
 
   return (
     <>
-      {registerComplete && (
-        <div className="mt-2">
-          <AlertAnimate />
+      {registerCompleteCount > 0 && (
+        <div className="m-1">
+          {Array.from({ length: registerCompleteCount }).map((_, index) => (
+            <div key={index} className="my-1">
+              <AlertAnimate color={"green"} value="登録が完了しました。" />
+            </div>
+          ))}
         </div>
       )}
 
