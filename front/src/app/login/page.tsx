@@ -34,7 +34,10 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`/auth`, { userId, password });
+      const response = await axios.post(`/api/public/auth`, {
+        userId,
+        password,
+      });
       setError("");
 
       router.push("/expense");

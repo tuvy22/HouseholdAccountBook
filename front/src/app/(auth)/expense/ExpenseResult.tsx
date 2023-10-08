@@ -4,7 +4,7 @@ import { Suspense } from "react";
 
 export const ExpenseResult = async () => {
   const fetchData: () => Promise<Expense[]> = async () => {
-    const res = await fetch("http://localhost:8080/expenses", {
+    const res = await fetch("http://localhost:8080/api/localhost/expenses", {
       cache: "no-store",
     });
     return res.json();

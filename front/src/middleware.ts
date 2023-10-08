@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
         cache: "no-store",
     };
 
-    const response = await fetch(`http://localhost:8080/check-auth`, options);
+    const response = await fetch(`http://localhost:8080/api/private/check-auth`, options);
     if (response.status !== 200) {
         return NextResponse.redirect(new URL('/login', request.url))
     }

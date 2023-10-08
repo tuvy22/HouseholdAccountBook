@@ -57,7 +57,7 @@ export const ExpenseForm = () => {
       sortAt: new Date().toISOString(),
     };
 
-    const response = await fetch(`/expenses`, {
+    const response = await fetch(`/api/private/expenses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

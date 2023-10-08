@@ -257,16 +257,17 @@ func main() {
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 	config.AllowOrigins = strings.Split(allowedOrigins, ",")
 	config.AllowCredentials = true
-	r.Use(cors.New(config))
+	public := r.Group("/api/public/")
+	public.Use(cors.New(config))
 
-	r.POST("/auth", auth)
-	r.POST("/user/register", idRegister)
+	public.POST("/auth", auth)
+	public.POST("/user/register", idRegister)
 
-	localhost := r.Group("/")
+	localhost := r.Group("/api/localhost/")
 	localhost.Use(localhostOnly())
 	localhost.GET("/expenses", getExpenses)
 
-	authorized := r.Group("/")
+	authorized := r.Group("/api/private/")
 	authorized.Use(checkToken())
 	authorized.POST("/auth-del", authDel)
 	authorized.GET("/check-auth", checkAuth)

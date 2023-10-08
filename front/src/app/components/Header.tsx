@@ -11,7 +11,7 @@ const Header = ({ userId }: { userId: string }) => {
 
   const handleLogout = async (e: React.FormEvent) => {
     try {
-      const response = await axios.post(`/auth-del`);
+      const response = await axios.post(`/api/private/auth-del`);
       if (response.status === 200) {
         router.push("/login");
       } else {
