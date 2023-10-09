@@ -68,23 +68,26 @@ func auth(c *gin.Context) {
 		return
 	}
 
-	// storedUserID := os.Getenv("ID")
-	// storedPassword := os.Getenv("PASS")
-
-	// var user User
-	// var err error
-	// if creds.UserID == storedUserID && creds.Password == storedPassword {
-	// 	user = User{
-	// 		ID:       creds.UserID,
-	// 		Password: "XXXXXXXX",
-	// 		Name:     creds.UserID,
-	// 	}
-
-	// } else {
 	user, err := getUserByID(creds.UserID)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-		return
+		storedUserID := os.Getenv("ID")
+		storedPassword := os.Getenv("PASS")
+
+		if creds.UserID == storedUserID && creds.Password == storedPassword {
+			hashPassword, err := pass.HashPassword(creds.Password)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			}
+			var userDefault = User{
+				ID:       creds.UserID,
+				Password: hashPassword,
+				Name:     creds.UserID,
+			}
+			user = &userDefault
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+			return
+		}
 	}
 
 	if !pass.CheckPassword(user.Password, creds.Password) {
