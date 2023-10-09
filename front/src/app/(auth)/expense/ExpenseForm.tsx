@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, schema } from "./schema";
 import { useRouter } from "next/navigation";
 import { getToday } from "../../util/util";
+import { useUser } from "@/app/context/UserProvider";
 
 export const ExpenseForm = () => {
   const today = getToday();
@@ -39,6 +40,7 @@ export const ExpenseForm = () => {
   // 現在表示されているメモのインデックスを追跡するための状態
   const [visibleMemoIndex, setVisibleMemoIndex] = useState<number | null>(null);
   const router = useRouter();
+  const user = useUser().user;
 
   const onSubmit = async (data: Schema) => {
     setIsLoading(true);
@@ -55,6 +57,7 @@ export const ExpenseForm = () => {
       memo: data.memo,
       date: data.date,
       sortAt: new Date().toISOString(),
+      registerUserId: user.id,
     };
 
     const response = await fetch(`/api/private/expenses`, {

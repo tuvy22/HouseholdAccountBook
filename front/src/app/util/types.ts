@@ -5,4 +5,5 @@ export interface Expense {
   amount: number;
   memo: string;
   sortAt: string;
+  registerUserId: string;
 }

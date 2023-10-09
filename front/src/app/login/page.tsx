@@ -12,6 +12,8 @@ import {
   CardBody,
   Typography,
 } from "@material-tailwind/react";
+import { UserInfo } from "../context/context";
+import { useUser } from "@/app/context/UserProvider";
 
 interface IFormInput {
   id: string;
@@ -22,6 +24,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { setUser } = useUser();
   const {
     register,
     handleSubmit,
@@ -38,7 +41,10 @@ const Login = () => {
         userId,
         password,
       });
+
       setError("");
+      console.log(`ログイン時にセットしたID${response.data.id}`);
+      setUser(response.data);
 
       router.push("/expense");
     } catch (error) {

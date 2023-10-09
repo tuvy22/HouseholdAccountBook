@@ -49,7 +49,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                       color="blue-gray"
                       className="font-normal"
                     >
-                      XXXXXX
+                      {expense.registerUserId}
                     </Typography>
                   </td>
                   <td className="p-4">
@@ -101,7 +101,6 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
       ) : (
         <span>データは存在しません。</span>
       )}
-      ;
     </div>
   );
 };

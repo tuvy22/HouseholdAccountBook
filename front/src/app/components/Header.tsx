@@ -4,10 +4,12 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typography } from "@material-tailwind/react";
+import { useUser } from "../context/UserProvider";
 
-const Header = ({ userId }: { userId: string }) => {
+const Header = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const user = useUser().user;
 
   const handleLogout = async (e: React.FormEvent) => {
     try {
@@ -30,7 +32,7 @@ const Header = ({ userId }: { userId: string }) => {
       <div className="flex items-center h-full">
         <span className="mr-4">
           こんにちは&nbsp;
-          <span className="text-lg font-semibold">{userId}</span>
+          <span className="text-lg font-semibold">{user.id}</span>
           さん
         </span>
         <button

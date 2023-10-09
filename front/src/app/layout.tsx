@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import UserProvider from "./context/UserProvider";
 import Footer from "./components/Footer";
+import { cookies } from "next/headers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,10 +17,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = cookies();
+  const userId = cookieStore.get("userId")?.value ?? "";
+
   return (
     <html lang="ja">
       <body className={inter.className}>
-        <UserProvider>
+        <UserProvider userId={userId}>
           <div className="flex flex-col justify-between min-h-screen">
             {children}
             <Footer />

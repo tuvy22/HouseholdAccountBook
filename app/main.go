@@ -18,12 +18,13 @@ import (
 )
 
 type Expense struct {
-	ID       uint   `gorm:"primaryKey"`
-	Category string `json:"category" gorm:"column:category"`
-	Amount   int    `json:"amount" gorm:"column:amount"`
-	Memo     string `json:"memo" gorm:"column:memo"`
-	Date     string `json:"date" gorm:"column:date"`
-	SortAt   string `json:"sortAt" gorm:"column:sort_at"`
+	ID             uint   `gorm:"primaryKey"`
+	Category       string `json:"category" gorm:"column:category"`
+	Amount         int    `json:"amount" gorm:"column:amount"`
+	Memo           string `json:"memo" gorm:"column:memo"`
+	Date           string `json:"date" gorm:"column:date"`
+	SortAt         string `json:"sortAt" gorm:"column:sort_at"`
+	RegisterUserID string `json:"registerUserId" gorm:"column:register_user_id"`
 }
 type User struct {
 	ID       string `json:"id" gorm:"primaryKey"`
@@ -67,19 +68,27 @@ func auth(c *gin.Context) {
 		return
 	}
 
-	storedUserID := os.Getenv("ID")
-	storedPassword := os.Getenv("PASS")
+	// storedUserID := os.Getenv("ID")
+	// storedPassword := os.Getenv("PASS")
 
-	if creds.UserID != storedUserID || creds.Password != storedPassword {
-		user, err := getUserByID(creds.UserID)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-			return
-		}
-		if !pass.CheckPassword(user.Password, creds.Password) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-		}
+	// var user User
+	// var err error
+	// if creds.UserID == storedUserID && creds.Password == storedPassword {
+	// 	user = User{
+	// 		ID:       creds.UserID,
+	// 		Password: "XXXXXXXX",
+	// 		Name:     creds.UserID,
+	// 	}
 
+	// } else {
+	user, err := getUserByID(creds.UserID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	if !pass.CheckPassword(user.Password, creds.Password) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 	}
 
 	// JWTトークンの生成
@@ -98,6 +107,7 @@ func auth(c *gin.Context) {
 	c.SetSameSite(http.SameSiteNoneMode)
 	c.SetCookie("jwt", tokenString, 3600, "/", os.Getenv("ALLOWED_ORIGINS"), true, false)
 	c.SetCookie("userId", creds.UserID, 3600, "/", os.Getenv("ALLOWED_ORIGINS"), true, false)
+	c.JSON(http.StatusOK, user)
 }
 
 func idRegister(c *gin.Context) {
@@ -141,6 +151,26 @@ func getExpenses(c *gin.Context) {
 	db.Order("Date desc, sort_at desc").Find(&expenses)
 	c.JSON(http.StatusOK, expenses)
 }
+func getUser(c *gin.Context) {
+	userIdInterface, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found in context"})
+		return
+	}
+	userId, ok := userIdInterface.(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id was not a string"})
+		return
+	}
+
+	user, err := getUserByID(userId)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
 func getUserByID(id string) (*User, error) {
 	var user User
 
@@ -162,6 +192,19 @@ func createExpense(c *gin.Context) {
 		return
 	}
 	log.Println(expense)
+
+	userId, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found in context"})
+		return
+	}
+
+	if expense.RegisterUserID != userId {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not match"})
+		return
+
+	}
+
 	if expense.SortAt == "" {
 		expense.SortAt = time.Now().Format(time.RFC3339)
 	}
@@ -271,6 +314,7 @@ func main() {
 	authorized.Use(checkToken())
 	authorized.POST("/auth-del", authDel)
 	authorized.GET("/check-auth", checkAuth)
+	authorized.GET("/user", getUser)
 	authorized.POST("/expenses", createExpense)
 	authorized.PUT("/expenses/:id", updateExpense)
 
