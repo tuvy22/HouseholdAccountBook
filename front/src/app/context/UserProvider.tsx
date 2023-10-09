@@ -5,10 +5,10 @@ import { UserContext, UserContextProps, UserInfo } from "./context";
 
 const UserProvider = ({
   children,
-  userId,
+  token,
 }: {
   children: React.ReactNode;
-  userId: string;
+  token: string;
 }) => {
   const userInfo: UserInfo = {
     id: "",
@@ -17,10 +17,10 @@ const UserProvider = ({
   const [user, setUser] = useState<UserInfo>(userInfo);
 
   useEffect(() => {
-    if (userId) {
+    if (token) {
       fetchDataFromServer();
     }
-  }, [userId]);
+  }, [token]);
 
   const fetchDataFromServer = async () => {
     try {

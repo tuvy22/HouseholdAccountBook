@@ -8,11 +8,9 @@ import {
   Spinner,
   Input,
   Card,
-  CardHeader,
   CardBody,
   Typography,
 } from "@material-tailwind/react";
-import { UserInfo } from "../context/context";
 import { useUser } from "@/app/context/UserProvider";
 
 interface IFormInput {

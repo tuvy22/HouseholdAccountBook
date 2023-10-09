@@ -18,12 +18,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = cookies();
-  const userId = cookieStore.get("userId")?.value ?? "";
+  const token = cookieStore.get("jwt")?.value ?? "";
 
   return (
     <html lang="ja">
       <body className={inter.className}>
-        <UserProvider userId={userId}>
+        <UserProvider token={token}>
           <div className="flex flex-col justify-between min-h-screen">
             {children}
             <Footer />
