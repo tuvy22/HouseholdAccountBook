@@ -45,19 +45,13 @@ export const ExpenseForm = () => {
   const onSubmit = async (data: Schema) => {
     setIsLoading(true);
 
-    const userDate = data.date; // YYYY-MM-DD 形式
-    const systemTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS 形式
-
-    // ユーザーが選択した日付とシステムの現在時間を組み合わせる
-    const combinedDateTime = `${userDate}T${systemTime}`;
-
     const newExpense: Expense = {
       id: 0,
       category: data.category,
       amount: parseInt(data.amount),
       memo: data.memo,
       date: data.date,
-      sortAt: new Date().toISOString(),
+      sortAt: "",
       registerUserId: user.id,
     };
 

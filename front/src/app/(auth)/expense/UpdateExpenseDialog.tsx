@@ -4,11 +4,6 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Typography,
   Input,
   Option,
   DialogFooter,
@@ -24,15 +19,15 @@ import { Schema, schema } from "./schema";
 type Props = {
   open: boolean;
   handleOpen: () => void;
-  expense: Expense;
-  updateExpense: (updatedExpense: Expense) => void;
+  updatedExpense: Expense;
+  handleUpdate: (expense: Expense) => void;
 };
 
 export const UpdateExpenseDialog: React.FC<Props> = ({
   open,
   handleOpen,
-  expense,
-  updateExpense,
+  updatedExpense,
+  handleUpdate,
 }) => {
   const {
     control,
@@ -42,50 +37,36 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     formState: { errors },
   } = useForm<Schema>({
     resolver: zodResolver(schema),
-    // defaultValues: {
-    //   date: expense.date,
-    //   category: expense.category,
-    //   amount: expense.amount.toString(),
-    //   memo: expense.memo,
-    // },
   });
   useEffect(() => {
     if (open) {
       reset({
-        date: expense.date,
-        category: expense.category,
-        amount: expense.amount.toString(),
-        memo: expense.memo,
+        date: updatedExpense.date,
+        category: updatedExpense.category,
+        amount: updatedExpense.amount.toString(),
+        memo: updatedExpense.memo,
       });
     }
   }, [
     open,
-    expense.amount,
-    expense.category,
-    expense.date,
-    expense.memo,
+    updatedExpense.amount,
+    updatedExpense.category,
+    updatedExpense.date,
+    updatedExpense.memo,
     reset,
   ]);
 
   const onSubmit = (data: Schema) => {
-    console.log("onsubmit実行");
-
-    const userDate = data.date; // YYYY-MM-DD 形式
-    const systemTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS 形式
-
-    // ユーザーが選択した日付とシステムの現在時間を組み合わせる
-    const combinedDateTime = `${userDate}T${systemTime}`;
-
     const newExpense: Expense = {
-      id: expense.id,
+      id: updatedExpense.id,
       category: data.category,
       amount: parseInt(data.amount),
       memo: data.memo,
       date: data.date,
-      sortAt: new Date().toISOString(),
-      registerUserId: expense.registerUserId,
+      sortAt: updatedExpense.sortAt,
+      registerUserId: updatedExpense.registerUserId,
     };
-    updateExpense(newExpense);
+    handleUpdate(newExpense);
     handleOpen();
   };
 

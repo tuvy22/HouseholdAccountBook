@@ -16,19 +16,18 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
   const [Error, setError] = useState("");
   const router = useRouter();
 
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deletedExpense, setSelectedExpense] = useState<Expense | null>(null);
 
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-  const [selectedExpenseForUpdate, setSelectedExpenseForUpdate] =
-    useState<Expense | null>(null);
+  const [updatedExpense, setUpdatedExpense] = useState<Expense | null>(null);
 
   const handleOpenUpdateDialog = (expense: Expense) => {
-    setSelectedExpenseForUpdate(expense);
+    setUpdatedExpense(expense);
     setOpenUpdateDialog(true);
   };
 
-  const handleUpdateExpense = async (updatedExpense: Expense) => {
+  const handleUpdate = async (updatedExpense: Expense) => {
     if (updatedExpense) {
       setIsLoading(true);
 
@@ -50,16 +49,16 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
       } finally {
         setIsLoading(false);
       }
-      setOpenDialog(false);
+      setOpenDeleteDialog(false);
       setSelectedExpense(null);
       //リフレッシュ
       router.refresh();
     }
   };
 
-  const handleOpenDialog = (expense: Expense) => {
+  const handleOpenDeleteDialog = (expense: Expense) => {
     setSelectedExpense(expense);
-    setOpenDialog(true);
+    setOpenDeleteDialog(true);
   };
 
   const handleDelete = async () => {
@@ -73,7 +72,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
       } finally {
         setIsLoading(false);
       }
-      setOpenDialog(false);
+      setOpenDeleteDialog(false);
       setSelectedExpense(null);
       //リフレッシュ
       router.refresh();
@@ -187,7 +186,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                         variant="filled"
                         color="green"
                         size="sm"
-                        onClick={() => handleOpenDialog(expense)}
+                        onClick={() => handleOpenDeleteDialog(expense)}
                       >
                         削除
                       </Button>
@@ -197,19 +196,19 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
               </tbody>
             </table>
           </Card>
-          {selectedExpenseForUpdate && (
+          {updatedExpense && (
             <UpdateExpenseDialog
               open={openUpdateDialog}
               handleOpen={() => setOpenUpdateDialog(!openUpdateDialog)}
-              expense={selectedExpenseForUpdate}
-              updateExpense={handleUpdateExpense}
+              updatedExpense={updatedExpense}
+              handleUpdate={handleUpdate}
             />
           )}
           {deletedExpense && (
             <DeleteConfirmDialog
-              open={openDialog}
-              handleOpen={() => setOpenDialog(!openDialog)}
-              onConfirm={handleDelete}
+              open={openDeleteDialog}
+              handleOpen={() => setOpenDeleteDialog(!openDeleteDialog)}
+              handleDelete={handleDelete}
             />
           )}
           {isLoading && (

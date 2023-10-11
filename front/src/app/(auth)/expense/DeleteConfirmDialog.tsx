@@ -12,13 +12,13 @@ import {
 type Props = {
   open: boolean;
   handleOpen: () => void;
-  onConfirm: () => void;
+  handleDelete: () => void;
 };
 
 export const DeleteConfirmDialog: React.FC<Props> = ({
   open,
   handleOpen,
-  onConfirm,
+  handleDelete,
 }) => {
   return (
     <>
@@ -42,7 +42,7 @@ export const DeleteConfirmDialog: React.FC<Props> = ({
             variant="gradient"
             color="green"
             onClick={() => {
-              onConfirm();
+              handleDelete();
               handleOpen();
             }}
           >
