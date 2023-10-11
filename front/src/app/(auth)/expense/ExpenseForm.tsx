@@ -52,6 +52,7 @@ export const ExpenseForm = () => {
     const combinedDateTime = `${userDate}T${systemTime}`;
 
     const newExpense: Expense = {
+      id: 0,
       category: data.category,
       amount: parseInt(data.amount),
       memo: data.memo,
@@ -60,7 +61,7 @@ export const ExpenseForm = () => {
       registerUserId: user.id,
     };
 
-    const response = await fetch(`/api/private/expenses`, {
+    const response = await fetch(`/api/private/expense`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,81 +90,79 @@ export const ExpenseForm = () => {
 
   return (
     <>
-      <Suspense fallback={<p>Loading...</p>}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
-            <div className="flex flex-col flex-grow">
-              <Input
-                label="日付 (必須)"
-                type="date"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("date")}
-              />
-              {errors.date && (
-                <div className="text-red-500">{errors.date.message}</div>
-              )}
-            </div>
-
-            <div className="flex flex-col flex-grow">
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <Select label="区分 (必須)" size="lg" {...field}>
-                    <Option value="a">a</Option>
-                    <Option value="b">b</Option>
-                    <Option value="c">c</Option>
-                  </Select>
-                )}
-              />
-              {errors.category && (
-                <div className="text-red-500">{errors.category.message}</div>
-              )}
-            </div>
-            <div className="flex flex-col  flex-grow">
-              <Input
-                label="金額 (必須)"
-                type="number"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("amount")}
-              />
-              {errors.amount && (
-                <div className="text-red-500">{errors.amount.message}</div>
-              )}
-            </div>
-            <div className="flex flex-col grow-[2]">
-              <Input
-                label="メモ"
-                type="text"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("memo")}
-              />
-              {errors.memo && (
-                <div className="text-red-500">{errors.memo.message}</div>
-              )}
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              variant="filled"
-              color="green"
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
+          <div className="flex flex-col flex-grow">
+            <Input
+              label="日付 (必須)"
+              type="date"
               size="lg"
-              className="mt-4 w-full md:w-auto"
-            >
-              登録
-            </Button>
+              crossOrigin={undefined}
+              {...register("date")}
+            />
+            {errors.date && (
+              <div className="text-red-500">{errors.date.message}</div>
+            )}
           </div>
-        </form>
-        {isLoading && (
-          <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">
-            <Spinner />
+
+          <div className="flex flex-col flex-grow">
+            <Controller
+              name="category"
+              control={control}
+              render={({ field }) => (
+                <Select label="区分 (必須)" size="lg" {...field}>
+                  <Option value="a">a</Option>
+                  <Option value="b">b</Option>
+                  <Option value="c">c</Option>
+                </Select>
+              )}
+            />
+            {errors.category && (
+              <div className="text-red-500">{errors.category.message}</div>
+            )}
           </div>
-        )}
-      </Suspense>
+          <div className="flex flex-col  flex-grow">
+            <Input
+              label="金額 (必須)"
+              type="number"
+              size="lg"
+              crossOrigin={undefined}
+              {...register("amount")}
+            />
+            {errors.amount && (
+              <div className="text-red-500">{errors.amount.message}</div>
+            )}
+          </div>
+          <div className="flex flex-col grow-[2]">
+            <Input
+              label="メモ"
+              type="text"
+              size="lg"
+              crossOrigin={undefined}
+              {...register("memo")}
+            />
+            {errors.memo && (
+              <div className="text-red-500">{errors.memo.message}</div>
+            )}
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            variant="filled"
+            color="green"
+            size="lg"
+            className="mt-4 w-full md:w-auto"
+          >
+            登録
+          </Button>
+        </div>
+      </form>
+      {isLoading && (
+        <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">
+          <Spinner />
+        </div>
+      )}
     </>
   );
 };

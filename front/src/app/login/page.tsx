@@ -41,7 +41,6 @@ const Login = () => {
       });
 
       setError("");
-      console.log(`ログイン時にセットしたID${response.data.id}`);
       setUser(response.data);
 
       router.push("/expense");

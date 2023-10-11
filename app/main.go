@@ -18,7 +18,7 @@ import (
 )
 
 type Expense struct {
-	ID             uint   `gorm:"primaryKey"`
+	ID             uint   `json:"id" gorm:"primaryKey"`
 	Category       string `json:"category" gorm:"column:category"`
 	Amount         int    `json:"amount" gorm:"column:amount"`
 	Memo           string `json:"memo" gorm:"column:memo"`
@@ -220,27 +220,48 @@ func createExpense(c *gin.Context) {
 	c.JSON(http.StatusOK, expense)
 }
 
-func updateExpense(c *gin.Context) {
-	id := c.Param("id")
+func deleteExpense(c *gin.Context) {
 	var expense Expense
+	id := c.Param("id")
+	if err := db.Where("id = ?", id).Delete(&expense).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to delete expense"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Expense deleted successfully"})
+}
 
-	if err := db.First(&expense, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Expense not found"})
+func updateExpense(c *gin.Context) {
+	var expense Expense
+	var updateExpense Expense
+	id := c.Param("id")
+
+	if err := db.Where("id = ?", id).First(&expense).Error; err != nil {
+		c.JSON(400, gin.H{"error": "Expense not found"})
 		return
 	}
 
-	var newExpense Expense
-	if err := c.ShouldBindJSON(&newExpense); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := c.ShouldBindJSON(&updateExpense); err != nil {
+		c.JSON(400, gin.H{"error": "Failed to parse request"})
+		return
+	}
+	userId, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found in context"})
 		return
 	}
 
-	if err := db.Model(&expense).Updates(newExpense).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if updateExpense.RegisterUserID != userId {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not match"})
+		return
+
+	}
+
+	if err := db.Save(&updateExpense).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to update expense"})
 		return
 	}
 
-	c.JSON(http.StatusOK, expense)
+	c.JSON(200, gin.H{"message": "Expense updated successfully", "data": updateExpense})
 }
 
 func checkAuth(c *gin.Context) {
@@ -316,8 +337,9 @@ func main() {
 	authorized.POST("/auth-del", authDel)
 	authorized.GET("/check-auth", checkAuth)
 	authorized.GET("/user", getUser)
-	authorized.POST("/expenses", createExpense)
-	authorized.PUT("/expenses/:id", updateExpense)
+	authorized.POST("/expense", createExpense)
+	authorized.DELETE("/expense/:id", deleteExpense)
+	authorized.PUT("/expense/:id", updateExpense)
 
 	r.Run(":8080")
 }
