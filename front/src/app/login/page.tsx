@@ -12,6 +12,8 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useUser } from "@/app/context/UserProvider";
+import LockIcon from "@mui/icons-material/Lock";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 
 interface IFormInput {
   id: string;
@@ -52,32 +54,36 @@ const Login = () => {
   };
 
   return (
-    <Card className="w-full max-w-[20rem]">
+    <Card className="w-full max-w-[22rem]">
       <Typography variant="h2" className="text-center pt-5 text-xl">
         ログイン
       </Typography>
       <CardBody>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-          <Input
-            label="ユーザID"
-            type="text"
-            variant="standard"
-            size="lg"
-            crossOrigin={undefined}
-            icon={<i className="fas fa-heart" />}
-            {...register("id")}
-          />
-
-          <Input
-            label="パスワード"
-            type="password"
-            variant="standard"
-            size="lg"
-            crossOrigin={undefined}
-            icon={<i className="fas fa-heart" />}
-            {...register("password")}
-          />
-
+          <div className="flex items-center gap-3">
+            <AccountBoxIcon />
+            <Input
+              label="ユーザID"
+              type="text"
+              variant="standard"
+              size="lg"
+              crossOrigin={undefined}
+              icon={<i className="fas fa-heart" />}
+              {...register("id")}
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <LockIcon />
+            <Input
+              label="パスワード"
+              type="password"
+              variant="standard"
+              size="lg"
+              crossOrigin={undefined}
+              icon={<i className="fas fa-heart" />}
+              {...register("password")}
+            />
+          </div>
           <Button
             type="submit"
             variant="filled"

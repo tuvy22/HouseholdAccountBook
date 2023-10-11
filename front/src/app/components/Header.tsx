@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typography } from "@material-tailwind/react";
 import { useUser } from "../context/UserProvider";
+import Link from "next/link";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const Header = () => {
   const [error, setError] = useState<string | null>(null);
@@ -27,20 +29,18 @@ const Header = () => {
   return (
     <div className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white h-14">
       <Typography variant="h2" className="text-2xl font-bold">
-        家計簿Web
+        <Link href="/login">家計簿Web</Link>
       </Typography>
-      <div className="flex items-center h-full">
+      <div className="flex items-center h-full gap-3">
         <span className="mr-4">
           こんにちは&nbsp;
           <span className="text-lg font-semibold">{user.id}</span>
           さん
         </span>
-        <button
+        <LogoutIcon
           onClick={handleLogout}
-          className="px-4 h-full hover:underline hover:bg-gray-700"
-        >
-          ログアウト
-        </button>
+          className="cursor-pointer hover:text-green-500 text-2xl"
+        />
       </div>
       {error && <div className="text-red-500 mt-2">{error}</div>}
     </div>

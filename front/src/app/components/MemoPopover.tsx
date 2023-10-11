@@ -2,12 +2,11 @@ import {
   Popover,
   PopoverHandler,
   PopoverContent,
-  Button,
 } from "@material-tailwind/react";
+import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 
-export function PopoverAnimation({
+export function MemoPopover({
   content,
-  buttonText,
 }: {
   content: string;
   buttonText: string;
@@ -20,9 +19,7 @@ export function PopoverAnimation({
       }}
     >
       <PopoverHandler>
-        <Button type="submit" variant="filled" color="green" size="sm">
-          {buttonText}
-        </Button>
+        <StickyNote2Icon className="cursor-pointer hover:text-green-500" />
       </PopoverHandler>
       <PopoverContent>{content}</PopoverContent>
     </Popover>

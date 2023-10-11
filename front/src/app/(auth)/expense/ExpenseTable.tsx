@@ -1,15 +1,17 @@
 "use client";
 
-import { PopoverAnimation } from "@/app/components/Popover";
+import { MemoPopover } from "@/app/components/MemoPopover";
 import { Expense } from "@/app/util/types";
-import { Button, Card, Spinner, Typography } from "@material-tailwind/react";
+import { Card, Spinner, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DeleteConfirmDialog } from "@/app/(auth)/expense/DeleteConfirmDialog";
 import { UpdateExpenseDialog } from "@/app/(auth)/expense/UpdateExpenseDialog";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
-const TABLE_HEAD = ["日付", "支払い", "区分", "金額", "メモ", "操作"];
+const TABLE_HEAD = ["日付", "支払い", "区分", "金額", "メモ", ""];
 
 export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -156,7 +158,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                       <div className="md:hidden">
                         {/* スマホサイズでの表示 */}
                         {expense.memo.length >= 10 ? (
-                          <PopoverAnimation
+                          <MemoPopover
                             content={expense.memo}
                             buttonText="表示"
                           />
@@ -171,25 +173,15 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                         )}
                       </div>
                     </td>
-                    <td className="p-4 flex flex-col flex-wrap justify-start gap-3 md:flex-row">
-                      <Button
-                        type="submit"
-                        variant="filled"
-                        color="green"
-                        size="sm"
+                    <td className="p-4 flex flex-col flex-wrap justify-center gap-3 md:flex-row">
+                      <ModeEditIcon
+                        className="cursor-pointer hover:text-green-500"
                         onClick={() => handleOpenUpdateDialog(expense)}
-                      >
-                        更新
-                      </Button>
-                      <Button
-                        type="submit"
-                        variant="filled"
-                        color="green"
-                        size="sm"
+                      />
+                      <DeleteForeverIcon
+                        className="cursor-pointer hover:text-green-500"
                         onClick={() => handleOpenDeleteDialog(expense)}
-                      >
-                        削除
-                      </Button>
+                      />
                     </td>
                   </tr>
                 ))}
