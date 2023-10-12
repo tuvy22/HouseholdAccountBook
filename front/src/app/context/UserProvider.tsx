@@ -11,8 +11,8 @@ const UserProvider = ({
   token: string;
 }) => {
   const userInfo: UserInfo = {
-    id: "",
-    name: "",
+    id: null,
+    name: null,
   };
   const [user, setUser] = useState<UserInfo>(userInfo);
 

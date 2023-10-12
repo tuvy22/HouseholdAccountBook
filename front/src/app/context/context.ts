@@ -1,8 +1,8 @@
 import { createContext } from 'react'
 
 export interface UserInfo {
-  id: string;
-  name: string;
+  id: string|null;
+  name: string|null;
 }
 
 export interface UserContextProps {

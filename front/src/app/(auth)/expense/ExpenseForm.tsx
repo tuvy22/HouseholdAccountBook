@@ -52,7 +52,7 @@ export const ExpenseForm = () => {
       memo: data.memo,
       date: data.date,
       sortAt: "",
-      registerUserId: user.id,
+      registerUserId: user.id === null ? "" : user.id,
     };
 
     const response = await fetch(`/api/private/expense`, {
