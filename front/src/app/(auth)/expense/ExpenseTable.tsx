@@ -172,17 +172,21 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                     </div>
                   </td>
                   <td className="p-4 flex flex-col flex-wrap justify-center gap-3 md:flex-row">
-                    {user && user.id === expense.registerUserId && (
-                      <>
-                        <ModeEditIcon
-                          className="cursor-pointer hover:text-green-500"
-                          onClick={() => handleOpenUpdateDialog(expense)}
-                        />
-                        <DeleteForeverIcon
-                          className="cursor-pointer hover:text-green-500"
-                          onClick={() => handleOpenDeleteDialog(expense)}
-                        />
-                      </>
+                    {user.id !== null ? (
+                      user.id === expense.registerUserId && (
+                        <>
+                          <ModeEditIcon
+                            className="cursor-pointer hover:text-green-500"
+                            onClick={() => handleOpenUpdateDialog(expense)}
+                          />
+                          <DeleteForeverIcon
+                            className="cursor-pointer hover:text-green-500"
+                            onClick={() => handleOpenDeleteDialog(expense)}
+                          />
+                        </>
+                      )
+                    ) : (
+                      <Spinner />
                     )}
                   </td>
                 </tr>

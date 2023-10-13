@@ -1,12 +1,14 @@
 "use client";
 
 import axios from "axios";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typography } from "@material-tailwind/react";
 import { useUser } from "../context/UserProvider";
 import Link from "next/link";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { Spinner } from "@material-tailwind/react";
+import HeaderUser from "./HeaderUser";
 
 const Header = () => {
   const [error, setError] = useState<string | null>(null);
@@ -32,11 +34,9 @@ const Header = () => {
         <Link href="/login">家計簿Web</Link>
       </Typography>
       <div className="flex items-center h-full gap-3">
-        <span className="mr-4">
-          こんにちは&nbsp;
-          <span className="text-lg font-semibold">{user.id}</span>
-          さん
-        </span>
+        <Suspense fallback={<Spinner className="inline-block" />}>
+          <HeaderUser />
+        </Suspense>
         <LogoutIcon
           onClick={handleLogout}
           className="cursor-pointer hover:text-green-500 text-2xl"

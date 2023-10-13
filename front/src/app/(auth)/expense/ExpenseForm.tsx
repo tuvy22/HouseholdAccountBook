@@ -1,7 +1,7 @@
 "use client";
 
 import { Expense } from "@/app/util/types";
-import { Suspense, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Button,
@@ -17,7 +17,7 @@ import { getToday } from "../../util/util";
 import { useUser } from "@/app/context/UserProvider";
 
 export const ExpenseForm = () => {
-  const today = getToday();
+  const [today] = useState(getToday());
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,12 +29,12 @@ export const ExpenseForm = () => {
     formState: { errors },
   } = useForm<Schema>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      date: today,
-      category: "",
-      amount: "",
-      memo: "",
-    },
+    // defaultValues: {
+    //   date: today,
+    //   category: "",
+    //   amount: "",
+    //   memo: "",
+    // },
   });
 
   // 現在表示されているメモのインデックスを追跡するための状態
@@ -69,18 +69,24 @@ export const ExpenseForm = () => {
       router.push("/login");
       return;
     }
-    reset({
-      date: today,
-      category: "",
-      amount: "",
-      memo: "",
-    });
+    resetForm();
 
     //リフレッシュ
     router.refresh();
 
     setIsLoading(false);
   };
+  const resetForm = useCallback(() => {
+    reset({
+      date: today,
+      category: "",
+      amount: "",
+      memo: "",
+    });
+  }, [reset, today]);
+  useEffect(() => {
+    resetForm();
+  }, [resetForm]);
 
   return (
     <>
