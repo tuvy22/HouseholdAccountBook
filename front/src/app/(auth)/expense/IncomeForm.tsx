@@ -20,9 +20,8 @@ import CategoryForm from "./CategoryForm";
 import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
 import SubmitButtonForm from "./SubmitButtonForm";
-import { registerSchema } from "./register";
 
-export const ExpenseForm = () => {
+export const IncomeForm = () => {
   const [today] = useState(getToday());
 
   const [isLoading, setIsLoading] = useState(false);
@@ -44,11 +43,31 @@ export const ExpenseForm = () => {
 
   const onSubmit = async (data: Schema) => {
     setIsLoading(true);
-    if (!(await registerSchema(data, user.id == null ? "" : user.id, true))) {
+
+    const newExpense: Expense = {
+      id: 0,
+      category: data.category,
+      amount: parseInt(data.amount),
+      memo: data.memo,
+      date: data.date,
+      sortAt: "",
+      registerUserId: user.id === null ? "" : user.id,
+    };
+
+    const response = await fetch(`/api/private/expense`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newExpense),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      alert(`支出の登録に失敗しました: ${errorData.error}`);
       router.push("/login");
       return;
     }
-
     resetForm();
 
     //リフレッシュ
@@ -77,19 +96,7 @@ export const ExpenseForm = () => {
             errors={errors}
             register={register}
             control={control}
-            options={[
-              "食費",
-              "衣類",
-              "住居",
-              "電気",
-              "ガス",
-              "水道",
-              "通信",
-              "交通費",
-              "交際費",
-              "家具・家電",
-              "その他",
-            ]}
+            options={["給与", "ボーナス", "その他収入"]}
           />
           <AmountForm errors={errors} register={register} />
           <MemoForm errors={errors} register={register} />

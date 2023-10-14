@@ -1,14 +1,11 @@
-import { ExpenseForm } from "./ExpenseForm";
-import { Suspense } from "react";
+import { EIForm } from "./EIForm";
 import { ExpenseResult } from "./ExpenseResult";
 
-const Expenses = async () => {
-  return (
-    <div className="container mx-auto p-10 max-w-screen-2xl">
-      <ExpenseForm />
-      <ExpenseResult />
-    </div>
-  );
-};
+const Expenses = async () => (
+  <div className="container mx-auto p-10 max-w-screen-2xl">
+    <EIForm />
+    <ExpenseResult />
+  </div>
+);
 
 export default Expenses;

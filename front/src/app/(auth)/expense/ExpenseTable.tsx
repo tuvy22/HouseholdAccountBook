@@ -180,7 +180,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                             onClick={() => handleOpenUpdateDialog(expense)}
                           />
                           <DeleteForeverIcon
-                            className="cursor-pointer hover:text-green-500"
+                            className="cursor-pointer hover:text-red-500"
                             onClick={() => handleOpenDeleteDialog(expense)}
                           />
                         </>
