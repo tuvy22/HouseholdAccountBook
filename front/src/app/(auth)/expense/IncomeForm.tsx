@@ -20,6 +20,7 @@ import CategoryForm from "./CategoryForm";
 import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
 import SubmitButtonForm from "./SubmitButtonForm";
+import { registerSchema } from "./register";
 
 export const IncomeForm = () => {
   const [today] = useState(getToday());
@@ -43,31 +44,11 @@ export const IncomeForm = () => {
 
   const onSubmit = async (data: Schema) => {
     setIsLoading(true);
-
-    const newExpense: Expense = {
-      id: 0,
-      category: data.category,
-      amount: parseInt(data.amount),
-      memo: data.memo,
-      date: data.date,
-      sortAt: "",
-      registerUserId: user.id === null ? "" : user.id,
-    };
-
-    const response = await fetch(`/api/private/expense`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newExpense),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      alert(`支出の登録に失敗しました: ${errorData.error}`);
+    if (!(await registerSchema(data, user.id == null ? "" : user.id, false))) {
       router.push("/login");
       return;
     }
+
     resetForm();
 
     //リフレッシュ
