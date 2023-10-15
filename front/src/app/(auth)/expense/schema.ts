@@ -10,6 +10,9 @@ export const schema = z.object({
     })
     .refine(value => Number(value) >= 1, {
       message: "金額は0より大きい数値を入力してください。",
+    })
+    .refine((value) => Number(value) < 100000000, {
+      message: "金額は100,000,000より小さい数値を入力してください。",
     }),
   memo: z.string().max(50, { message: "メモは50文字以下で入力してください。" }),
 });
