@@ -139,7 +139,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
 
                     return (
                       <tr key={index} className="break-all">
-                        <td className="p-4 border-b border-blue-gray-50">
+                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <Typography
                             variant="small"
                             color="blue-gray"
@@ -148,7 +148,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                             {expense.registerUserId}
                           </Typography>
                         </td>
-                        <td className="p-4 border-b border-blue-gray-50">
+                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <Typography
                             variant="small"
                             color="blue-gray"
@@ -157,7 +157,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                             {expense.category}
                           </Typography>
                         </td>
-                        <td className="p-4 border-b border-blue-gray-50">
+                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <Typography
                             variant="small"
                             color="blue-gray"
@@ -166,7 +166,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                             {expense.amount.toLocaleString()}
                           </Typography>
                         </td>
-                        <td className="p-4 border-b border-blue-gray-50">
+                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <div className="hidden md:block">
                             {/* デスクトップサイズでの  表示 */}
                             <Typography
@@ -195,7 +195,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                             )}
                           </div>
                         </td>
-                        <td className="p-4 border-b border-blue-gray-50">
+                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           {user.id !== null ? (
                             user.id === expense.registerUserId && (
                               <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row">

@@ -4,7 +4,7 @@ import { ExpenseResult } from "./ExpenseResult";
 
 const Expenses = async () => {
   return (
-    <div className="container mx-auto p-10 max-w-screen-2xl">
+    <div className="container mx-auto p-4 md:p-10 max-w-screen-2xl">
       <ExpenseForm />
       <ExpenseResult />
     </div>
