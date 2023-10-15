@@ -25,6 +25,7 @@ type Expense struct {
 	Date           string `json:"date" gorm:"column:date"`
 	SortAt         string `json:"sortAt" gorm:"column:sort_at"`
 	RegisterUserID string `json:"registerUserId" gorm:"column:register_user_id"`
+	HasPlusAmount  bool   `json:"hasPlusAmount" gorm:"column:has_plus_amount"`
 }
 type User struct {
 	ID       string `json:"id" gorm:"primaryKey"`
@@ -192,8 +193,6 @@ func createExpense(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	log.Println(expense)
-
 	userId, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not found in context"})
@@ -209,8 +208,13 @@ func createExpense(c *gin.Context) {
 	if expense.SortAt == "" {
 		expense.SortAt = time.Now().Format(time.RFC3339)
 	}
-	log.Println(expense)
 
+	if expense.Amount >= 0 {
+		expense.HasPlusAmount = true
+	} else {
+		expense.HasPlusAmount = false
+	}
+	log.Println(expense)
 	if err := db.Create(&expense).Error; err != nil {
 		log.Println("Error Creating Expense:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -254,6 +258,15 @@ func updateExpense(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not match"})
 		return
 
+	}
+	if expense.SortAt == "" {
+		expense.SortAt = time.Now().Format(time.RFC3339)
+	}
+
+	if expense.Amount >= 0 {
+		expense.HasPlusAmount = true
+	} else {
+		expense.HasPlusAmount = false
 	}
 
 	if err := db.Save(&updateExpense).Error; err != nil {

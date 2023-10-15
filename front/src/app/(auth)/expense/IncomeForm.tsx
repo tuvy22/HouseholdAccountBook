@@ -1,19 +1,11 @@
 "use client";
-
-import { Expense } from "@/app/util/types";
-import { Suspense, useCallback, useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import {
-  Button,
-  Select,
-  Option,
-  Input,
-  Spinner,
-} from "@material-tailwind/react";
+import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Spinner } from "@material-tailwind/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, schema } from "./schema";
 import { useRouter } from "next/navigation";
-import { getToday } from "../../util/util";
+import { getToday, incomeCategory } from "../../util/util";
 import { useUser } from "@/app/context/UserProvider";
 import DateForm from "./DateForm";
 import CategoryForm from "./CategoryForm";
@@ -21,6 +13,7 @@ import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
 import SubmitButtonForm from "./SubmitButtonForm";
 import { registerSchema } from "./register";
+import FormInputs from "./FormInputs";
 
 export const IncomeForm = () => {
   const [today] = useState(getToday());
@@ -37,8 +30,6 @@ export const IncomeForm = () => {
     resolver: zodResolver(schema),
   });
 
-  // 現在表示されているメモのインデックスを追跡するための状態
-  const [visibleMemoIndex, setVisibleMemoIndex] = useState<number | null>(null);
   const router = useRouter();
   const user = useUser().user;
 
@@ -71,17 +62,12 @@ export const IncomeForm = () => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
-          <DateForm errors={errors} register={register} />
-          <CategoryForm
-            errors={errors}
-            register={register}
-            control={control}
-            options={["給与", "ボーナス", "その他収入"]}
-          />
-          <AmountForm errors={errors} register={register} />
-          <MemoForm errors={errors} register={register} />
-        </div>
+        <FormInputs
+          errors={errors}
+          register={register}
+          control={control}
+          hasPlusAmount={true}
+        />
         <div className="flex justify-end">
           <SubmitButtonForm />
         </div>

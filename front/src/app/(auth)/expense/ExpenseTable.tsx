@@ -136,12 +136,12 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                       {expense.category}
                     </Typography>
                   </td>
-                  <td className="p-4">
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
+                  <td
+                    className={`p-4 ${
+                      expense.hasPlusAmount ? "text-blue-500" : "text-red-500"
+                    }`}
+                  >
+                    <Typography variant="small" className="font-normal">
                       {expense.amount}
                     </Typography>
                   </td>

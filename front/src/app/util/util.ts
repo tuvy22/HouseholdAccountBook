@@ -6,3 +6,17 @@ export const getToday = (): string => {
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   return formattedDate;
 }
+export const expenseCategory=[
+              "食費",
+              "衣類",
+              "住居",
+              "電気",
+              "ガス",
+              "水道",
+              "通信",
+              "交通費",
+              "交際費",
+              "家具・家電",
+              "その他",
+]
+            export const incomeCategory=["給与", "ボーナス", "その他収入"]

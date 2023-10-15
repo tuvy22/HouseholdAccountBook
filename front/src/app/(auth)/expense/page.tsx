@@ -1,11 +1,11 @@
-import { EIForm } from "./EIForm";
-import { ExpenseResult } from "./ExpenseResult";
+import { ListForm } from "./ListForm";
+import { ListResult } from "./ListResult";
 
-const Expenses = async () => (
+const List = async () => (
   <div className="container mx-auto p-10 max-w-screen-2xl">
-    <EIForm />
-    <ExpenseResult />
+    <ListForm />
+    <ListResult />
   </div>
 );
 
-export default Expenses;
+export default List;

@@ -9,20 +9,40 @@ import {
   TabPanel,
 } from "@material-tailwind/react";
 
-export const EITabs = ({ children }: { children?: React.ReactNode }) => {
-  const [activeTab, setActiveTab] = React.useState("expense");
-  const data = [
-    {
-      label: "収入",
-      value: "income",
-      borderColor: "border-blue-500",
-    },
-    {
-      label: "支出",
-      value: "expense",
-      borderColor: "border-red-500",
-    },
-  ];
+export const ListTabs = ({
+  children,
+  isIncome,
+  isExpense,
+}: {
+  children?: React.ReactNode;
+  isIncome: boolean;
+  isExpense: boolean;
+}) => {
+  const [activeTab, setActiveTab] = React.useState(
+    isIncome && !isExpense ? "income" : "expense"
+  );
+
+  let data: { label: string; value: string; borderColor: string }[] = [];
+
+  const incomeData = {
+    label: "収入",
+    value: "income",
+    borderColor: "border-blue-500",
+  };
+
+  const expenseData = {
+    label: "支出",
+    value: "expense",
+    borderColor: "border-red-500",
+  };
+
+  if (isIncome) {
+    data = [...data, incomeData];
+  }
+  if (isExpense) {
+    data = [...data, expenseData];
+  }
+
   const currentBorderColor =
     data.find((item) => item.value === activeTab)?.borderColor || "";
 
@@ -48,12 +68,11 @@ export const EITabs = ({ children }: { children?: React.ReactNode }) => {
         ))}
       </TabsHeader>
       <TabsBody className="mt-6 overflow-visible">
-        <TabPanel key={data[0].value} value={data[0].value}>
-          {childArray[0]}
-        </TabPanel>
-        <TabPanel key={data[1].value} value={data[1].value}>
-          {childArray[1]}
-        </TabPanel>
+        {data.map((item, index) => (
+          <TabPanel key={data[index].value} value={data[index].value}>
+            {childArray[index]}
+          </TabPanel>
+        ))}
       </TabsBody>
     </Tabs>
   );
