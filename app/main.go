@@ -28,8 +28,9 @@ type Expense struct {
 }
 type User struct {
 	ID       string `json:"id" gorm:"primaryKey"`
-	Password string `json:"password" gorm:"column:Password"`
+	Password string `gorm:"column:Password"`
 	Name     string `json:"name" gorm:"column:name"`
+	GroupID  uint   `json:"groupId" gorm:"column:group_id"`
 }
 
 type Credentials struct {
@@ -152,6 +153,22 @@ func getExpenses(c *gin.Context) {
 	db.Order("Date desc, sort_at desc").Find(&expenses)
 	c.JSON(http.StatusOK, expenses)
 }
+
+func getUserAll(c *gin.Context) {
+	var users []User
+	db.Order("id").Find(&users)
+	c.JSON(http.StatusOK, users)
+}
+func deleteUser(c *gin.Context) {
+	var user User
+	id := c.Param("id")
+	if err := db.Where("id = ?", id).Delete(&user).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to delete expense"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Expense deleted successfully"})
+}
+
 func getUser(c *gin.Context) {
 	userIdInterface, exists := c.Get("user_id")
 	if !exists {
@@ -326,17 +343,20 @@ func main() {
 	public.Use(cors.New(config))
 
 	public.POST("/auth", auth)
-	public.POST("/user/register", idRegister)
 
 	localhost := r.Group("/api/localhost/")
 	localhost.Use(localhostOnly())
 	localhost.GET("/expenses", getExpenses)
+	localhost.GET("/user/all", getUserAll)
 
 	authorized := r.Group("/api/private/")
 	authorized.Use(checkToken())
 	authorized.POST("/auth-del", authDel)
 	authorized.GET("/check-auth", checkAuth)
+	authorized.POST("/user/register", idRegister)
 	authorized.GET("/user", getUser)
+
+	authorized.DELETE("/user/:id", deleteUser)
 	authorized.POST("/expense", createExpense)
 	authorized.DELETE("/expense/:id", deleteExpense)
 	authorized.PUT("/expense/:id", updateExpense)
