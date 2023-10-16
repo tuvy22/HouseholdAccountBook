@@ -19,7 +19,7 @@ import DateForm from "./DateForm";
 import AmountForm from "./AmountForm";
 import CategoryForm from "./CategoryForm";
 import MemoForm from "./MemoForm";
-import { expenseCategory, incomeCategory } from "@/app/util/util";
+import { expenseCategory, incomeCategory, isMinus } from "@/app/util/util";
 import FormInputs from "./FormInputs";
 import { ListTabs } from "./ListTabs";
 
@@ -36,6 +36,8 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
   updatedExpense,
   handleUpdate,
 }) => {
+  const isDaialogMinus = isMinus(updatedExpense.amount);
+
   const {
     control,
     register,
@@ -50,9 +52,9 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
       reset({
         date: updatedExpense.date,
         category: updatedExpense.category,
-        amount: updatedExpense.hasPlusAmount
-          ? updatedExpense.amount.toString()
-          : (-updatedExpense.amount).toString(),
+        amount: isDaialogMinus
+          ? (-updatedExpense.amount).toString()
+          : updatedExpense.amount.toString(),
         memo: updatedExpense.memo,
       });
     }
@@ -63,21 +65,18 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     updatedExpense.date,
     updatedExpense.memo,
     reset,
-    updatedExpense.hasPlusAmount,
+    isDaialogMinus,
   ]);
 
   const onSubmit = (data: Schema) => {
     const newExpense: Expense = {
       id: updatedExpense.id,
       category: data.category,
-      amount: updatedExpense.hasPlusAmount
-        ? parseInt(data.amount)
-        : -parseInt(data.amount),
+      amount: isDaialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: data.date,
       sortAt: updatedExpense.sortAt,
       registerUserId: updatedExpense.registerUserId,
-      hasPlusAmount: updatedExpense.hasPlusAmount,
     };
     handleUpdate(newExpense);
     handleOpen();
@@ -89,15 +88,12 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>編集</DialogHeader>
           <DialogBody>
-            <ListTabs
-              isIncome={updatedExpense.hasPlusAmount}
-              isExpense={!updatedExpense.hasPlusAmount}
-            >
+            <ListTabs isIncome={!isDaialogMinus} isExpense={isDaialogMinus}>
               <FormInputs
                 errors={errors}
                 register={register}
                 control={control}
-                hasPlusAmount={updatedExpense.hasPlusAmount}
+                isMinus={isDaialogMinus}
               />
             </ListTabs>
           </DialogBody>

@@ -1,16 +1,15 @@
 import { Expense } from "@/app/util/types";
 import { Schema } from "./schema";
 
-  export const registerSchema = async (data: Schema,userId:string,isExpense:boolean) => {
+  export const registerSchema = async (data: Schema,userId:string,isMinus:boolean) => {
     const newExpense: Expense = {
       id: 0,
       category: data.category,
-      amount: isExpense ? -parseInt(data.amount) : parseInt(data.amount),
+      amount: isMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: data.date,
       sortAt: "",
-      registerUserId: userId,
-      hasPlusAmount: !isExpense
+      registerUserId: userId
     };
 
     const response = await fetch(`/api/private/expense`, {

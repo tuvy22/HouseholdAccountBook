@@ -11,10 +11,10 @@ import { UpdateExpenseDialog } from "@/app/(auth)/expense/UpdateExpenseDialog";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useUser } from "@/app/context/UserProvider";
-import { getToday } from "@/app/util/util";
+import { getToday, isMinus } from "@/app/util/util";
 import React from "react";
 
-const TABLE_HEAD = ["支払い", "区分", "金額", "メモ", ""];
+const TABLE_HEAD = ["登録", "区分", "金額", "メモ", ""];
 
 export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -159,9 +159,9 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                         </td>
                         <td
                           className={`p-4 ${
-                            expense.hasPlusAmount
-                              ? "text-blue-500"
-                              : "text-red-500"
+                            isMinus(expense.amount)
+                              ? "text-red-500"
+                              : "text-blue-500"
                           }`}
                         >
                           <Typography variant="small" className="font-normal">

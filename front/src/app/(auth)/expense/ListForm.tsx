@@ -21,10 +21,10 @@ export const ListForm = () => {
   const router = useRouter();
   const user = useUser().user;
 
-  const onSubmit = async (data: Schema, isExpense: boolean) => {
+  const onSubmit = async (data: Schema, isMinus: boolean) => {
     setIsLoading(true);
     if (
-      !(await registerSchema(data, user.id == null ? "" : user.id, isExpense))
+      !(await registerSchema(data, user.id == null ? "" : user.id, isMinus))
     ) {
       router.push("/login");
       return;

@@ -19,4 +19,8 @@ export const expenseCategory=[
               "家具・家電",
               "その他",
 ]
-            export const incomeCategory=["給与", "ボーナス", "その他収入"]
+export const incomeCategory = ["給与", "ボーナス", "その他収入"]
+
+export const isMinus = (amount:number) => { 
+  return amount < 0;
+}

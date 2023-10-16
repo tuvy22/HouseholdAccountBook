@@ -11,7 +11,7 @@ import FormInputs from "./FormInputs";
 export const ExpenseForm = ({
   onSubmit,
 }: {
-  onSubmit: (data: Schema, isExpense: boolean) => Promise<void>;
+  onSubmit: (data: Schema, isMinus: boolean) => Promise<void>;
 }) => {
   const [today] = useState(getToday());
 
@@ -44,7 +44,7 @@ export const ExpenseForm = ({
           errors={errors}
           register={register}
           control={control}
-          hasPlusAmount={false}
+          isMinus={true}
         />
         <div className="flex justify-end">
           <SubmitButtonForm />

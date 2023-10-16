@@ -12,13 +12,13 @@ export default function FormInputs({
   register,
   control,
 
-  hasPlusAmount,
+  isMinus,
 }: {
   errors: FieldErrors<Schema>;
   register: UseFormRegister<Schema>;
   control: Control<Schema>;
 
-  hasPlusAmount: boolean;
+  isMinus: boolean;
 }) {
   return (
     <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
@@ -27,7 +27,7 @@ export default function FormInputs({
         errors={errors}
         register={register}
         control={control}
-        options={hasPlusAmount ? incomeCategory : expenseCategory}
+        options={isMinus ? expenseCategory : incomeCategory}
       />
       <AmountForm errors={errors} register={register} />
       <MemoForm errors={errors} register={register} />

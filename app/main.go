@@ -25,7 +25,6 @@ type Expense struct {
 	Date           string `json:"date" gorm:"column:date"`
 	SortAt         string `json:"sortAt" gorm:"column:sort_at"`
 	RegisterUserID string `json:"registerUserId" gorm:"column:register_user_id"`
-	HasPlusAmount  bool   `json:"hasPlusAmount" gorm:"column:has_plus_amount"`
 }
 type User struct {
 	ID       string `json:"id" gorm:"primaryKey"`
@@ -225,12 +224,6 @@ func createExpense(c *gin.Context) {
 	if expense.SortAt == "" {
 		expense.SortAt = time.Now().Format(time.RFC3339)
 	}
-
-	if expense.Amount >= 0 {
-		expense.HasPlusAmount = true
-	} else {
-		expense.HasPlusAmount = false
-	}
 	log.Println(expense)
 	if err := db.Create(&expense).Error; err != nil {
 		log.Println("Error Creating Expense:", err)
@@ -278,12 +271,6 @@ func updateExpense(c *gin.Context) {
 	}
 	if expense.SortAt == "" {
 		expense.SortAt = time.Now().Format(time.RFC3339)
-	}
-
-	if expense.Amount >= 0 {
-		expense.HasPlusAmount = true
-	} else {
-		expense.HasPlusAmount = false
 	}
 
 	if err := db.Save(&updateExpense).Error; err != nil {
