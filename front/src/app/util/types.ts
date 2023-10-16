@@ -9,3 +9,10 @@ export interface Expense {
   registerUserId: string;
   hasPlusAmount:boolean
 }
+
+
+export interface User {
+  id: string
+  name: string;
+  groupId: number;
+}

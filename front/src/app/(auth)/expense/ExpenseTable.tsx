@@ -11,8 +11,10 @@ import { UpdateExpenseDialog } from "@/app/(auth)/expense/UpdateExpenseDialog";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useUser } from "@/app/context/UserProvider";
+import { getToday } from "@/app/util/util";
+import React from "react";
 
-const TABLE_HEAD = ["日付", "支払い", "区分", "金額", "メモ", ""];
+const TABLE_HEAD = ["支払い", "区分", "金額", "メモ", ""];
 
 export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -83,6 +85,8 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
     }
   };
 
+  let previousDate = "";
+
   return (
     <>
       <Card className="h-full w-full mt-6">
@@ -108,88 +112,121 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
             </thead>
             <tbody>
               {fetchData.map((expense: Expense, index) => (
-                <tr key={index} className="even:bg-blue-gray-50/50">
-                  <td className="p-4 whitespace-nowrap">
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      {expense.date}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      {expense.registerUserId}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      {expense.category}
-                    </Typography>
-                  </td>
-                  <td
-                    className={`p-4 ${
-                      expense.hasPlusAmount ? "text-blue-500" : "text-red-500"
-                    }`}
-                  >
-                    <Typography variant="small" className="font-normal">
-                      {expense.amount}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <div className="hidden md:block break-all">
-                      {/* デスクトップサイズでの  表示 */}
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {expense.memo}
-                      </Typography>
-                    </div>
-                    <div className="md:hidden">
-                      {/* スマホサイズでの表示 */}
-                      {expense.memo.length >= 10 ? (
-                        <MemoPopover content={expense.memo} buttonText="表示" />
-                      ) : (
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
+                <React.Fragment key={index}>
+                  {expense.date !== previousDate && (
+                    <>
+                      <tr className="bg-green-50">
+                        <td
+                          className="p-4 whitespace-nowrap text-center border-b border-blue-gray-50"
+                          colSpan={TABLE_HEAD.length}
                         >
-                          {expense.memo}
-                        </Typography>
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-4 flex flex-col flex-wrap justify-center gap-3 md:flex-row">
-                    {user.id !== null ? (
-                      user.id === expense.registerUserId && (
-                        <>
-                          <ModeEditIcon
-                            className="cursor-pointer hover:text-green-500"
-                            onClick={() => handleOpenUpdateDialog(expense)}
-                          />
-                          <DeleteForeverIcon
-                            className="cursor-pointer hover:text-red-500"
-                            onClick={() => handleOpenDeleteDialog(expense)}
-                          />
-                        </>
-                      )
-                    ) : (
-                      <Spinner />
-                    )}
-                  </td>
-                </tr>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal text-green-700"
+                          >
+                            {expense.date}
+                          </Typography>
+                        </td>
+                      </tr>
+                    </>
+                  )}
+
+                  {(() => {
+                    if (expense.date !== previousDate) {
+                      previousDate = expense.date;
+                    }
+
+                    return (
+                      <tr key={index} className="break-all">
+                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {expense.registerUserId}
+                          </Typography>
+                        </td>
+                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {expense.category}
+                          </Typography>
+                        </td>
+                        <td
+                          className={`p-4 ${
+                            expense.hasPlusAmount
+                              ? "text-blue-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {expense.amount.toLocaleString()}
+                          </Typography>
+                        </td>
+                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
+                          <div className="hidden md:block">
+                            {/* デスクトップサイズでの  表示 */}
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                            >
+                              {expense.memo}
+                            </Typography>
+                          </div>
+                          <div className="md:hidden">
+                            {/* スマホサイズでの表示 */}
+                            {expense.memo.length >= 10 ? (
+                              <MemoPopover
+                                content={expense.memo}
+                                buttonText="表示"
+                              />
+                            ) : (
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"
+                              >
+                                {expense.memo}
+                              </Typography>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
+                          {user.id !== null ? (
+                            user.id === expense.registerUserId && (
+                              <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row">
+                                <ModeEditIcon
+                                  className="cursor-pointer hover:text-green-500"
+                                  onClick={() =>
+                                    handleOpenUpdateDialog(expense)
+                                  }
+                                />
+                                <DeleteForeverIcon
+                                  className="cursor-pointer hover:text-red-500"
+                                  onClick={() =>
+                                    handleOpenDeleteDialog(expense)
+                                  }
+                                />
+                              </div>
+                            )
+                          ) : (
+                            <Spinner />
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })()}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
