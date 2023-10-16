@@ -164,11 +164,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                               : "text-red-500"
                           }`}
                         >
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
+                          <Typography variant="small" className="font-normal">
                             {expense.amount.toLocaleString()}
                           </Typography>
                         </td>
