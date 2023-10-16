@@ -10,7 +10,7 @@ import FormInputs from "./FormInputs";
 export const IncomeForm = ({
   onSubmit,
 }: {
-  onSubmit: (data: Schema) => Promise<void>;
+  onSubmit: (data: Schema, isExpense: boolean) => Promise<void>;
 }) => {
   const [today] = useState(getToday());
 
@@ -38,7 +38,7 @@ export const IncomeForm = ({
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={(e) => handleSubmit((data) => onSubmit(data, false))(e)}>
         <FormInputs
           errors={errors}
           register={register}

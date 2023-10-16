@@ -10,7 +10,7 @@ import { Schema } from "./schema";
       date: data.date,
       sortAt: "",
       registerUserId: userId,
-      hasPlusAmount: false
+      hasPlusAmount: !isExpense
     };
 
     const response = await fetch(`/api/private/expense`, {
