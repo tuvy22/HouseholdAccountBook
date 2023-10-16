@@ -8,3 +8,10 @@ export interface Expense {
   sortAt: string;
   registerUserId: string;
 }
+
+
+export interface User {
+  id: string
+  name: string;
+  groupId: number;
+}
