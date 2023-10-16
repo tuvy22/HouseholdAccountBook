@@ -157,12 +157,14 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                             {expense.category}
                           </Typography>
                         </td>
-                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
+                        <td
+                          className={`p-4 ${
+                            expense.hasPlusAmount
+                              ? "text-blue-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          <Typography variant="small" className="font-normal">
                             {expense.amount.toLocaleString()}
                           </Typography>
                         </td>
@@ -206,7 +208,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                                   }
                                 />
                                 <DeleteForeverIcon
-                                  className="cursor-pointer hover:text-green-500"
+                                  className="cursor-pointer hover:text-red-500"
                                   onClick={() =>
                                     handleOpenDeleteDialog(expense)
                                   }

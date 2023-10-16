@@ -1,5 +1,4 @@
 "use client";
-
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +7,7 @@ import { getToday } from "../../util/util";
 import SubmitButtonForm from "./SubmitButtonForm";
 import FormInputs from "./FormInputs";
 
-export const ExpenseForm = ({
+export const IncomeForm = ({
   onSubmit,
 }: {
   onSubmit: (data: Schema) => Promise<void>;
@@ -44,7 +43,7 @@ export const ExpenseForm = ({
           errors={errors}
           register={register}
           control={control}
-          hasPlusAmount={false}
+          hasPlusAmount={true}
         />
         <div className="flex justify-end">
           <SubmitButtonForm />

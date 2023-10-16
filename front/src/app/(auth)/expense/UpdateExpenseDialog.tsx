@@ -15,6 +15,13 @@ import { Expense } from "../../util/types";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, schema } from "./schema";
+import DateForm from "./DateForm";
+import AmountForm from "./AmountForm";
+import CategoryForm from "./CategoryForm";
+import MemoForm from "./MemoForm";
+import { expenseCategory, incomeCategory } from "@/app/util/util";
+import FormInputs from "./FormInputs";
+import { ListTabs } from "./ListTabs";
 
 type Props = {
   open: boolean;
@@ -43,7 +50,9 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
       reset({
         date: updatedExpense.date,
         category: updatedExpense.category,
-        amount: updatedExpense.amount.toString(),
+        amount: updatedExpense.hasPlusAmount
+          ? updatedExpense.amount.toString()
+          : (-updatedExpense.amount).toString(),
         memo: updatedExpense.memo,
       });
     }
@@ -54,17 +63,21 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     updatedExpense.date,
     updatedExpense.memo,
     reset,
+    updatedExpense.hasPlusAmount,
   ]);
 
   const onSubmit = (data: Schema) => {
     const newExpense: Expense = {
       id: updatedExpense.id,
       category: data.category,
-      amount: parseInt(data.amount),
+      amount: updatedExpense.hasPlusAmount
+        ? parseInt(data.amount)
+        : -parseInt(data.amount),
       memo: data.memo,
       date: data.date,
       sortAt: updatedExpense.sortAt,
       registerUserId: updatedExpense.registerUserId,
+      hasPlusAmount: updatedExpense.hasPlusAmount,
     };
     handleUpdate(newExpense);
     handleOpen();
@@ -74,60 +87,19 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     <>
       <Dialog open={open} handler={handleOpen}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>更新内容入力</DialogHeader>
-          <DialogBody className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
-            <div className="flex flex-col flex-grow">
-              <Input
-                label="日付 (必須)"
-                type="date"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("date")}
-              />
-              {errors.date && (
-                <div className="text-red-500">{errors.date.message}</div>
-              )}
-            </div>
-            <div className="flex flex-col flex-grow">
-              <Controller
-                name="category"
+          <DialogHeader>編集</DialogHeader>
+          <DialogBody>
+            <ListTabs
+              isIncome={updatedExpense.hasPlusAmount}
+              isExpense={!updatedExpense.hasPlusAmount}
+            >
+              <FormInputs
+                errors={errors}
+                register={register}
                 control={control}
-                render={({ field }) => (
-                  <Select label="区分 (必須)" size="lg" {...field}>
-                    <Option value="a">a</Option>
-                    <Option value="b">b</Option>
-                    <Option value="c">c</Option>
-                  </Select>
-                )}
+                hasPlusAmount={updatedExpense.hasPlusAmount}
               />
-              {errors.category && (
-                <div className="text-red-500">{errors.category.message}</div>
-              )}
-            </div>
-            <div className="flex flex-col  flex-grow">
-              <Input
-                label="金額 (必須)"
-                type="number"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("amount")}
-              />
-              {errors.amount && (
-                <div className="text-red-500">{errors.amount.message}</div>
-              )}
-            </div>
-            <div className="flex flex-col grow-[2]">
-              <Input
-                label="メモ"
-                type="text"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("memo")}
-              />
-              {errors.memo && (
-                <div className="text-red-500">{errors.memo.message}</div>
-              )}
-            </div>
+            </ListTabs>
           </DialogBody>
 
           <DialogFooter>

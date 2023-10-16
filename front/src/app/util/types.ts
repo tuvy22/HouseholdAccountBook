@@ -7,6 +7,7 @@ export interface Expense {
   memo: string;
   sortAt: string;
   registerUserId: string;
+  hasPlusAmount:boolean
 }
 
 

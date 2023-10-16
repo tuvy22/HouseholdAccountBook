@@ -1,14 +1,11 @@
-import { ExpenseForm } from "./ExpenseForm";
-import { Suspense } from "react";
-import { ExpenseResult } from "./ExpenseResult";
+import { ListForm } from "./ListForm";
+import { ListResult } from "./ListResult";
 
-const Expenses = async () => {
-  return (
-    <div className="container mx-auto p-4 md:p-10 max-w-screen-2xl">
-      <ExpenseForm />
-      <ExpenseResult />
-    </div>
-  );
-};
+const List = async () => (
+  <div className="container mx-auto p-10 max-w-screen-2xl">
+    <ListForm />
+    <ListResult />
+  </div>
+);
 
-export default Expenses;
+export default List;
