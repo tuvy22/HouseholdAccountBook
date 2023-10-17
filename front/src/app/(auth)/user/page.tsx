@@ -1,6 +1,6 @@
 import { UserResult } from "./UserResult";
 
-const UserList = async () => {
+const Page = async () => {
   return (
     <div className="container mx-auto p-4 md:p-10 max-w-screen-2xl">
       <UserResult />
@@ -8,4 +8,4 @@ const UserList = async () => {
   );
 };
 
-export default UserList;
+export default Page;

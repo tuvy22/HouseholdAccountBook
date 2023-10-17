@@ -17,7 +17,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Expense struct {
+type IncomeAndExpense struct {
 	ID             uint   `json:"id" gorm:"primaryKey"`
 	Category       string `json:"category" gorm:"column:category"`
 	Amount         int    `json:"amount" gorm:"column:amount"`
@@ -58,7 +58,7 @@ func init() {
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
-	db.AutoMigrate(&Expense{})
+	db.AutoMigrate(&IncomeAndExpense{})
 	db.AutoMigrate(&User{})
 }
 
@@ -148,10 +148,10 @@ func authDel(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 
-func getExpenses(c *gin.Context) {
-	var expenses []Expense
-	db.Order("Date desc, sort_at desc").Find(&expenses)
-	c.JSON(http.StatusOK, expenses)
+func getIncomeAndExpenses(c *gin.Context) {
+	var incomeAndExpense []IncomeAndExpense
+	db.Order("Date desc, sort_at desc").Find(&incomeAndExpense)
+	c.JSON(http.StatusOK, incomeAndExpense)
 }
 
 func getUserAll(c *gin.Context) {
@@ -203,9 +203,9 @@ func getUserByID(id string) (*User, error) {
 	return &user, nil
 }
 
-func createExpense(c *gin.Context) {
-	var expense Expense
-	if err := c.ShouldBindJSON(&expense); err != nil {
+func createIncomeAndExpense(c *gin.Context) {
+	var incomeAndExpense IncomeAndExpense
+	if err := c.ShouldBindJSON(&incomeAndExpense); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -215,46 +215,46 @@ func createExpense(c *gin.Context) {
 		return
 	}
 
-	if expense.RegisterUserID != userId {
+	if incomeAndExpense.RegisterUserID != userId {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not match"})
 		return
 
 	}
 
-	if expense.SortAt == "" {
-		expense.SortAt = time.Now().Format(time.RFC3339)
+	if incomeAndExpense.SortAt == "" {
+		incomeAndExpense.SortAt = time.Now().Format(time.RFC3339)
 	}
-	log.Println(expense)
-	if err := db.Create(&expense).Error; err != nil {
+	log.Println(incomeAndExpense)
+	if err := db.Create(&incomeAndExpense).Error; err != nil {
 		log.Println("Error Creating Expense:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, expense)
+	c.JSON(http.StatusOK, incomeAndExpense)
 }
 
-func deleteExpense(c *gin.Context) {
-	var expense Expense
+func deleteIncomeAndExpense(c *gin.Context) {
+	var incomeAndExpense IncomeAndExpense
 	id := c.Param("id")
-	if err := db.Where("id = ?", id).Delete(&expense).Error; err != nil {
+	if err := db.Where("id = ?", id).Delete(&incomeAndExpense).Error; err != nil {
 		c.JSON(500, gin.H{"error": "Failed to delete expense"})
 		return
 	}
 	c.JSON(200, gin.H{"message": "Expense deleted successfully"})
 }
 
-func updateExpense(c *gin.Context) {
-	var expense Expense
-	var updateExpense Expense
+func updateIncomeAndExpense(c *gin.Context) {
+	var incomeAndExpense IncomeAndExpense
+	var updateIncomeAndExpense IncomeAndExpense
 	id := c.Param("id")
 
-	if err := db.Where("id = ?", id).First(&expense).Error; err != nil {
+	if err := db.Where("id = ?", id).First(&incomeAndExpense).Error; err != nil {
 		c.JSON(400, gin.H{"error": "Expense not found"})
 		return
 	}
 
-	if err := c.ShouldBindJSON(&updateExpense); err != nil {
+	if err := c.ShouldBindJSON(&updateIncomeAndExpense); err != nil {
 		c.JSON(400, gin.H{"error": "Failed to parse request"})
 		return
 	}
@@ -264,21 +264,21 @@ func updateExpense(c *gin.Context) {
 		return
 	}
 
-	if updateExpense.RegisterUserID != userId {
+	if updateIncomeAndExpense.RegisterUserID != userId {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User ID not match"})
 		return
 
 	}
-	if expense.SortAt == "" {
-		expense.SortAt = time.Now().Format(time.RFC3339)
+	if incomeAndExpense.SortAt == "" {
+		incomeAndExpense.SortAt = time.Now().Format(time.RFC3339)
 	}
 
-	if err := db.Save(&updateExpense).Error; err != nil {
+	if err := db.Save(&updateIncomeAndExpense).Error; err != nil {
 		c.JSON(500, gin.H{"error": "Failed to update expense"})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Expense updated successfully", "data": updateExpense})
+	c.JSON(200, gin.H{"message": "Expense updated successfully", "data": updateIncomeAndExpense})
 }
 
 func checkAuth(c *gin.Context) {
@@ -346,7 +346,7 @@ func main() {
 
 	localhost := r.Group("/api/localhost/")
 	localhost.Use(localhostOnly())
-	localhost.GET("/expenses", getExpenses)
+	localhost.GET("/incomeAndExpense", getIncomeAndExpenses)
 	localhost.GET("/user/all", getUserAll)
 
 	authorized := r.Group("/api/private/")
@@ -357,9 +357,9 @@ func main() {
 	authorized.GET("/user", getUser)
 
 	authorized.DELETE("/user/:id", deleteUser)
-	authorized.POST("/expense", createExpense)
-	authorized.DELETE("/expense/:id", deleteExpense)
-	authorized.PUT("/expense/:id", updateExpense)
+	authorized.POST("/incomeAndExpense", createIncomeAndExpense)
+	authorized.DELETE("/incomeAndExpense/:id", deleteIncomeAndExpense)
+	authorized.PUT("/incomeAndExpense/:id", updateIncomeAndExpense)
 
 	r.Run(":8080")
 }

@@ -1,13 +1,13 @@
 "use client";
 
 import { MemoPopover } from "@/app/components/MemoPopover";
-import { Expense } from "@/app/util/types";
+import { IncomeAndExpense } from "@/app/util/types";
 import { Card, Spinner, Typography } from "@material-tailwind/react";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { DeleteConfirmDialog } from "@/app/(auth)/expense/DeleteConfirmDialog";
-import { UpdateExpenseDialog } from "@/app/(auth)/expense/UpdateExpenseDialog";
+import { DeleteConfirmDialog } from "@/app/components/DeleteConfirmDialog";
+import { UpdateExpenseDialog } from "@/app/(auth)/income-and-expense/UpdateExpenseDialog";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useUser } from "@/app/context/UserProvider";
@@ -16,36 +16,42 @@ import React from "react";
 
 const TABLE_HEAD = ["登録", "区分", "金額", "メモ", ""];
 
-export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
+export const IncomeAndExpenseTable = ({
+  fetchData,
+}: {
+  fetchData: IncomeAndExpense[];
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [Error, setError] = useState("");
   const router = useRouter();
   const user = useUser().user;
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [deletedExpense, setSelectedExpense] = useState<Expense | null>(null);
+  const [deletedIncomeAndExpense, setDeletedIncomeAndExpense] =
+    useState<IncomeAndExpense | null>(null);
 
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-  const [updatedExpense, setUpdatedExpense] = useState<Expense | null>(null);
+  const [updatedIncomeAndExpense, setUpdatedIncomeAndExpense] =
+    useState<IncomeAndExpense | null>(null);
 
-  const handleOpenUpdateDialog = (expense: Expense) => {
-    setUpdatedExpense(expense);
+  const handleOpenUpdateDialog = (incomeAndExpense: IncomeAndExpense) => {
+    setUpdatedIncomeAndExpense(incomeAndExpense);
     setOpenUpdateDialog(true);
   };
 
-  const handleUpdate = async (updatedExpense: Expense) => {
-    if (updatedExpense) {
+  const handleUpdate = async (updatedIncomeAndExpense: IncomeAndExpense) => {
+    if (updatedIncomeAndExpense) {
       setIsLoading(true);
 
       try {
         const response = await fetch(
-          `/api/private/expense/${updatedExpense.id}`,
+          `/api/private/incomeAndExpense/${updatedIncomeAndExpense.id}`,
           {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(updatedExpense),
+            body: JSON.stringify(updatedIncomeAndExpense),
           }
         );
 
@@ -56,22 +62,24 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
         setIsLoading(false);
       }
       setOpenDeleteDialog(false);
-      setSelectedExpense(null);
+      setDeletedIncomeAndExpense(null);
       //リフレッシュ
       router.refresh();
     }
   };
 
-  const handleOpenDeleteDialog = (expense: Expense) => {
-    setSelectedExpense(expense);
+  const handleOpenDeleteDialog = (incomeAndExpense: IncomeAndExpense) => {
+    setDeletedIncomeAndExpense(incomeAndExpense);
     setOpenDeleteDialog(true);
   };
 
   const handleDelete = async () => {
-    if (deletedExpense) {
+    if (deletedIncomeAndExpense) {
       setIsLoading(true);
       try {
-        await axios.delete(`/api/private/expense/${deletedExpense.id}`);
+        await axios.delete(
+          `/api/private/incomeAndExpense/${deletedIncomeAndExpense.id}`
+        );
         setError("");
       } catch (error) {
         setError("削除に失敗しました。");
@@ -79,7 +87,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
         setIsLoading(false);
       }
       setOpenDeleteDialog(false);
-      setSelectedExpense(null);
+      setDeletedIncomeAndExpense(null);
       //リフレッシュ
       router.refresh();
     }
@@ -89,8 +97,8 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
 
   return (
     <>
-      <Card className="h-full w-full mt-6">
-        {fetchData.length > 0 ? (
+      {fetchData.length > 0 ? (
+        <Card className="h-full w-full mt-6">
           <table className="max-w-full table-auto text-left">
             <thead>
               <tr>
@@ -111,9 +119,9 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
               </tr>
             </thead>
             <tbody>
-              {fetchData.map((expense: Expense, index) => (
+              {fetchData.map((incomeAndExpense: IncomeAndExpense, index) => (
                 <React.Fragment key={index}>
-                  {expense.date !== previousDate && (
+                  {incomeAndExpense.date !== previousDate && (
                     <>
                       <tr className="bg-green-50">
                         <td
@@ -125,7 +133,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                             color="blue-gray"
                             className="font-normal text-green-700"
                           >
-                            {expense.date}
+                            {incomeAndExpense.date}
                           </Typography>
                         </td>
                       </tr>
@@ -133,8 +141,8 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                   )}
 
                   {(() => {
-                    if (expense.date !== previousDate) {
-                      previousDate = expense.date;
+                    if (incomeAndExpense.date !== previousDate) {
+                      previousDate = incomeAndExpense.date;
                     }
 
                     return (
@@ -145,7 +153,7 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {expense.registerUserId}
+                            {incomeAndExpense.registerUserId}
                           </Typography>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
@@ -154,18 +162,18 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {expense.category}
+                            {incomeAndExpense.category}
                           </Typography>
                         </td>
                         <td
                           className={`p-4 ${
-                            isMinus(expense.amount)
+                            isMinus(incomeAndExpense.amount)
                               ? "text-red-500"
                               : "text-blue-500"
                           }`}
                         >
                           <Typography variant="small" className="font-normal">
-                            {expense.amount.toLocaleString()}
+                            {incomeAndExpense.amount.toLocaleString()}
                           </Typography>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
@@ -176,14 +184,14 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                               color="blue-gray"
                               className="font-normal"
                             >
-                              {expense.memo}
+                              {incomeAndExpense.memo}
                             </Typography>
                           </div>
                           <div className="md:hidden">
                             {/* スマホサイズでの表示 */}
-                            {expense.memo.length >= 10 ? (
+                            {incomeAndExpense.memo.length >= 10 ? (
                               <MemoPopover
-                                content={expense.memo}
+                                content={incomeAndExpense.memo}
                                 buttonText="表示"
                               />
                             ) : (
@@ -192,25 +200,25 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
                                 color="blue-gray"
                                 className="font-normal"
                               >
-                                {expense.memo}
+                                {incomeAndExpense.memo}
                               </Typography>
                             )}
                           </div>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           {user.id !== null ? (
-                            user.id === expense.registerUserId && (
+                            user.id === incomeAndExpense.registerUserId && (
                               <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row">
                                 <ModeEditIcon
                                   className="cursor-pointer hover:text-green-500"
                                   onClick={() =>
-                                    handleOpenUpdateDialog(expense)
+                                    handleOpenUpdateDialog(incomeAndExpense)
                                   }
                                 />
                                 <DeleteForeverIcon
                                   className="cursor-pointer hover:text-red-500"
                                   onClick={() =>
-                                    handleOpenDeleteDialog(expense)
+                                    handleOpenDeleteDialog(incomeAndExpense)
                                   }
                                 />
                               </div>
@@ -226,19 +234,19 @@ export const ExpenseTable = ({ fetchData }: { fetchData: Expense[] }) => {
               ))}
             </tbody>
           </table>
-        ) : (
-          <span>データは存在しません。</span>
-        )}
-      </Card>
-      {updatedExpense && (
+        </Card>
+      ) : (
+        <div className="text-center">データは存在しません。</div>
+      )}
+      {updatedIncomeAndExpense && (
         <UpdateExpenseDialog
           open={openUpdateDialog}
           handleOpen={() => setOpenUpdateDialog(!openUpdateDialog)}
-          updatedExpense={updatedExpense}
+          updatedIncomeAndExpense={updatedIncomeAndExpense}
           handleUpdate={handleUpdate}
         />
       )}
-      {deletedExpense && (
+      {deletedIncomeAndExpense && (
         <DeleteConfirmDialog
           open={openDeleteDialog}
           handleOpen={() => setOpenDeleteDialog(!openDeleteDialog)}

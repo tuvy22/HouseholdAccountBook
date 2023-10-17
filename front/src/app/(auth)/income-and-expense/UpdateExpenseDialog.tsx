@@ -11,7 +11,7 @@ import {
   DialogBody,
   Select,
 } from "@material-tailwind/react";
-import { Expense } from "../../util/types";
+import { IncomeAndExpense } from "../../util/types";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, schema } from "./schema";
@@ -21,22 +21,22 @@ import CategoryForm from "./CategoryForm";
 import MemoForm from "./MemoForm";
 import { expenseCategory, incomeCategory, isMinus } from "@/app/util/util";
 import FormInputs from "./FormInputs";
-import { ListTabs } from "./ListTabs";
+import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
 
 type Props = {
   open: boolean;
   handleOpen: () => void;
-  updatedExpense: Expense;
-  handleUpdate: (expense: Expense) => void;
+  updatedIncomeAndExpense: IncomeAndExpense;
+  handleUpdate: (incomeAndExpense: IncomeAndExpense) => void;
 };
 
 export const UpdateExpenseDialog: React.FC<Props> = ({
   open,
   handleOpen,
-  updatedExpense,
+  updatedIncomeAndExpense,
   handleUpdate,
 }) => {
-  const isDaialogMinus = isMinus(updatedExpense.amount);
+  const isDaialogMinus = isMinus(updatedIncomeAndExpense.amount);
 
   const {
     control,
@@ -50,35 +50,35 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
   useEffect(() => {
     if (open) {
       reset({
-        date: updatedExpense.date,
-        category: updatedExpense.category,
+        date: updatedIncomeAndExpense.date,
+        category: updatedIncomeAndExpense.category,
         amount: isDaialogMinus
-          ? (-updatedExpense.amount).toString()
-          : updatedExpense.amount.toString(),
-        memo: updatedExpense.memo,
+          ? (-updatedIncomeAndExpense.amount).toString()
+          : updatedIncomeAndExpense.amount.toString(),
+        memo: updatedIncomeAndExpense.memo,
       });
     }
   }, [
     open,
-    updatedExpense.amount,
-    updatedExpense.category,
-    updatedExpense.date,
-    updatedExpense.memo,
+    updatedIncomeAndExpense.amount,
+    updatedIncomeAndExpense.category,
+    updatedIncomeAndExpense.date,
+    updatedIncomeAndExpense.memo,
     reset,
     isDaialogMinus,
   ]);
 
   const onSubmit = (data: Schema) => {
-    const newExpense: Expense = {
-      id: updatedExpense.id,
+    const newIncomeAndExpense: IncomeAndExpense = {
+      id: updatedIncomeAndExpense.id,
       category: data.category,
       amount: isDaialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: data.date,
-      sortAt: updatedExpense.sortAt,
-      registerUserId: updatedExpense.registerUserId,
+      sortAt: updatedIncomeAndExpense.sortAt,
+      registerUserId: updatedIncomeAndExpense.registerUserId,
     };
-    handleUpdate(newExpense);
+    handleUpdate(newIncomeAndExpense);
     handleOpen();
   };
 
@@ -88,14 +88,17 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>編集</DialogHeader>
           <DialogBody>
-            <ListTabs isIncome={!isDaialogMinus} isExpense={isDaialogMinus}>
+            <IncomeAndExpenseTabs
+              isIncome={!isDaialogMinus}
+              isExpense={isDaialogMinus}
+            >
               <FormInputs
                 errors={errors}
                 register={register}
                 control={control}
                 isMinus={isDaialogMinus}
               />
-            </ListTabs>
+            </IncomeAndExpenseTabs>
           </DialogBody>
 
           <DialogFooter>

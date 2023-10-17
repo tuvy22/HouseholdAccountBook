@@ -1,4 +1,4 @@
-import { Expense, User } from "@/app/util/types";
+import { IncomeAndExpenseTabs, User } from "@/app/util/types";
 import { UserTable } from "./UserTable";
 import { Suspense } from "react";
 

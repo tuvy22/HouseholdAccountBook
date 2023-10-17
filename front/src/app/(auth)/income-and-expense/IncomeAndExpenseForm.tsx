@@ -2,7 +2,7 @@
 
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
-import { ListTabs } from "./ListTabs";
+import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
 import { Schema } from "./schema";
 import { registerSchema } from "./register";
 
@@ -13,7 +13,7 @@ import { useUser } from "@/app/context/UserProvider";
 import { Spinner } from "@material-tailwind/react";
 import { useState } from "react";
 
-export const ListForm = () => {
+export const IncomeAndExpenseForm = () => {
   const [today] = useState(getToday());
 
   const [isLoading, setIsLoading] = useState(false);
@@ -37,10 +37,10 @@ export const ListForm = () => {
   };
   return (
     <>
-      <ListTabs isIncome={true} isExpense={true}>
+      <IncomeAndExpenseTabs isIncome={true} isExpense={true}>
         <IncomeForm onSubmit={onSubmit} />
         <ExpenseForm onSubmit={onSubmit} />
-      </ListTabs>
+      </IncomeAndExpenseTabs>
       {isLoading && (
         <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">
           <Spinner />
