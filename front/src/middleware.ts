@@ -5,7 +5,7 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.match('/((?!login).*)')) {
     const jwtToken = request.cookies.get('jwt')
     console.log("request.url:"+request.url)
-    //JWTが存在しない場合、ログインページにリダイ
+    //JWTが存在しない場合、ログインページに
     if (!jwtToken) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
