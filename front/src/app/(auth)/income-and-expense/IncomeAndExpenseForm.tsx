@@ -4,7 +4,6 @@ import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
 import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
 import { Schema } from "./schema";
-import { registerSchema } from "./register";
 
 import { useRouter } from "next/navigation";
 
@@ -12,6 +11,8 @@ import { getToday } from "@/app/util/util";
 import { useUser } from "@/app/context/UserProvider";
 import { Spinner } from "@material-tailwind/react";
 import { useState } from "react";
+import { postIncomeAndExpense } from "@/app/util/api";
+import { IncomeAndExpense } from "@/app/util/types";
 
 export const IncomeAndExpenseForm = () => {
   const [today] = useState(getToday());
@@ -23,9 +24,16 @@ export const IncomeAndExpenseForm = () => {
 
   const onSubmit = async (data: Schema, isMinus: boolean) => {
     setIsLoading(true);
-    if (
-      !(await registerSchema(data, user.id == null ? "" : user.id, isMinus))
-    ) {
+    const newIncomeAndExpense: IncomeAndExpense = {
+      id: 0,
+      category: data.category,
+      amount: isMinus ? -parseInt(data.amount) : parseInt(data.amount),
+      memo: data.memo,
+      date: data.date,
+      sortAt: "",
+      registerUserId: user.id == null ? "" : user.id,
+    };
+    if (!(await postIncomeAndExpense(newIncomeAndExpense))) {
       router.push("/login");
       return;
     }

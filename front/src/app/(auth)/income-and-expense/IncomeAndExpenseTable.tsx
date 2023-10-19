@@ -13,6 +13,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useUser } from "@/app/context/UserProvider";
 import { getToday, isMinus } from "@/app/util/util";
 import React from "react";
+import { deleteIncomeAndExpense, putIncomeAndExpense } from "@/app/util/api";
 
 const TABLE_HEAD = ["登録", "区分", "金額", "メモ", ""];
 
@@ -22,7 +23,6 @@ export const IncomeAndExpenseTable = ({
   fetchData: IncomeAndExpense[];
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [Error, setError] = useState("");
   const router = useRouter();
   const user = useUser().user;
 
@@ -42,27 +42,11 @@ export const IncomeAndExpenseTable = ({
   const handleUpdate = async (updatedIncomeAndExpense: IncomeAndExpense) => {
     if (updatedIncomeAndExpense) {
       setIsLoading(true);
-
-      try {
-        const response = await fetch(
-          `/api/private/incomeAndExpense/${updatedIncomeAndExpense.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedIncomeAndExpense),
-          }
-        );
-
-        setError("");
-      } catch (error) {
-        setError("更新に失敗しました。");
-      } finally {
-        setIsLoading(false);
-      }
+      await putIncomeAndExpense(updatedIncomeAndExpense);
+      setIsLoading(false);
       setOpenDeleteDialog(false);
       setDeletedIncomeAndExpense(null);
+
       //リフレッシュ
       router.refresh();
     }
@@ -76,18 +60,11 @@ export const IncomeAndExpenseTable = ({
   const handleDelete = async () => {
     if (deletedIncomeAndExpense) {
       setIsLoading(true);
-      try {
-        await axios.delete(
-          `/api/private/incomeAndExpense/${deletedIncomeAndExpense.id}`
-        );
-        setError("");
-      } catch (error) {
-        setError("削除に失敗しました。");
-      } finally {
-        setIsLoading(false);
-      }
+      await deleteIncomeAndExpense(deletedIncomeAndExpense.id);
+      setIsLoading(false);
       setOpenDeleteDialog(false);
       setDeletedIncomeAndExpense(null);
+
       //リフレッシュ
       router.refresh();
     }
@@ -166,7 +143,7 @@ export const IncomeAndExpenseTable = ({
                           </Typography>
                         </td>
                         <td
-                          className={`p-4 ${
+                          className={`p-2 md:p-4 border-b border-blue-gray-50 ${
                             isMinus(incomeAndExpense.amount)
                               ? "text-red-500"
                               : "text-blue-500"

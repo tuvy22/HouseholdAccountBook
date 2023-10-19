@@ -10,5 +10,7 @@ export default function ExpenseLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <div className="container mx-auto p-10 max-w-screen-2xl">{children}</div>
+  );
 }

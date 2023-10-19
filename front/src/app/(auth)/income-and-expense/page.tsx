@@ -1,11 +1,11 @@
 import { IncomeAndExpenseForm } from "./IncomeAndExpenseForm";
-import { IncomeAndExpenseResult } from "./IncomeAndExpenseResult";
+import { IncomeAndExpenseTablePrefetcher } from "./IncomeAndExpenseTablePrefetcher";
 
 const Page = async () => (
-  <div className="container mx-auto p-10 max-w-screen-2xl">
+  <>
     <IncomeAndExpenseForm />
-    <IncomeAndExpenseResult />
-  </div>
+    <IncomeAndExpenseTablePrefetcher />
+  </>
 );
 
 export default Page;
