@@ -21,9 +21,12 @@ export const IncomeAndExpenseForm = () => {
 
   const router = useRouter();
   const user = useUser().user;
+  const [triggerReset, setTriggerReset] = useState(0); // 新しい状態
 
   const onSubmit = async (data: Schema, isMinus: boolean) => {
     setIsLoading(true);
+    setTriggerReset((prev) => prev + 1);
+
     const newIncomeAndExpense: IncomeAndExpense = {
       id: 0,
       category: data.category,
@@ -46,8 +49,8 @@ export const IncomeAndExpenseForm = () => {
   return (
     <>
       <IncomeAndExpenseTabs isIncome={true} isExpense={true}>
-        <IncomeForm onSubmit={onSubmit} />
-        <ExpenseForm onSubmit={onSubmit} />
+        <IncomeForm onSubmit={onSubmit} triggerReset={triggerReset} />
+        <ExpenseForm onSubmit={onSubmit} triggerReset={triggerReset} />
       </IncomeAndExpenseTabs>
       {isLoading && (
         <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">

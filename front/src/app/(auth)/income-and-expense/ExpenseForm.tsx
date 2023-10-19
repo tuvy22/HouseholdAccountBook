@@ -10,8 +10,10 @@ import FormInputs from "./FormInputs";
 
 export const ExpenseForm = ({
   onSubmit,
+  triggerReset,
 }: {
   onSubmit: (data: Schema, isMinus: boolean) => Promise<void>;
+  triggerReset: number;
 }) => {
   const [today] = useState(getToday());
 
@@ -20,6 +22,7 @@ export const ExpenseForm = ({
     register,
     handleSubmit,
     reset,
+    getValues,
     formState: { errors },
   } = useForm<Schema>({
     resolver: zodResolver(schema),
@@ -28,14 +31,14 @@ export const ExpenseForm = ({
   const resetForm = useCallback(() => {
     reset({
       date: today,
-      category: "",
+      category: getValues().category,
       amount: "",
       memo: "",
     });
-  }, [reset, today]);
+  }, [getValues, reset, today]);
   useEffect(() => {
     resetForm();
-  }, [resetForm]);
+  }, [resetForm, triggerReset]);
 
   return (
     <>
