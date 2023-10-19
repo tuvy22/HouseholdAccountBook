@@ -185,7 +185,7 @@ export const IncomeAndExpenseTable = ({
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           {user.id !== null ? (
                             user.id === incomeAndExpense.registerUserId && (
-                              <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row">
+                              <div className="flex flex-col flex-wrap justify-end gap-3 md:flex-row">
                                 <ModeEditIcon
                                   className="cursor-pointer hover:text-green-500"
                                   onClick={() =>
