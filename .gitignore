@@ -34,7 +34,7 @@
 /fromt/*.tsbuildinfo
 /front/next-env.d.ts
 
-/app/__debug*.exe
+/app/__debug*
 /app/tmp/
 */.env
 
