@@ -7,7 +7,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DeleteConfirmDialog } from "@/app/components/DeleteConfirmDialog";
-import { UpdateExpenseDialog } from "@/app/(auth)/income-and-expense/UpdateExpenseDialog";
+import { UpdateExpenseDialog } from "@/app/(auth)/income-and-expense/list/UpdateExpenseDialog";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useUser } from "@/app/context/UserProvider";

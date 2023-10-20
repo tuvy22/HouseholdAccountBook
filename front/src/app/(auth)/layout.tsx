@@ -8,10 +8,10 @@ export default async function AuthLayout({
 }) {
   return (
     <>
-      <Suspense fallback={<p>Loading...</p>}>
-        <Header />
-      </Suspense>
-      <main className="flex-grow flex flex-col bg-gray-50">{children}</main>
+      <Header />
+      <main className="flex-grow container mx-auto p-10 max-w-screen-2xl">
+        {children}
+      </main>
     </>
   );
 }

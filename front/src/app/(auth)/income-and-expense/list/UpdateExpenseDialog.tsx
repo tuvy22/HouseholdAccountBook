@@ -11,7 +11,7 @@ import {
   DialogBody,
   Select,
 } from "@material-tailwind/react";
-import { IncomeAndExpense } from "../../util/types";
+import { IncomeAndExpense } from "../../../util/types";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, schema } from "./schema";

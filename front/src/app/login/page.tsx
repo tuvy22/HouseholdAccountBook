@@ -45,7 +45,7 @@ const Login = () => {
       setError("");
       setUser(response.data);
 
-      router.push("/income-and-expense");
+      router.push("/income-and-expense/list");
     } catch (error) {
       setError("IDまたはパスワードが間違っています。");
     } finally {

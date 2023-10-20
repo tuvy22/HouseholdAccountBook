@@ -29,14 +29,27 @@ const Header = () => {
   };
 
   return (
-    <div className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white h-14">
-      <Typography variant="h2" className="flex flex-col text-left font-bold">
-        <span className="text-xs ">家計簿サービス</span>
-        <Link href="/login" className="text-2xl">
-          F-Circle
-        </Link>
-      </Typography>
+    <div className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white">
+      <div className="flex gap-16">
+        <Typography
+          variant="h2"
+          className="p-1 flex flex-col text-left font-bold"
+        >
+          <span className="text-xs ">家計簿サービス</span>
+          <Link href="/income-and-expense/list" className="text-3xl">
+            エフサク
+          </Link>
+        </Typography>
 
+        <Typography
+          variant="h3"
+          className="p-1 cursor-pointer hover:bg-blue-gray-600"
+        >
+          <Link href="/income-and-expense/summary" className="text-xl">
+            ダッシュボード
+          </Link>
+        </Typography>
+      </div>
       <div className="flex items-center h-full gap-3">
         <Suspense fallback={<Spinner className="inline-block" />}>
           <HeaderUser />
