@@ -6,7 +6,7 @@ import (
 )
 
 type UserRepository interface {
-	GetUser(id string) (*entity.User, error)
+	GetUser(id string, user *entity.User) error
 }
 
 type userRepositoryImpl struct {
@@ -17,16 +17,10 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepositoryImpl{DB: db}
 }
 
-func (r *userRepositoryImpl) GetUser(id string) (*entity.User, error) {
-	var user entity.User
-
+func (r *userRepositoryImpl) GetUser(id string, user *entity.User) error {
 	if err := r.DB.Where("id = ?", id).First(&user).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, gorm.ErrRecordNotFound
-		} else {
-			return nil, err
-		}
+		return err
 	}
 
-	return &user, nil
+	return nil
 }

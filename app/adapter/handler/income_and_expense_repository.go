@@ -23,7 +23,7 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenses(c *gin.Context) {
 
 	incomeAndExpense, err := h.usecase.GetIncomeAndExpenses()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve incomeAndExpense"})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 

@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ten313/HouseholdAccountBook/app/adapter/handler"
 	"github.com/ten313/HouseholdAccountBook/app/adapter/middleware"
+	"github.com/ten313/HouseholdAccountBook/app/domain/password"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
@@ -31,7 +32,8 @@ func main() {
 	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
 
 	authRepo := repository.NewUserRepository(db.GetDB())
-	authUsecase := usecase.NewAuthUsecase(authRepo, *cfg)
+	password := password.NewPassWord()
+	authUsecase := usecase.NewAuthUsecase(authRepo, password, *cfg)
 	authHandler := handler.NewAuthHandler(authUsecase)
 
 	responsedOKHandler := handler.NewResponsedOKHandler()

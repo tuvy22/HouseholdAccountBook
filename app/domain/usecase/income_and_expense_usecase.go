@@ -6,7 +6,7 @@ import (
 )
 
 type IncomeAndExpenseUsecase interface {
-	GetIncomeAndExpenses() (*[]entity.IncomeAndExpense, error)
+	GetIncomeAndExpenses() ([]entity.IncomeAndExpense, error)
 }
 
 type incomeAndExpenseUsecaseImpl struct {
@@ -17,6 +17,13 @@ func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository) Inco
 	return &incomeAndExpenseUsecaseImpl{repo: repo}
 }
 
-func (u *incomeAndExpenseUsecaseImpl) GetIncomeAndExpenses() (*[]entity.IncomeAndExpense, error) {
-	return u.repo.GetIncomeAndExpenses()
+func (u *incomeAndExpenseUsecaseImpl) GetIncomeAndExpenses() ([]entity.IncomeAndExpense, error) {
+	incomeAndExpenses := []entity.IncomeAndExpense{}
+
+	err := u.repo.GetIncomeAndExpenses(&incomeAndExpenses)
+	if err != nil {
+		return incomeAndExpenses, err
+	}
+
+	return incomeAndExpenses, nil
 }
