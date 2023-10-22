@@ -11,7 +11,7 @@ import (
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
 )
 
-func NewRouter(cfg config.Config, authHandler handler.AuthHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, responsedOKHandler handler.ResponsedOKHandler) *gin.Engine {
+func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, responsedOKHandler handler.ResponsedOKHandler) *gin.Engine {
 	r := gin.Default()
 
 	// CORS 設定
@@ -22,15 +22,25 @@ func NewRouter(cfg config.Config, authHandler handler.AuthHandler, incomeAndExpe
 
 	public := r.Group("/api/public/")
 	public.Use(cors.New(config))
-	public.POST("/auth", authHandler.Authenticate)
+	public.POST("/auth", userHandler.Authenticate)
 
 	localhost := r.Group("/api/localhost/")
 	localhost.Use(middleware.LocalhostOnly())
-	localhost.GET("/incomeAndExpense", incomeAndExpenseHandler.GetIncomeAndExpenses)
+	localhost.GET("/user/all", userHandler.GetAllUser)
+
+	localhost.GET("/incomeAndExpenseAll", incomeAndExpenseHandler.GetAllIncomeAndExpense)
 
 	authorized := r.Group("/api/private/")
 	authorized.Use(middleware.CheckToken(cfg))
 	authorized.GET("/check-auth", responsedOKHandler.ResponsedOK)
+	authorized.POST("/user/register", userHandler.CreateUser)
+	authorized.GET("/user", userHandler.GetUser)
+	authorized.DELETE("/user/:id", userHandler.DeleteUser)
+	authorized.PUT("/user/:id", userHandler.UpdateUser)
+
+	authorized.POST("/incomeAndExpense", incomeAndExpenseHandler.CreateIncomeAndExpense)
+	authorized.PUT("/incomeAndExpense/:id", incomeAndExpenseHandler.UpdateIncomeAndExpense)
+	authorized.DELETE("/incomeAndExpense/:id", incomeAndExpenseHandler.DeleteIncomeAndExpense)
 
 	return r
 }

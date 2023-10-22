@@ -29,14 +29,14 @@ func main() {
 	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo)
 	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
 
-	authRepo := repository.NewUserRepository(db.GetDB())
+	userRepo := repository.NewUserRepository(db.GetDB())
 	password := password.NewPassWord()
-	authUsecase := usecase.NewAuthUsecase(authRepo, password, cfg)
-	authHandler := handler.NewAuthHandler(authUsecase)
+	userUsecase := usecase.NewUserUsecase(userRepo, password, cfg)
+	userHandler := handler.NewUserHandler(userUsecase)
 
 	responsedOKHandler := handler.NewResponsedOKHandler()
 
-	r := router.NewRouter(cfg, authHandler, incomeAndExpenseHandler, responsedOKHandler)
+	r := router.NewRouter(cfg, userHandler, incomeAndExpenseHandler, responsedOKHandler)
 
 	r.Run(":8080")
 }

@@ -6,7 +6,11 @@ import (
 )
 
 type IncomeAndExpenseRepository interface {
-	GetIncomeAndExpenses(*[]entity.IncomeAndExpense) error
+	GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense) error
+	GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error
+	CreateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
+	UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
+	DeleteIncomeAndExpense(id uint) error
 }
 
 type incomeAndExpenseRepositoryImpl struct {
@@ -17,9 +21,38 @@ func NewIncomeAndExpenseRepository(db *gorm.DB) IncomeAndExpenseRepository {
 	return &incomeAndExpenseRepositoryImpl{DB: db}
 }
 
-func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenses(incomeAndExpense *[]entity.IncomeAndExpense) error {
+func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense) error {
 
-	if err := r.DB.Order("Date desc, sort_at desc").Find(&incomeAndExpense).Error; err != nil {
+	if err := r.DB.Order("Date desc, sort_at desc").Find(&incomeAndExpenses).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error {
+
+	if err := r.DB.Where("id = ?", id).First(&incomeAndExpense).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *incomeAndExpenseRepositoryImpl) CreateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error {
+
+	if err := r.DB.Create(&incomeAndExpense).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error {
+
+	if err := r.DB.Save(&incomeAndExpense).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (r *incomeAndExpenseRepositoryImpl) DeleteIncomeAndExpense(id uint) error {
+
+	if err := r.DB.Where("id = ?", id).Delete(&entity.IncomeAndExpense{}).Error; err != nil {
 		return err
 	}
 	return nil

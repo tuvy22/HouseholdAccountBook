@@ -6,3 +6,8 @@ type User struct {
 	Name     string `json:"name" gorm:"column:name"`
 	GroupID  uint   `json:"groupId" gorm:"column:group_id"`
 }
+
+type Credentials struct {
+	UserID   string `json:"userId"`
+	Password string `json:"password"`
+}

@@ -19,7 +19,7 @@ export const postIncomeAndExpense = async (incomeAndExpense: IncomeAndExpense) =
 
 export const getIncomeAndExpense = async () => {
   try {
-    const response = await axios.get("http://localhost:8080/api/localhost/incomeAndExpense", {
+    const response = await axios.get("http://localhost:8080/api/localhost/incomeAndExpenseAll", {
       headers: {
         cache: "no-store",
       },
