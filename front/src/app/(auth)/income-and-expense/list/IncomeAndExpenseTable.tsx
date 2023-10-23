@@ -3,15 +3,14 @@
 import { MemoPopover } from "@/app/components/MemoPopover";
 import { IncomeAndExpense } from "@/app/util/types";
 import { Card, Spinner, Typography } from "@material-tailwind/react";
-import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DeleteConfirmDialog } from "@/app/components/DeleteConfirmDialog";
 import { UpdateExpenseDialog } from "@/app/(auth)/income-and-expense/list/UpdateExpenseDialog";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useUser } from "@/app/context/UserProvider";
-import { getToday, isMinus } from "@/app/util/util";
+import { isMinus } from "@/app/util/util";
 import React from "react";
 import { deleteIncomeAndExpense, putIncomeAndExpense } from "@/app/util/api";
 
@@ -192,7 +191,7 @@ export const IncomeAndExpenseTable = ({
                                     handleOpenUpdateDialog(incomeAndExpense)
                                   }
                                 />
-                                <DeleteForeverIcon
+                                <DeleteIcon
                                   className="cursor-pointer hover:text-red-500"
                                   onClick={() =>
                                     handleOpenDeleteDialog(incomeAndExpense)

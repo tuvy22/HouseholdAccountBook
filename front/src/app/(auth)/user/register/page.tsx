@@ -12,7 +12,8 @@ import {
   CardBody,
   Typography,
 } from "@material-tailwind/react";
-import { AlertAnimate } from "@/app/components/Alert";
+import { Alerts } from "@/app/components/Alerts";
+import { ColorAndValue } from "@/app/components/AlertCustom";
 
 interface IFormInput {
   id: string;
@@ -23,7 +24,8 @@ interface IFormInput {
 const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [registerCompleteCount, setRegisterCompleteCount] = useState(0);
+  const [colorAndValue, setColorAndValue] = useState<ColorAndValue[]>([]);
+
   const {
     register,
     handleSubmit,
@@ -42,7 +44,14 @@ const Register = () => {
         password,
         name,
       });
-      setRegisterCompleteCount(registerCompleteCount + 1);
+
+      //結果追加
+      const newColorAndValue: ColorAndValue = {
+        color: "green",
+        value: "登録が成功しました。",
+      };
+      setColorAndValue([...colorAndValue, newColorAndValue]);
+
       setError("");
     } catch (error) {
       setError("ユーザーの登録に失敗しました。");
@@ -53,15 +62,7 @@ const Register = () => {
 
   return (
     <>
-      {registerCompleteCount > 0 && (
-        <div className="m-1">
-          {Array.from({ length: registerCompleteCount }).map((_, index) => (
-            <div key={index} className="my-1">
-              <AlertAnimate color={"green"} value="登録が完了しました。" />
-            </div>
-          ))}
-        </div>
-      )}
+      <Alerts colorAndValue={colorAndValue} />
 
       <div className="flex-grow flex items-center justify-center">
         <Card className="w-full max-w-[20rem]">

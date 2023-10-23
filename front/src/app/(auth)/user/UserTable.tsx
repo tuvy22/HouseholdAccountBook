@@ -5,11 +5,9 @@ import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DeleteConfirmDialog } from "@/app/components/DeleteConfirmDialog";
-import { UpdateExpenseDialog } from "@/app/(auth)/income-and-expense/list/UpdateExpenseDialog";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useUser } from "@/app/context/UserProvider";
-import { getToday } from "@/app/util/util";
 import React from "react";
 import { User } from "@/app/util/types";
 import { UpdateUserDialog } from "./UpdateUserDialog";
@@ -135,7 +133,7 @@ export const UserTable = ({ fetchData }: { fetchData: User[] }) => {
                         className="cursor-pointer hover:text-green-500"
                         onClick={() => handleOpenUpdateDialog(user)}
                       />
-                      <DeleteForeverIcon
+                      <DeleteIcon
                         className="cursor-pointer hover:text-green-500"
                         onClick={() => handleOpenDeleteDialog(user)}
                       />

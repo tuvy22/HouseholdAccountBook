@@ -35,7 +35,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized.GET("/check-auth", responsedOKHandler.ResponsedOK)
 	authorized.POST("/auth-del", responsedOKHandler.ResponsedOK)
 
-	authorized.POST("/user/register", userHandler.CreateUser)
+	authorized.POST("/user", userHandler.CreateUser)
 	authorized.GET("/user", userHandler.GetLoginUser)
 	authorized.DELETE("/user/:id", userHandler.DeleteUser)
 	authorized.PUT("/user/:id", userHandler.UpdateUser)
