@@ -2,7 +2,7 @@ import Reports from "./Reports";
 
 const Page = async () => (
   <>
-    <Reports />
+    <Reports fetchData={await getIncomeAndExpense()} />
   </>
 );
 

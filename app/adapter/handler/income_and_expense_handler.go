@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ten313/HouseholdAccountBook/app/adapter/context_utils"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -42,7 +42,7 @@ func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	userIdStr, err := h.getLoginUserID(c)
+	userIdStr, err := context_utils.GetLoginUserID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -64,7 +64,7 @@ func (h *incomeAndExpenseHandlerImpl) UpdateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	userIdStr, err := h.getLoginUserID(c)
+	userIdStr, err := context_utils.GetLoginUserID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -107,19 +107,6 @@ func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpense(c *gin.Context) (enti
 	}
 
 	return incomeAndExpense, nil
-}
-func (h *incomeAndExpenseHandlerImpl) getLoginUserID(c *gin.Context) (string, error) {
-	userId, exists := c.Get("user_id")
-	if !exists {
-		return "", fmt.Errorf("User ID not found in context")
-	}
-
-	userIdStr, ok := userId.(string)
-	if !ok {
-		return "", fmt.Errorf("User ID is not a string")
-	}
-
-	return userIdStr, nil
 }
 
 func (h *incomeAndExpenseHandlerImpl) getID(c *gin.Context) (uint, error) {

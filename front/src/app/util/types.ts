@@ -7,6 +7,7 @@ export interface IncomeAndExpense {
   memo: string;
   sortAt: string;
   registerUserId: string;
+  groupId: string;
 }
 
 

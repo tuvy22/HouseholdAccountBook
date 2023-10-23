@@ -94,6 +94,11 @@ func (u *userUsecaseImpl) GetUser(id string) (entity.User, error) {
 	return user, nil
 }
 func (u *userUsecaseImpl) CreateUser(user entity.User) error {
+	hashPassword, err := u.password.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hashPassword
 
 	return u.repo.CreateUser(&user)
 }

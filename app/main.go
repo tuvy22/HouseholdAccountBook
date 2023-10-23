@@ -17,7 +17,7 @@ import (
 func main() {
 
 	// 設定をロードする
-	cfg := config.LoadConfig()
+	originalConfig := config.LoadConfig()
 
 	// CORS 設定
 	config := cors.DefaultConfig()
@@ -31,12 +31,12 @@ func main() {
 
 	userRepo := repository.NewUserRepository(db.GetDB())
 	password := password.NewPassWord()
-	userUsecase := usecase.NewUserUsecase(userRepo, password, cfg)
+	userUsecase := usecase.NewUserUsecase(userRepo, password, originalConfig)
 	userHandler := handler.NewUserHandler(userUsecase)
 
 	responsedOKHandler := handler.NewResponsedOKHandler()
 
-	r := router.NewRouter(cfg, userHandler, incomeAndExpenseHandler, responsedOKHandler)
+	r := router.NewRouter(originalConfig, userHandler, incomeAndExpenseHandler, responsedOKHandler)
 
 	r.Run(":8080")
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { IncomeAndExpense } from "@/app/util/types";
 import {
   LineChart,
   Line,
@@ -11,7 +12,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export default function MonthlyExpenseChart() {
+export const MonthlyExpenseChart = ({
+  fetchData,
+}: {
+  fetchData: IncomeAndExpense[];
+}) => {
   const data = [
     { month: "1月", expense: 2400 },
     { month: "2月", expense: 2210 },
@@ -49,4 +54,4 @@ export default function MonthlyExpenseChart() {
       </div>
     </>
   );
-}
+};
