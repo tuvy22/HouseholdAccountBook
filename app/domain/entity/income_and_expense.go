@@ -14,4 +14,5 @@ type IncomeAndExpense struct {
 type MonthlyTotal struct {
 	Month       string `gorm:"column:month"`
 	TotalAmount int    `gorm:"column:total_amount"`
+	GroupID     uint   `json:"groupId" gorm:"column:group_id"`
 }

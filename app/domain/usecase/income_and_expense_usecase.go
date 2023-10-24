@@ -18,6 +18,8 @@ type IncomeAndExpenseUsecase interface {
 	CreateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	DeleteIncomeAndExpense(id uint) error
+
+	MonthlyTotal() ([]entity.MonthlyTotal, error)
 }
 
 type incomeAndExpenseUsecaseImpl struct {
@@ -68,6 +70,17 @@ func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint) error {
 
 	return u.repo.DeleteIncomeAndExpense(id)
 }
+func (u *incomeAndExpenseUsecaseImpl) MonthlyTotal() ([]entity.MonthlyTotal, error) {
+	monthlyTotals := []entity.MonthlyTotal{}
+
+	err := u.repo.MonthlyTotal(&monthlyTotals)
+	if err != nil {
+		return monthlyTotals, err
+	}
+
+	return monthlyTotals, nil
+}
+
 func (u *incomeAndExpenseUsecaseImpl) setTimestampIfEmpty(incomeAndExpense *entity.IncomeAndExpense) {
 	if incomeAndExpense.SortAt == "" {
 		incomeAndExpense.SortAt = time.Now().Format(time.RFC3339)

@@ -12,8 +12,8 @@ import {
   CardBody,
   Typography,
 } from "@material-tailwind/react";
-import { Alerts } from "@/app/components/Alerts";
-import { ColorAndValue } from "@/app/components/AlertCustom";
+import { Alerts, AlertValue } from "@/app/components/AlertCustoms";
+import { useAlert } from "@/app/context/AlertProvider";
 
 interface IFormInput {
   id: string;
@@ -24,7 +24,7 @@ interface IFormInput {
 const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [colorAndValue, setColorAndValue] = useState<ColorAndValue[]>([]);
+  const alert = useAlert();
 
   const {
     register,
@@ -46,11 +46,11 @@ const Register = () => {
       });
 
       //結果追加
-      const newColorAndValue: ColorAndValue = {
+      const newAlertValue: AlertValue = {
         color: "green",
         value: "登録が成功しました。",
       };
-      setColorAndValue([...colorAndValue, newColorAndValue]);
+      alert.setAlertValues([...alert.alertValues, newAlertValue]);
 
       setError("");
     } catch (error) {
@@ -62,8 +62,6 @@ const Register = () => {
 
   return (
     <>
-      <Alerts colorAndValue={colorAndValue} />
-
       <div className="flex-grow flex items-center justify-center">
         <Card className="w-full max-w-[20rem]">
           <Typography variant="h2" className="text-center pt-5 text-xl">

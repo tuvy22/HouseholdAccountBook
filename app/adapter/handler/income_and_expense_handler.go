@@ -100,6 +100,17 @@ func (h *incomeAndExpenseHandlerImpl) DeleteIncomeAndExpense(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+func (h *incomeAndExpenseHandlerImpl) MonthlyTotal(c *gin.Context) {
+
+	monthlyTotals, err := h.usecase.MonthlyTotal()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, monthlyTotals)
+}
+
 func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpense(c *gin.Context) (entity.IncomeAndExpense, error) {
 	incomeAndExpense := entity.IncomeAndExpense{}
 	if err := c.ShouldBindJSON(&incomeAndExpense); err != nil {

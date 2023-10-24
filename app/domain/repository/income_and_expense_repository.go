@@ -11,6 +11,8 @@ type IncomeAndExpenseRepository interface {
 	CreateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
 	UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
 	DeleteIncomeAndExpense(id uint) error
+
+	MonthlyTotal(monthlyTotals *[]entity.MonthlyTotal) error
 }
 
 type incomeAndExpenseRepositoryImpl struct {
@@ -53,6 +55,15 @@ func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpense(incomeAndExpense
 func (r *incomeAndExpenseRepositoryImpl) DeleteIncomeAndExpense(id uint) error {
 
 	if err := r.DB.Where("id = ?", id).Delete(&entity.IncomeAndExpense{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// 月ごとの合計
+func (r *incomeAndExpenseRepositoryImpl) MonthlyTotal(monthlyTotals *[]entity.MonthlyTotal) error {
+
+	if err := r.DB.Select("DATE_FORMAT(date, '%Y-%m') as month, SUM(amount) as total_amount").Group("DATE_FORMAT(date, '%Y-%m')").Scan(&monthlyTotals).Error; err != nil {
 		return err
 	}
 	return nil

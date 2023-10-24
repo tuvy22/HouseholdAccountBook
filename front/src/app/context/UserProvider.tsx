@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import { UserContext, UserContextProps, UserInfo } from "./context";
+import { UserContext, UserContextProps, UserInfo } from "./UserContext";
 
 const UserProvider = ({
   children,

@@ -13,7 +13,6 @@ import HeaderUser from "./HeaderUser";
 const Header = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const user = useUser().user;
 
   const handleLogout = async (e: React.FormEvent) => {
     try {
@@ -29,7 +28,7 @@ const Header = () => {
   };
 
   return (
-    <div className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white">
+    <header className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white">
       <div className="flex gap-16">
         <Typography
           variant="h2"
@@ -60,7 +59,7 @@ const Header = () => {
         />
       </div>
       {error && <div className="text-red-500 mt-2">{error}</div>}
-    </div>
+    </header>
   );
 };
 

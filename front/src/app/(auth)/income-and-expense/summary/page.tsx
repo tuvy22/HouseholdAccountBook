@@ -1,8 +1,9 @@
-import Reports from "./Reports";
+import { getIncomeAndExpense } from "@/app/util/api";
+import { MonthlyExpenseChart } from "./Reports";
 
 const Page = async () => (
   <>
-    <Reports fetchData={await getIncomeAndExpense()} />
+    <MonthlyExpenseChart fetchData={await getIncomeAndExpense()} />
   </>
 );
 

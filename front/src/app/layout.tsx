@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import UserProvider from "./context/UserProvider";
 import Footer from "./components/Footer";
 import { cookies } from "next/headers";
+import AlertProvider from "./context/AlertProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
