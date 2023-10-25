@@ -29,9 +29,10 @@ export const ExpenseForm = ({
   });
 
   const resetForm = useCallback(() => {
+    const categoryValue = getValues().category;
     reset({
       date: today,
-      category: getValues().category,
+      category: categoryValue && categoryValue.length > 0 ? categoryValue : "",
       amount: "",
       memo: "",
     });

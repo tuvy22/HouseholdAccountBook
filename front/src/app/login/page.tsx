@@ -14,6 +14,8 @@ import {
 import { useUser } from "@/app/context/UserProvider";
 import LockIcon from "@mui/icons-material/Lock";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import { AlertValue } from "../components/AlertCustoms";
+import { auth } from "../util/api";
 
 interface IFormInput {
   id: string;
@@ -34,23 +36,17 @@ const Login = () => {
   const onSubmit = async (data: IFormInput) => {
     let userId: string = data.id;
     let password: string = data.password;
+
     setLoading(true);
-
     try {
-      const response = await axios.post(`/api/public/auth`, {
-        userId,
-        password,
-      });
-
-      setError("");
-      setUser(response.data);
-
+      setUser(await auth(userId, password));
       router.push("/income-and-expense/list");
     } catch (error) {
-      setError("IDまたはパスワードが間違っています。");
-    } finally {
-      setLoading(false);
+      if (error instanceof Error) {
+        setError(error.message);
+      }
     }
+    setLoading(false);
   };
 
   return (

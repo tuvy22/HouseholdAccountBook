@@ -16,7 +16,7 @@ export function Alerts({
   return (
     <>
       {alertValues.length > 0 && (
-        <div className="m-1">
+        <div className="mt-1 mb-8">
           {alertValues.map((item, index) => (
             <div key={index} className="my-1">
               <AlertCustom colorAndValue={item} />

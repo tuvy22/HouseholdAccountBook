@@ -25,7 +25,7 @@ func NewIncomeAndExpenseRepository(db *gorm.DB) IncomeAndExpenseRepository {
 
 func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense) error {
 
-	if err := r.DB.Order("Date desc, sort_at desc").Find(&incomeAndExpenses).Error; err != nil {
+	if err := r.DB.Order("Date desc, id desc").Find(&incomeAndExpenses).Error; err != nil {
 		return err
 	}
 	return nil

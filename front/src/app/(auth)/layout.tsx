@@ -11,7 +11,9 @@ export default async function AuthLayout({
   return (
     <>
       <Header />
-      <AlertProvider>{children}</AlertProvider>
+      <main className="flex-grow container mx-auto flex flex-col p-3">
+        <AlertProvider>{children}</AlertProvider>
+      </main>
     </>
   );
 }

@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ten313/HouseholdAccountBook/app/adapter/context_utils"
+	"github.com/ten313/HouseholdAccountBook/app/adapter/handler/context_utils"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -37,7 +37,10 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 
 	user, token, err := h.usecase.Authenticate(creds)
 	if err != nil {
-		if err == usecase.ErrInternalServer {
+		if err == usecase.ErrInvalidCredentials {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}

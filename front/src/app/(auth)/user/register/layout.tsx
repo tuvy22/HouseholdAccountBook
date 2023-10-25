@@ -10,5 +10,7 @@ export default function UserRegisterLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <div className="flex-grow flex items-center justify-center">{children}</div>
+  );
 }

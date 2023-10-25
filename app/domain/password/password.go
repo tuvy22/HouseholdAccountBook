@@ -6,7 +6,7 @@ import (
 
 type Password interface {
 	HashPassword(password string) (string, error)
-	CheckPassword(hashedPassword, password string) bool
+	CheckPassword(hashedPassword, password string) error
 }
 
 type passwordImpl struct{}
@@ -23,7 +23,7 @@ func (p *passwordImpl) HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func (p *passwordImpl) CheckPassword(hashedPassword, password string) bool {
+func (p *passwordImpl) CheckPassword(hashedPassword, password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-	return err == nil
+	return err
 }

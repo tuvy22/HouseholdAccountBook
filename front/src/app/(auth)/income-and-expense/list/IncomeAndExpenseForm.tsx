@@ -13,6 +13,7 @@ import { Spinner } from "@material-tailwind/react";
 import { useState } from "react";
 import { postIncomeAndExpense } from "@/app/util/api";
 import { IncomeAndExpense } from "@/app/util/types";
+import { useAlert } from "@/app/context/AlertProvider";
 
 export const IncomeAndExpenseForm = () => {
   const [today] = useState(getToday());
@@ -21,7 +22,8 @@ export const IncomeAndExpenseForm = () => {
 
   const router = useRouter();
   const user = useUser().user;
-  const [triggerReset, setTriggerReset] = useState(0); // 新しい状態
+  const [triggerReset, setTriggerReset] = useState(0);
+  const alert = useAlert();
 
   const onSubmit = async (data: Schema, isMinus: boolean) => {
     setIsLoading(true);
@@ -33,14 +35,20 @@ export const IncomeAndExpenseForm = () => {
       amount: isMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: data.date,
-      sortAt: "",
       registerUserId: user.id == null ? "" : user.id,
     };
-    if (!(await postIncomeAndExpense(newIncomeAndExpense))) {
-      router.push("/login");
-      return;
-    }
 
+    try {
+      await postIncomeAndExpense(newIncomeAndExpense);
+    } catch (error) {
+      if (error instanceof Error) {
+        let message = error.message;
+        alert.setAlertValues((prev) => [
+          ...prev,
+          { color: "red", value: message },
+        ]);
+      }
+    }
     //リフレッシュ
     router.refresh();
 

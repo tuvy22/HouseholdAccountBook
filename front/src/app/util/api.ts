@@ -1,11 +1,33 @@
 import { IncomeAndExpense, User } from "@/app/util/types";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const HTTP_OK = 200;
+const HTTP_STATUS_UNAUTHORIZED = 401;
 const GET_NG_MESSAGE = "データの取得に失敗しました。";
-const POST_NG_MESSAGE = "データの登録に失敗しました。";
+const POST_NG_MESSAGE = "データの送信に失敗しました。";
 const PUT_NG_MESSAGE = "データの更新に失敗しました。";
 const DELETE_NG_MESSAGE = "データの削除に失敗しました。";
+const INVALID_CREDENTIALS = "IDまたはパスワードが間違っています。";
+
+export const auth = async (userId: string, password: string) => {
+  try {
+    const response = await axios.post(`/api/public/auth`, {
+      userId,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    if (
+      axios.isAxiosError(error) &&
+      error.response &&
+      error.response.status === HTTP_STATUS_UNAUTHORIZED
+    ) {
+      throw new Error(INVALID_CREDENTIALS);
+    } else {
+      throw new Error(POST_NG_MESSAGE);
+    }
+  }
+};
 
 export const getIncomeAndExpense = async () => {
   try {

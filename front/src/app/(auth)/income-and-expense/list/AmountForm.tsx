@@ -12,7 +12,7 @@ export default function AmountForm({
   register: UseFormRegister<Schema>;
 }) {
   return (
-    <div className="flex flex-col  flex-grow">
+    <div className="flex flex-col flex-grow">
       <Input
         label="金額 (必須)"
         type="number"

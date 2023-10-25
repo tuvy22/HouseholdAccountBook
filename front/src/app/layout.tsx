@@ -23,12 +23,12 @@ export default function RootLayout({
 
   return (
     <html lang="ja">
-      <body className={inter.className}>
+      <body
+        className={`${inter.className} flex flex-col justify-between min-h-screen bg-gray-50`}
+      >
         <UserProvider token={token}>
-          <div className="flex flex-col justify-between min-h-screen">
-            {children}
-            <Footer />
-          </div>
+          {children}
+          <Footer />
         </UserProvider>
       </body>
     </html>

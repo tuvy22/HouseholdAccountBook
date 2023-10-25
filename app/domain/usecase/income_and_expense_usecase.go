@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
@@ -47,8 +46,6 @@ func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(incomeAndExpense en
 		return err
 	}
 
-	u.setTimestampIfEmpty(&incomeAndExpense)
-
 	return u.repo.CreateIncomeAndExpense(&incomeAndExpense)
 }
 func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error {
@@ -63,7 +60,6 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense en
 		return err
 	}
 
-	u.setTimestampIfEmpty(&incomeAndExpense)
 	return u.repo.UpdateIncomeAndExpense(&incomeAndExpense)
 }
 func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint) error {
@@ -79,12 +75,6 @@ func (u *incomeAndExpenseUsecaseImpl) MonthlyTotal() ([]entity.MonthlyTotal, err
 	}
 
 	return monthlyTotals, nil
-}
-
-func (u *incomeAndExpenseUsecaseImpl) setTimestampIfEmpty(incomeAndExpense *entity.IncomeAndExpense) {
-	if incomeAndExpense.SortAt == "" {
-		incomeAndExpense.SortAt = time.Now().Format(time.RFC3339)
-	}
 }
 
 func (u *incomeAndExpenseUsecaseImpl) validateUserID(incomeAndExpense entity.IncomeAndExpense, userId string, errMessage string) error {

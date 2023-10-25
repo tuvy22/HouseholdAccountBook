@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"errors"
 	"os"
 	"time"
 
@@ -11,8 +10,6 @@ import (
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
 )
-
-var ErrInternalServer = errors.New("internal server error")
 
 type UserUsecase interface {
 	Authenticate(creds entity.Credentials) (entity.User, string, error)
@@ -53,12 +50,13 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.User, s
 				Name:     creds.UserID,
 			}
 		} else {
-			return user, "", ErrInternalServer
+			return user, "", ErrInvalidCredentials
 		}
 	}
 
-	if !u.password.CheckPassword(user.Password, creds.Password) {
-		return user, "", ErrInternalServer
+	err = u.password.CheckPassword(user.Password, creds.Password)
+	if err != nil {
+		return user, "", ErrInvalidCredentials
 	}
 
 	// JWTトークンの生成

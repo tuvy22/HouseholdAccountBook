@@ -19,8 +19,8 @@ export default function CategoryForm({
   return (
     <div className="flex flex-col flex-grow">
       <Controller
-        name="category"
         control={control}
+        {...register("category")}
         render={({ field }) => (
           <Select label="区分 (必須)" size="lg" {...field}>
             {options.map((option) => (
