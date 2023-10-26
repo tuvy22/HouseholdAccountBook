@@ -3,11 +3,9 @@
 import axios from "axios";
 import React, { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Typography } from "@material-tailwind/react";
-import { useUser } from "../context/UserProvider";
+import { Spinner, Typography } from "../materialTailwindExports";
 import Link from "next/link";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Spinner } from "@material-tailwind/react";
 import HeaderUser from "./HeaderUser";
 
 const Header = () => {

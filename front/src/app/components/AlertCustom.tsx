@@ -1,7 +1,6 @@
 import React from "react";
-import { Alert, Button } from "@material-tailwind/react";
-import { colors } from "@material-tailwind/react/types/generic";
 import { AlertValue } from "./AlertCustoms";
+import { Alert } from "../materialTailwindExports";
 
 export function AlertCustom({ colorAndValue }: { colorAndValue: AlertValue }) {
   const [open, setOpen] = React.useState(true);

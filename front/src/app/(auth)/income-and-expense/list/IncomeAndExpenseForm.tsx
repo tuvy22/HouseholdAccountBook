@@ -9,11 +9,11 @@ import { useRouter } from "next/navigation";
 
 import { getToday } from "@/app/util/util";
 import { useUser } from "@/app/context/UserProvider";
-import { Spinner } from "@material-tailwind/react";
 import { useState } from "react";
 import { postIncomeAndExpense } from "@/app/util/api";
 import { IncomeAndExpense } from "@/app/util/types";
 import { useAlert } from "@/app/context/AlertProvider";
+import { Spinner } from "@/app/materialTailwindExports";
 
 export const IncomeAndExpenseForm = () => {
   const [today] = useState(getToday());

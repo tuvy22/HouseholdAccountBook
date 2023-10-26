@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@material-tailwind/react";
+import { Button } from "@/app/materialTailwindExports";
 
 export default function SubmitButtonForm() {
   return (

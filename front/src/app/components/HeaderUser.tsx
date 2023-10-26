@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "../context/UserProvider";
-import { Spinner } from "@material-tailwind/react";
+import { Spinner } from "../materialTailwindExports";
 
 const HeaderUser = () => {
   const user = useUser().user;

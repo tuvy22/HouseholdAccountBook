@@ -7,7 +7,7 @@ import {
   TabsBody,
   Tab,
   TabPanel,
-} from "@material-tailwind/react";
+} from "@/app/materialTailwindExports";
 
 export const IncomeAndExpenseTabs = ({
   children,

@@ -1,8 +1,8 @@
 "use client";
 
-import { Input } from "@material-tailwind/react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { Schema } from "./schema";
+import { Input } from "@/app/materialTailwindExports";
 
 export default function DateForm({
   errors,

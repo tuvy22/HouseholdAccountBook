@@ -4,24 +4,17 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
-  Input,
-  Option,
   DialogFooter,
   DialogHeader,
   DialogBody,
-  Select,
-} from "@material-tailwind/react";
+} from "@/app/materialTailwindExports";
 import { IncomeAndExpense } from "../../../util/types";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, schema } from "./schema";
-import DateForm from "./DateForm";
-import AmountForm from "./AmountForm";
-import CategoryForm from "./CategoryForm";
-import MemoForm from "./MemoForm";
-import { expenseCategory, incomeCategory, isMinus } from "@/app/util/util";
+import { isMinus } from "@/app/util/util";
 import FormInputs from "./FormInputs";
 import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
+import { useForm } from "react-hook-form";
 
 type Props = {
   open: boolean;
@@ -75,7 +68,6 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
       amount: isDaialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: data.date,
-      sortAt: updatedIncomeAndExpense.sortAt,
       registerUserId: updatedIncomeAndExpense.registerUserId,
     };
     handleUpdate(newIncomeAndExpense);

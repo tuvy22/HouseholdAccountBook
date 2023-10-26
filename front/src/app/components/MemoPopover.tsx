@@ -1,9 +1,9 @@
+import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import {
   Popover,
-  PopoverHandler,
   PopoverContent,
-} from "@material-tailwind/react";
-import StickyNote2Icon from "@mui/icons-material/StickyNote2";
+  PopoverHandler,
+} from "../materialTailwindExports";
 
 export function MemoPopover({
   content,

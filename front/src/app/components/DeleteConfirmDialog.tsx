@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
-} from "@material-tailwind/react";
+} from "../materialTailwindExports";
 
 type Props = {
   open: boolean;

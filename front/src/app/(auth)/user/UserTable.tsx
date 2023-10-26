@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Spinner, Typography } from "@material-tailwind/react";
+import { Card, Spinner, Typography } from "@/app/materialTailwindExports";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";

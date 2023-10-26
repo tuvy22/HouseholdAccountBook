@@ -3,7 +3,7 @@
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import { Schema } from "./schema";
 import { Controller } from "react-hook-form";
-import { Select, Option } from "@material-tailwind/react";
+import { Select, Option } from "@/app/materialTailwindExports";
 
 export default function CategoryForm({
   errors,

@@ -1,10 +1,14 @@
+import { Suspense } from "react";
 import { IncomeAndExpenseForm } from "./IncomeAndExpenseForm";
-import { IncomeAndExpenseTablePrefetcher } from "./IncomeAndExpenseTablePrefetcher";
+import { IncomeAndExpenseTable } from "./IncomeAndExpenseTable";
+import { Spinner } from "@/app/materialTailwindExports";
 
 const Page = async () => (
   <>
-    <IncomeAndExpenseForm />
-    <IncomeAndExpenseTablePrefetcher />
+    <Suspense fallback={<Spinner />}>
+      <IncomeAndExpenseForm />
+      <IncomeAndExpenseTable />
+    </Suspense>
   </>
 );
 
