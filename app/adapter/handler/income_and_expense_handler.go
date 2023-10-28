@@ -16,6 +16,7 @@ type IncomeAndExpenseHandler interface {
 	CreateIncomeAndExpense(c *gin.Context)
 	UpdateIncomeAndExpense(c *gin.Context)
 	DeleteIncomeAndExpense(c *gin.Context)
+	MonthlyTotal(c *gin.Context)
 }
 
 type incomeAndExpenseHandlerImpl struct {

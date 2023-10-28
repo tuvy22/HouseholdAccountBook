@@ -45,6 +45,22 @@ export const getIncomeAndExpense = async () => {
     throw new Error(GET_NG_MESSAGE);
   }
 };
+export const getIncomeAndExpenseMonthlyTotal = async () => {
+  try {
+    const response = await axios.get(
+      "http://localhost:8080/api/localhost/incomeAndExpense/monthlyTotal",
+      {
+        headers: {
+          cache: "no-store",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error(GET_NG_MESSAGE);
+  }
+};
 
 export const postIncomeAndExpense = async (
   incomeAndExpense: IncomeAndExpense

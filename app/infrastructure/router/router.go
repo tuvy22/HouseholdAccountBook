@@ -29,6 +29,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	localhost.GET("/user/all", userHandler.GetAllUser)
 
 	localhost.GET("/incomeAndExpenseAll", incomeAndExpenseHandler.GetAllIncomeAndExpense)
+	localhost.GET("/incomeAndExpense/monthlyTotal", incomeAndExpenseHandler.MonthlyTotal)
 
 	authorized := r.Group("/api/private/")
 	authorized.Use(middleware.CheckToken(cfg))

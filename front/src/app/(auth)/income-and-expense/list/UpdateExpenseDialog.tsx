@@ -11,7 +11,7 @@ import {
 import { IncomeAndExpense } from "../../../util/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, schema } from "./schema";
-import { isMinus } from "@/app/util/util";
+import { isMinus, toDateObject, toDateString } from "@/app/util/util";
 import FormInputs from "./FormInputs";
 import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
 import { useForm } from "react-hook-form";
@@ -43,7 +43,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
   useEffect(() => {
     if (open) {
       reset({
-        date: updatedIncomeAndExpense.date,
+        date: toDateString(new Date(updatedIncomeAndExpense.date)),
         category: updatedIncomeAndExpense.category,
         amount: isDaialogMinus
           ? (-updatedIncomeAndExpense.amount).toString()
@@ -67,7 +67,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
       category: data.category,
       amount: isDaialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
-      date: data.date,
+      date: toDateObject(data.date),
       registerUserId: updatedIncomeAndExpense.registerUserId,
     };
     handleUpdate(newIncomeAndExpense);

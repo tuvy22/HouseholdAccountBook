@@ -6,18 +6,15 @@ import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
 import { Schema } from "./schema";
 
 import { useRouter } from "next/navigation";
-
-import { getToday } from "@/app/util/util";
 import { useUser } from "@/app/context/UserProvider";
 import { useState } from "react";
 import { postIncomeAndExpense } from "@/app/util/api";
 import { IncomeAndExpense } from "@/app/util/types";
 import { useAlert } from "@/app/context/AlertProvider";
 import { Spinner } from "@/app/materialTailwindExports";
+import { toDateObject } from "@/app/util/util";
 
 export const IncomeAndExpenseForm = () => {
-  const [today] = useState(getToday());
-
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
@@ -34,7 +31,7 @@ export const IncomeAndExpenseForm = () => {
       category: data.category,
       amount: isMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
-      date: data.date,
+      date: toDateObject(data.date),
       registerUserId: user.id == null ? "" : user.id,
     };
 

@@ -12,7 +12,7 @@ type IncomeAndExpenseRepository interface {
 	UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
 	DeleteIncomeAndExpense(id uint) error
 
-	MonthlyTotal(monthlyTotals *[]entity.MonthlyTotal) error
+	MonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal) error
 }
 
 type incomeAndExpenseRepositoryImpl struct {
@@ -61,10 +61,31 @@ func (r *incomeAndExpenseRepositoryImpl) DeleteIncomeAndExpense(id uint) error {
 }
 
 // 月ごとの合計
-func (r *incomeAndExpenseRepositoryImpl) MonthlyTotal(monthlyTotals *[]entity.MonthlyTotal) error {
+func (r *incomeAndExpenseRepositoryImpl) MonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal) error {
+	sql := `
+    SELECT 
+        t1.year_month,
+        SUM(t2.monthTotalAmount) AS 'total_amount'
+    FROM
+        (SELECT 
+            DATE_FORMAT(date, '%Y-%m') as 'year_month',
+            SUM(amount) as 'monthTotalAmount'
+        FROM income_and_expenses
+        GROUP BY DATE_FORMAT(date, '%Y-%m')) t1
+    JOIN 
+        (SELECT 
+            DATE_FORMAT(date, '%Y-%m') as 'year_month',
+            SUM(amount) as 'monthTotalAmount'
+        FROM income_and_expenses
+        GROUP BY DATE_FORMAT(date, '%Y-%m')) t2
+    ON t1.year_month >= t2.year_month
+    GROUP BY t1.year_month
+    ORDER BY t1.year_month;
+	`
 
-	if err := r.DB.Select("DATE_FORMAT(date, '%Y-%m') as month, SUM(amount) as total_amount").Group("DATE_FORMAT(date, '%Y-%m')").Scan(&monthlyTotals).Error; err != nil {
+	if err := r.DB.Raw(sql).Scan(&monthlyTotals).Error; err != nil {
 		return err
 	}
+
 	return nil
 }

@@ -1,11 +1,3 @@
-export const getToday = (): string => {
-  // 今日の日付を YYYY-MM-DD 形式で取得
-  const today = new Date();
-  const formattedDate = `${today.getFullYear()}-${String(
-    today.getMonth() + 1
-  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  return formattedDate;
-};
 export const expenseCategory = [
   "食費",
   "衣類",
@@ -29,6 +21,22 @@ export function waitThreeSeconds() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve("3秒経過しました");
-    }, 10000); // 3000ミリ秒 = 3秒
+    }, 3000); // 3000ミリ秒 = 3秒
   });
+}
+
+export function toDateObject(dateString: string): Date {
+  // YYYY-MM-DD 形式をそのままDateオブジェクトに変換
+  return new Date(dateString);
+}
+
+export function toDateString(date: Date): string {
+  // YYYY-MM-DD 形式の文字列を返す
+  if (date instanceof Date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+  return "";
 }

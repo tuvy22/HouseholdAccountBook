@@ -1,9 +1,10 @@
-import { getIncomeAndExpense } from "@/app/util/api";
-import { MonthlyExpenseChart } from "./Reports";
-
+import { getIncomeAndExpenseMonthlyTotal } from "@/app/util/api";
+import { IncomeAndExpenseMonthlyChart } from "./IncomeAndExpenseMonthlyChart";
 const Page = async () => (
   <>
-    <MonthlyExpenseChart fetchData={await getIncomeAndExpense()} />
+    <IncomeAndExpenseMonthlyChart
+      data={await getIncomeAndExpenseMonthlyTotal()}
+    />
   </>
 );
 

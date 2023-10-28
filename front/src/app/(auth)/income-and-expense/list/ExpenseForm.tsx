@@ -4,9 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, schema } from "./schema";
-import { getToday } from "../../../util/util";
 import SubmitButtonForm from "./SubmitButtonForm";
 import FormInputs from "./FormInputs";
+import { toDateString } from "@/app/util/util";
 
 export const ExpenseForm = ({
   onSubmit,
@@ -15,8 +15,6 @@ export const ExpenseForm = ({
   onSubmit: (data: Schema, isMinus: boolean) => Promise<void>;
   triggerReset: number;
 }) => {
-  const [today] = useState(getToday());
-
   const {
     control,
     register,
@@ -31,12 +29,12 @@ export const ExpenseForm = ({
   const resetForm = useCallback(() => {
     const categoryValue = getValues().category;
     reset({
-      date: today,
+      date: toDateString(new Date()),
       category: categoryValue && categoryValue.length > 0 ? categoryValue : "",
       amount: "",
       memo: "",
     });
-  }, [getValues, reset, today]);
+  }, [getValues, reset]);
   useEffect(() => {
     resetForm();
   }, [resetForm, triggerReset]);

@@ -1,6 +1,6 @@
 import { MemoPopover } from "@/app/components/MemoPopover";
 import { IncomeAndExpense } from "@/app/util/types";
-import { isMinus, waitThreeSeconds } from "@/app/util/util";
+import { isMinus, toDateString, waitThreeSeconds } from "@/app/util/util";
 import React from "react";
 import { Card, Typography } from "@/app/materialTailwindExports";
 import EditIcon from "../../../components/EditIcon";
@@ -11,7 +11,7 @@ const TABLE_HEAD = ["登録", "区分", "金額", "メモ", ""];
 
 export const IncomeAndExpenseTable = async () => {
   const fetchData = await getIncomeAndExpense();
-  let previousDate = "";
+  let previousDate: Date;
 
   return (
     <>
@@ -52,7 +52,7 @@ export const IncomeAndExpenseTable = async () => {
                               color="blue-gray"
                               className="font-normal text-green-700"
                             >
-                              {incomeAndExpense.date}
+                              {toDateString(new Date(incomeAndExpense.date))}
                             </Typography>
                           </td>
                         </tr>

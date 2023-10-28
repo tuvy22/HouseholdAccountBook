@@ -20,7 +20,7 @@ export default function CategoryForm({
     <div className="flex flex-col flex-grow">
       <Controller
         control={control}
-        {...register("category")}
+        name="category"
         render={({ field }) => (
           <Select label="区分 (必須)" size="lg" {...field}>
             {options.map((option) => (
