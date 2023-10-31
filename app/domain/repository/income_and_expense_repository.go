@@ -12,7 +12,8 @@ type IncomeAndExpenseRepository interface {
 	UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
 	DeleteIncomeAndExpense(id uint) error
 
-	MonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal) error
+	GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal) error
+	GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, isMinus bool) error
 }
 
 type incomeAndExpenseRepositoryImpl struct {
@@ -61,7 +62,7 @@ func (r *incomeAndExpenseRepositoryImpl) DeleteIncomeAndExpense(id uint) error {
 }
 
 // 月ごとの合計
-func (r *incomeAndExpenseRepositoryImpl) MonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal) error {
+func (r *incomeAndExpenseRepositoryImpl) GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal) error {
 	sql := `
     SELECT 
         t1.year_month,
@@ -84,6 +85,27 @@ func (r *incomeAndExpenseRepositoryImpl) MonthlyTotal(monthlyTotals *[]entity.In
 	`
 
 	if err := r.DB.Raw(sql).Scan(&monthlyTotals).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 月ごとのカテゴリー別の集計
+func (r *incomeAndExpenseRepositoryImpl) GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, isMinus bool) error {
+
+	queryBuilder := r.DB.Table("income_and_expenses").
+		Select(`DATE_FORMAT(date, '%Y-%m') as 'year_month', category, ABS(SUM(amount)) as 'category_amount'`).
+		Where("DATE_FORMAT(date, '%Y-%m') = ?", yearMonth).
+		Group("DATE_FORMAT(date, '%Y-%m'), category").
+		Order("category_amount desc, category desc")
+
+	if isMinus {
+		queryBuilder = queryBuilder.Where("amount < ?", 0)
+	} else {
+		queryBuilder = queryBuilder.Where("amount >= ?", 0)
+	}
+	if err := queryBuilder.Find(&monthlyCategorys).Error; err != nil {
 		return err
 	}
 

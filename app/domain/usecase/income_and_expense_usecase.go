@@ -19,7 +19,8 @@ type IncomeAndExpenseUsecase interface {
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	DeleteIncomeAndExpense(id uint) error
 
-	MonthlyTotal() ([]entity.IncomeAndExpenseMonthlyTotal, error)
+	GetMonthlyTotal() ([]entity.IncomeAndExpenseMonthlyTotal, error)
+	GetMonthlyCategory(yearMonth string, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error)
 }
 
 type incomeAndExpenseUsecaseImpl struct {
@@ -67,10 +68,10 @@ func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint) error {
 
 	return u.repo.DeleteIncomeAndExpense(id)
 }
-func (u *incomeAndExpenseUsecaseImpl) MonthlyTotal() ([]entity.IncomeAndExpenseMonthlyTotal, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal() ([]entity.IncomeAndExpenseMonthlyTotal, error) {
 	monthlyTotals := []entity.IncomeAndExpenseMonthlyTotal{}
 
-	err := u.repo.MonthlyTotal(&monthlyTotals)
+	err := u.repo.GetMonthlyTotal(&monthlyTotals)
 	if err != nil {
 		return monthlyTotals, err
 	}
@@ -82,6 +83,16 @@ func (u *incomeAndExpenseUsecaseImpl) MonthlyTotal() ([]entity.IncomeAndExpenseM
 	result := u.mergeData(monthlyTotals, allMonths)
 
 	return result, nil
+}
+
+func (u *incomeAndExpenseUsecaseImpl) GetMonthlyCategory(yearMonth string, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error) {
+	monthlyCategorys := []entity.IncomeAndExpenseMonthlyCategory{}
+
+	err := u.repo.GetMonthlyCategory(&monthlyCategorys, yearMonth, isMinus)
+	if err != nil {
+		return monthlyCategorys, err
+	}
+	return monthlyCategorys, nil
 }
 
 func (u *incomeAndExpenseUsecaseImpl) validateUserID(incomeAndExpense entity.IncomeAndExpense, userId string, errMessage string) error {

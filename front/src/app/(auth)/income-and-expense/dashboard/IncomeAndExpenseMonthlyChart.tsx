@@ -1,6 +1,9 @@
 "use client";
 
-import { IncomeAndExpenseMonthlyTotal } from "@/app/util/types";
+import {
+  IncomeAndExpenseMonthlyCategory,
+  IncomeAndExpenseMonthlyTotal,
+} from "@/app/util/types";
 import {
   LineChart,
   Line,
@@ -12,6 +15,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { CategoricalChartState } from "recharts/types/chart/generateCategoricalChart";
+import { IncomeAndExpensePieChart } from "./IncomeAndExpensePieChart";
 
 export const IncomeAndExpenseMonthlyChart = ({
   data,
@@ -26,7 +30,7 @@ export const IncomeAndExpenseMonthlyChart = ({
     <>
       {/* <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
       <div className="absolute top-0 left-0 w-full h-full"> */}
-      <ResponsiveContainer height={400}>
+      <ResponsiveContainer height={250}>
         <LineChart
           data={data}
           margin={{ top: 20, right: 10, left: 10, bottom: 10 }}
@@ -52,6 +56,7 @@ export const IncomeAndExpenseMonthlyChart = ({
           />
         </LineChart>
       </ResponsiveContainer>
+      <IncomeAndExpensePieChart yearMonth={"2023-10"} isMinus={true} />
       {/* </div>
     </div> */}
     </>

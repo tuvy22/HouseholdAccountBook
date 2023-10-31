@@ -9,7 +9,7 @@ export default async function AuthLayout({
   return (
     <>
       <Header />
-      <main className="flex-grow container mx-auto flex flex-col p-3">
+      <main className="flex-grow container mx-auto flex flex-col py-7 ">
         <AlertProvider>{children}</AlertProvider>
       </main>
     </>

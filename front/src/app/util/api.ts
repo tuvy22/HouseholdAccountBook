@@ -61,6 +61,26 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
     throw new Error(GET_NG_MESSAGE);
   }
 };
+export const getIncomeAndExpenseMonthlyCategory = async (
+  yearMonth: string,
+  isMinus: boolean
+) => {
+  try {
+    const response = await axios.get(
+      "/api/private/incomeAndExpense/monthlyCategory",
+      {
+        params: {
+          yearMonth: yearMonth,
+          isMinus: isMinus.toString(),
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error(GET_NG_MESSAGE);
+  }
+};
 
 export const postIncomeAndExpense = async (
   incomeAndExpense: IncomeAndExpense

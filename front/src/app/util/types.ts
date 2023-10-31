@@ -12,6 +12,12 @@ export interface IncomeAndExpenseMonthlyTotal {
   totalAmount: number;
   groupId: number;
 }
+export interface IncomeAndExpenseMonthlyCategory {
+  yearMonth: string;
+  category: string;
+  categoryAmount: number;
+  groupId: number;
+}
 
 export interface User {
   id: string;

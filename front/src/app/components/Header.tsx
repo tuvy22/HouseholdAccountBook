@@ -42,7 +42,7 @@ const Header = () => {
           variant="h3"
           className="p-1 cursor-pointer hover:bg-blue-gray-600"
         >
-          <Link href="/income-and-expense/summary" className="text-xl">
+          <Link href="/income-and-expense/dashboard" className="text-xl">
             ダッシュボード
           </Link>
         </Typography>

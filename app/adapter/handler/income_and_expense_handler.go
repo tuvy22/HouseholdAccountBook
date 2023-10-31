@@ -16,7 +16,9 @@ type IncomeAndExpenseHandler interface {
 	CreateIncomeAndExpense(c *gin.Context)
 	UpdateIncomeAndExpense(c *gin.Context)
 	DeleteIncomeAndExpense(c *gin.Context)
-	MonthlyTotal(c *gin.Context)
+
+	GetMonthlyTotal(c *gin.Context)
+	GetMonthlyCategory(c *gin.Context)
 }
 
 type incomeAndExpenseHandlerImpl struct {
@@ -102,15 +104,33 @@ func (h *incomeAndExpenseHandlerImpl) DeleteIncomeAndExpense(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func (h *incomeAndExpenseHandlerImpl) MonthlyTotal(c *gin.Context) {
+func (h *incomeAndExpenseHandlerImpl) GetMonthlyTotal(c *gin.Context) {
 
-	monthlyTotals, err := h.usecase.MonthlyTotal()
+	monthlyTotals, err := h.usecase.GetMonthlyTotal()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	c.JSON(http.StatusOK, monthlyTotals)
+}
+func (h *incomeAndExpenseHandlerImpl) GetMonthlyCategory(c *gin.Context) {
+
+	yearMonth := c.DefaultQuery("yearMonth", "")
+	isMinus, err := strconv.ParseBool(c.DefaultQuery("isMinus", ""))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	monthlyCategorys, err := h.usecase.GetMonthlyCategory(yearMonth, isMinus)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, monthlyCategorys)
+
 }
 
 func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpense(c *gin.Context) (entity.IncomeAndExpense, error) {

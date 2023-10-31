@@ -52,7 +52,7 @@ const Login = () => {
   };
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm px-4">
       <Typography variant="h2" className="text-center pt-5 text-xl">
         ログイン
       </Typography>
