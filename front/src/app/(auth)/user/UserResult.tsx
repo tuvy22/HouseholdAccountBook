@@ -1,6 +1,5 @@
-import { IncomeAndExpenseTabs, User } from "@/app/util/types";
+import { User } from "@/app/util/types";
 import { UserTable } from "./UserTable";
-import { Suspense } from "react";
 
 export const UserResult = async () => {
   const fetchData: () => Promise<User[]> = async () => {
@@ -10,9 +9,5 @@ export const UserResult = async () => {
     return res.json();
   };
   const data = await fetchData();
-  return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <UserTable fetchData={data} />
-    </Suspense>
-  );
+  return <UserTable fetchData={data} />;
 };

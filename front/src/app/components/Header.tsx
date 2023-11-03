@@ -1,9 +1,9 @@
 "use client";
 
 import axios from "axios";
-import React, { Suspense, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Spinner, Typography } from "../materialTailwindExports";
+import { Typography } from "../materialTailwindExports";
 import Link from "next/link";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HeaderUser from "./HeaderUser";
@@ -28,29 +28,26 @@ const Header = () => {
   return (
     <header className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white">
       <div className="flex gap-16">
-        <Typography
-          variant="h2"
-          className="p-1 flex flex-col text-left font-bold"
+        <Link
+          href="/income-and-expense/list"
+          className="p-1 flex flex-col items-left"
         >
-          <span className="text-xs ">家計簿サービス</span>
-          <Link href="/income-and-expense/list" className="text-3xl">
-            エフサク
-          </Link>
-        </Typography>
-
-        <Typography
-          variant="h3"
-          className="p-1 cursor-pointer hover:bg-blue-gray-600"
+          <span className="text-xs">家計簿サービス</span>
+          <Typography variant="h2" className="font-bold text-3xl">
+            えふSaku
+          </Typography>
+        </Link>
+        <Link
+          href="/income-and-expense/dashboard"
+          className="p-1 flex items-center cursor-pointer hover:bg-blue-gray-600"
         >
-          <Link href="/income-and-expense/dashboard" className="text-xl">
+          <Typography variant="h3" className="text-xl">
             ダッシュボード
-          </Link>
-        </Typography>
+          </Typography>
+        </Link>
       </div>
       <div className="flex items-center h-full gap-3">
-        <Suspense fallback={<Spinner className="inline-block" />}>
-          <HeaderUser />
-        </Suspense>
+        <HeaderUser />
         <LogoutIcon
           onClick={handleLogout}
           className="cursor-pointer hover:text-green-500 text-2xl"

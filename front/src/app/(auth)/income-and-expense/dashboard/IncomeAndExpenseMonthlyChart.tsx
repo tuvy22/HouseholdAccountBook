@@ -73,6 +73,7 @@ export const IncomeAndExpenseMonthlyChart = ({
           variant="outlined"
           onClick={prev}
           disabled={!isPre}
+          className={!isPre ? "text-gray-500 border-gray-500" : ""}
         >
           <NavigateBeforeIcon strokeWidth={2} className="h-4 w-4" />
         </IconButton>
@@ -110,6 +111,7 @@ export const IncomeAndExpenseMonthlyChart = ({
           variant="outlined"
           onClick={next}
           disabled={!isNext}
+          className={!isNext ? "text-gray-500 border-gray-500" : ""}
         >
           <NavigateNextIcon strokeWidth={2} className="h-4 w-4" />
         </IconButton>
