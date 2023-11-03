@@ -23,6 +23,7 @@ import {
   CardHeader,
   CardBody,
   Alert,
+  IconButton,
 } from "@material-tailwind/react";
 
 export {
@@ -48,4 +49,5 @@ export {
   CardHeader,
   CardBody,
   Alert,
+  IconButton,
 };

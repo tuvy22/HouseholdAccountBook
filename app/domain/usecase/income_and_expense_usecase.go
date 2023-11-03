@@ -76,11 +76,16 @@ func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal() ([]entity.IncomeAndExpen
 		return monthlyTotals, err
 	}
 
+	if len(monthlyTotals) == 0 {
+		return monthlyTotals, nil
+	}
+
 	// 期間中のすべての月のリストを作成
 	allMonths := u.generateAllMonths(monthlyTotals[0].YearMonth, monthlyTotals[len(monthlyTotals)-1].YearMonth)
-
 	// データをマージ
 	result := u.mergeData(monthlyTotals, allMonths)
+	// データをフィルター
+	//result = u.filterByYearMonth(result, startDate, endDate)
 
 	return result, nil
 }
@@ -136,4 +141,14 @@ func (u *incomeAndExpenseUsecaseImpl) mergeData(data []entity.IncomeAndExpenseMo
 	}
 
 	return merged
+}
+
+func (u *incomeAndExpenseUsecaseImpl) filterByYearMonth(incomes []entity.IncomeAndExpenseMonthlyTotal, start, end string) []entity.IncomeAndExpenseMonthlyTotal {
+	var result []entity.IncomeAndExpenseMonthlyTotal
+	for _, income := range incomes {
+		if income.YearMonth >= start && income.YearMonth <= end {
+			result = append(result, income)
+		}
+	}
+	return result
 }

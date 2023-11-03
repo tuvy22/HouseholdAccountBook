@@ -33,7 +33,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized := r.Group("/api/private")
 	authorized.Use(middleware.CheckToken(cfg))
 	authorized.GET("/check-auth", responsedOKHandler.ResponsedOK)
-	authorized.POST("/auth-del", responsedOKHandler.ResponsedOK)
+	authorized.POST("/auth-del", userHandler.DeleteAuthenticate)
 
 	authorized.POST("/user", userHandler.CreateUser)
 	authorized.GET("/user", userHandler.GetLoginUser)

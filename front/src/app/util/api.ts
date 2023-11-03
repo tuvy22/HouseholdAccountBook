@@ -1,5 +1,5 @@
 import { IncomeAndExpense, User } from "@/app/util/types";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 const HTTP_OK = 200;
 const HTTP_STATUS_UNAUTHORIZED = 401;

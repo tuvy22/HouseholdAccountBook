@@ -1,3 +1,5 @@
+import { IncomeAndExpenseMonthlyTotal } from "./types";
+
 export const expenseCategory = [
   "食費",
   "衣類",
@@ -17,26 +19,65 @@ export const isMinus = (amount: number) => {
   return amount < 0;
 };
 
-export function waitThreeSeconds() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("3秒経過しました");
-    }, 3000); // 3000ミリ秒 = 3秒
-  });
-}
-
 export function toDateObject(dateString: string): Date {
   // YYYY-MM-DD 形式をそのままDateオブジェクトに変換
   return new Date(dateString);
 }
 
-export function toDateString(date: Date): string {
-  // YYYY-MM-DD 形式の文字列を返す
+function formatDate(date: Date, format: string): string {
   if (date instanceof Date) {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(date.getDate()).padStart(2, "0")}`;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    if (format === "yyyy-mm-dd") {
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+    if (format === "yyyy-mm") {
+      return `${year}-${month}`;
+    }
   }
   return "";
 }
+
+export function toDateString(date: Date): string {
+  // YYYY-MM-DD 形式の文字列を返す
+  return formatDate(date, "yyyy-mm-dd");
+}
+
+export function toYearMonthString(date: Date): string {
+  // YYYY-MM 形式の文字列を返す
+  return formatDate(date, "yyyy-mm");
+}
+
+function shiftYear(yearMonth: string, years: number) {
+  let date = new Date(yearMonth + "-01");
+
+  date.setFullYear(date.getFullYear() + years);
+
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+
+  return `${year}-${month.toString().padStart(2, "0")}`;
+}
+
+export function getPreviousYearMonth(yearMonth: string) {
+  return shiftYear(yearMonth, -1);
+}
+
+export function getNextYearMonth(yearMonth: string) {
+  return shiftYear(yearMonth, 1);
+}
+
+// export function filterByYearMonth(
+//   incomes: IncomeAndExpenseMonthlyTotal[],
+//   start: string,
+//   end: string
+// ) {
+//   let result = [];
+//   for (let income of incomes) {
+//     if (income.yearMonth >= start && income.yearMonth <= end) {
+//       result.push(income);
+//     }
+//   }
+//   return result;
+// }

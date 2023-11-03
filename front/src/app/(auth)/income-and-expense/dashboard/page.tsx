@@ -1,10 +1,15 @@
 import { getIncomeAndExpenseMonthlyTotal } from "@/app/util/api";
-import { IncomeAndExpenseMonthlyChart } from "./IncomeAndExpenseMonthlyChart";
+
+import Dashboard from "./Dashboard";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "ダッシュボード",
+};
+
 const Page = async () => (
   <>
-    <h2 className="mb-4 text-xl font-bold">月別推移</h2>
-    <IncomeAndExpenseMonthlyChart
-      data={await getIncomeAndExpenseMonthlyTotal()}
+    <Dashboard
+      incomeAndExpenseMonthlyTotal={await getIncomeAndExpenseMonthlyTotal()}
     />
   </>
 );

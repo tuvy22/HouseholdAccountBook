@@ -12,6 +12,7 @@ import {
 import { scaleOrdinal } from "d3-scale";
 import { useEffect, useState } from "react";
 import { getIncomeAndExpenseMonthlyCategory } from "@/app/util/api";
+import { Typography } from "@/app/materialTailwindExports";
 
 export const IncomeAndExpensePieChart = ({
   yearMonth,
@@ -69,34 +70,51 @@ export const IncomeAndExpensePieChart = ({
 
   return (
     <>
-      <ResponsiveContainer height={500}>
-        <PieChart>
-          <Pie
-            data={data}
-            dataKey="categoryAmount"
-            nameKey="category"
-            startAngle={90}
-            endAngle={-270}
-            outerRadius={200}
-            label={({ name, percent }) => {
-              // 3%未満の場合はラベルを出力しない
-              if (percent < 0.03) return null;
+      <Typography variant="h2" className="pt-5 text-lg">
+        <div
+          className={`border-b-2 inline-block ${
+            isMinus ? "border-red-500" : "border-blue-500"
+          }`}
+        >
+          {isMinus ? "支出" : "収入"}
+          <span className="ml-2 text-xs">{yearMonth}</span>
+        </div>
+      </Typography>
+      <ResponsiveContainer height={400}>
+        {data.length > 0 ? (
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey="categoryAmount"
+              nameKey="category"
+              startAngle={90}
+              endAngle={-270}
+              outerRadius={130}
+              labelLine={false}
+              label={({ name, percent }) => {
+                // 3%未満の場合はラベルを出力しない
+                if (percent < 0.03) return null;
 
-              return `${name} ${(percent * 100).toFixed(0)}%`;
-            }}
-          >
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={colorScale(entry.category) as string}
-              />
-            ))}
-          </Pie>
-          <Tooltip
-            formatter={(value: number) => `${isMinus ? "-" : ""}${value}円`}
-          />
-          <Legend />
-        </PieChart>
+                return `${name} ${(percent * 100).toFixed(0)}%`;
+              }}
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={colorScale(entry.category) as string}
+                />
+              ))}
+            </Pie>
+            <Tooltip
+              formatter={(value: number) => `${isMinus ? "-" : ""}${value}円`}
+            />
+            <Legend />
+          </PieChart>
+        ) : (
+          <div className="h-full flex flex-col justify-center items-center">
+            データは存在しません。
+          </div>
+        )}
       </ResponsiveContainer>
     </>
   );
