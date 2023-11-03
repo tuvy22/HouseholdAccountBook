@@ -24,6 +24,7 @@ import {
   getPreviousYearMonth,
   toYearMonthString,
 } from "@/app/util/util";
+import PreOrNextIcon from "./PreOrNextIcon";
 
 export const IncomeAndExpenseMonthlyChart = ({
   incomeAndExpenseMonthlyTotal,
@@ -91,19 +92,33 @@ export const IncomeAndExpenseMonthlyChart = ({
   }, [startYearMonth, endYearMonth, incomeAndExpenseMonthlyTotal]);
   return (
     <>
-      <Typography variant="h2" className="text-xl">
-        残高推移
-      </Typography>
+      <div className="flex justify-center gap-4">
+        <div className="md:hidden block">
+          <PreOrNextIcon
+            isPreIcon={true}
+            morePreOrNext={isPre}
+            clickFn={prev}
+          />
+        </div>
+        <Typography variant="h2" className="text-xl text-center md:text-left">
+          残高推移
+        </Typography>
+        <div className="md:hidden block">
+          <PreOrNextIcon
+            isPreIcon={false}
+            morePreOrNext={isNext}
+            clickFn={next}
+          />
+        </div>
+      </div>
       <div className="flex items-center gap-5">
-        <IconButton
-          size="sm"
-          variant="outlined"
-          onClick={prev}
-          disabled={!isPre}
-          className={!isPre ? "text-gray-500 border-gray-500" : ""}
-        >
-          <NavigateBeforeIcon strokeWidth={2} className="h-4 w-4" />
-        </IconButton>
+        <div className="hidden md:block">
+          <PreOrNextIcon
+            isPreIcon={true}
+            morePreOrNext={isPre}
+            clickFn={prev}
+          />
+        </div>
         <ResponsiveContainer height={250}>
           <LineChart
             data={data}
@@ -119,7 +134,7 @@ export const IncomeAndExpenseMonthlyChart = ({
               verticalAlign="top"
               align="right"
               wrapperStyle={{
-                marginTop: -20,
+                marginTop: 0,
                 marginRight: -10,
               }}
             />
@@ -133,15 +148,13 @@ export const IncomeAndExpenseMonthlyChart = ({
             />
           </LineChart>
         </ResponsiveContainer>
-        <IconButton
-          size="sm"
-          variant="outlined"
-          onClick={next}
-          disabled={!isNext}
-          className={!isNext ? "text-gray-500 border-gray-500" : ""}
-        >
-          <NavigateNextIcon strokeWidth={2} className="h-4 w-4" />
-        </IconButton>
+        <div className="hidden md:block">
+          <PreOrNextIcon
+            isPreIcon={false}
+            morePreOrNext={isNext}
+            clickFn={next}
+          />
+        </div>
       </div>
     </>
   );

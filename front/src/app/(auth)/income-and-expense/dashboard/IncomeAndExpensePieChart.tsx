@@ -77,7 +77,10 @@ export const IncomeAndExpensePieChart = ({
 
   return (
     <>
-      <Typography variant="h2" className="pt-5 text-lg">
+      <Typography
+        variant="h2"
+        className="pt-5 text-lg text-center md:text-left"
+      >
         <div
           className={`border-b-2 inline-block ${
             isMinus ? "border-red-500" : "border-blue-500"
@@ -87,7 +90,7 @@ export const IncomeAndExpensePieChart = ({
           <span className="ml-2 text-xs">{yearMonth}</span>
         </div>
         <div
-          className={`text-center  ${
+          className={`text-center pt-4 md:pt-0  ${
             isMinus ? "text-red-500" : "text-blue-500"
           }`}
         >
