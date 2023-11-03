@@ -5,6 +5,5 @@ WORKDIR /go/src
 COPY . .
 
 RUN apk upgrade --update && apk --no-cache add git
-RUN go install github.com/cosmtrek/air@latest
 
 CMD ["go", "run", "main.go"]
