@@ -67,17 +67,3 @@ export function getPreviousYearMonth(yearMonth: string) {
 export function getNextYearMonth(yearMonth: string) {
   return shiftYear(yearMonth, 1);
 }
-
-// export function filterByYearMonth(
-//   incomes: IncomeAndExpenseMonthlyTotal[],
-//   start: string,
-//   end: string
-// ) {
-//   let result = [];
-//   for (let income of incomes) {
-//     if (income.yearMonth >= start && income.yearMonth <= end) {
-//       result.push(income);
-//     }
-//   }
-//   return result;
-// }

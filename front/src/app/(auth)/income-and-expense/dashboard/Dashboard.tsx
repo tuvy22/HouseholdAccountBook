@@ -20,17 +20,17 @@ const Dashboard = ({
 
   return (
     <>
-      <div className="grid grid-cols-[1fr_1fr] grid-rows[1fr_1fr] justify-items-center items-center gap-4">
-        <div className="col-span-2 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] grid-rows-[auto_auto_auto] md:grid-rows-[auto_auto] justify-items-center items-center gap-4">
+        <div className="w-full md:col-span-2">
           <IncomeAndExpenseMonthlyChart
             incomeAndExpenseMonthlyTotal={incomeAndExpenseMonthlyTotal}
             handlePointClick={handlePointClick}
           />
         </div>
-        <div className="w-full">
+        <div className="w-full md:col-span-1 col-span-2">
           <IncomeAndExpensePieChart yearMonth={yearMonth} isMinus={false} />
         </div>
-        <div className="w-full">
+        <div className="w-full md:col-span-1 col-span-2">
           <IncomeAndExpensePieChart yearMonth={yearMonth} isMinus={true} />
         </div>
       </div>

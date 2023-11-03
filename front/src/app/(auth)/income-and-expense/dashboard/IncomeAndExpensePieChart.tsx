@@ -56,13 +56,20 @@ export const IncomeAndExpensePieChart = ({
   ];
 
   const [data, setData] = useState<IncomeAndExpenseMonthlyCategory[]>([]);
+  const [totalCategoryAmount, setTotalCategoryAmount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       setData(await getIncomeAndExpenseMonthlyCategory(yearMonth, isMinus));
     };
+
     fetchData();
   }, [isMinus, yearMonth]);
+  useEffect(() => {
+    setTotalCategoryAmount(
+      data.reduce((sum, item) => sum + item.categoryAmount, 0)
+    );
+  }, [data]);
 
   const colorScale = scaleOrdinal<string>()
     .domain(data.map((d) => d.category))
@@ -78,6 +85,13 @@ export const IncomeAndExpensePieChart = ({
         >
           {isMinus ? "支出" : "収入"}
           <span className="ml-2 text-xs">{yearMonth}</span>
+        </div>
+        <div
+          className={`text-center  ${
+            isMinus ? "text-red-500" : "text-blue-500"
+          }`}
+        >
+          {`${isMinus ? "-" : ""}${totalCategoryAmount}円`}
         </div>
       </Typography>
       <ResponsiveContainer height={400}>

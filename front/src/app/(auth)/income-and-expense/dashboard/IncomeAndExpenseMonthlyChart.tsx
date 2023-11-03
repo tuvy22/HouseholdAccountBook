@@ -32,39 +32,66 @@ export const IncomeAndExpenseMonthlyChart = ({
   incomeAndExpenseMonthlyTotal: IncomeAndExpenseMonthlyTotal[];
   handlePointClick: (data: CategoricalChartState) => void;
 }) => {
+  const [startYearMonth, setStartYearMonth] = useState(
+    getPreviousYearMonth(toYearMonthString(new Date()))
+  );
   const [endYearMonth, setEndYearMonth] = useState(
     toYearMonthString(new Date())
   );
+
   const [data, setData] = useState<IncomeAndExpenseMonthlyTotal[]>([]);
   const [isPre, setIsPre] = useState(false);
   const [isNext, setIsNext] = useState(false);
+  const [minStartYearMonth, setMinStartYearMonth] = useState("");
+  const [maxEndYearMonth, setMaxEndYearMonth] = useState("");
 
   const next = () => {
-    setEndYearMonth(getNextYearMonth(endYearMonth));
+    if (maxEndYearMonth < getNextYearMonth(endYearMonth)) {
+      setStartYearMonth(getPreviousYearMonth(maxEndYearMonth));
+      setEndYearMonth(maxEndYearMonth);
+    } else {
+      setStartYearMonth(endYearMonth);
+      setEndYearMonth(getNextYearMonth(endYearMonth));
+    }
   };
 
   const prev = () => {
-    setEndYearMonth(getPreviousYearMonth(endYearMonth));
+    if (getPreviousYearMonth(startYearMonth) < minStartYearMonth) {
+      setStartYearMonth(minStartYearMonth);
+      setEndYearMonth(getNextYearMonth(minStartYearMonth));
+    } else {
+      setStartYearMonth(getPreviousYearMonth(startYearMonth));
+      setEndYearMonth(startYearMonth);
+    }
   };
 
   useEffect(() => {
-    const start = getPreviousYearMonth(endYearMonth);
-    const end = endYearMonth;
     setData(
       incomeAndExpenseMonthlyTotal.filter(
-        (list) => list.yearMonth >= start && list.yearMonth <= end
+        (list) =>
+          list.yearMonth >= startYearMonth && list.yearMonth <= endYearMonth
       )
     );
     setIsPre(
-      incomeAndExpenseMonthlyTotal.some((list) => list.yearMonth < start)
+      incomeAndExpenseMonthlyTotal.some(
+        (list) => list.yearMonth < startYearMonth
+      )
     );
     setIsNext(
-      incomeAndExpenseMonthlyTotal.some((list) => list.yearMonth > end)
+      incomeAndExpenseMonthlyTotal.some((list) => list.yearMonth > endYearMonth)
     );
-  }, [endYearMonth, incomeAndExpenseMonthlyTotal]);
+
+    if (incomeAndExpenseMonthlyTotal.length > 0) {
+      setMinStartYearMonth(incomeAndExpenseMonthlyTotal[0].yearMonth);
+      setMaxEndYearMonth(
+        incomeAndExpenseMonthlyTotal[incomeAndExpenseMonthlyTotal.length - 1]
+          .yearMonth
+      );
+    }
+  }, [startYearMonth, endYearMonth, incomeAndExpenseMonthlyTotal]);
   return (
     <>
-      <Typography variant="h2" className="pt-5 text-xl">
+      <Typography variant="h2" className="text-xl">
         残高推移
       </Typography>
       <div className="flex items-center gap-5">
@@ -80,7 +107,7 @@ export const IncomeAndExpenseMonthlyChart = ({
         <ResponsiveContainer height={250}>
           <LineChart
             data={data}
-            margin={{ top: 20, right: 10, left: 50, bottom: 10 }}
+            margin={{ top: 0, right: 10, left: 40, bottom: 10 }}
             onClick={handlePointClick}
           >
             <CartesianGrid strokeDasharray="3 3" />
