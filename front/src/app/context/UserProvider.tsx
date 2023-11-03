@@ -1,7 +1,8 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import { UserContext, UserContextProps, UserInfo } from "./UserContext";
+import { UserContext, UserContextProps } from "./UserContext";
+import { User } from "../util/types";
 
 const UserProvider = ({
   children,
@@ -10,11 +11,12 @@ const UserProvider = ({
   children: React.ReactNode;
   token: string;
 }) => {
-  const userInfo: UserInfo = {
-    id: null,
-    name: null,
+  const userInfo: User = {
+    id: "",
+    name: "",
+    groupId: 0,
   };
-  const [user, setUser] = useState<UserInfo>(userInfo);
+  const [user, setUser] = useState<User>(userInfo);
 
   useEffect(() => {
     if (token) {
@@ -25,7 +27,7 @@ const UserProvider = ({
   const fetchDataFromServer = async () => {
     try {
       const response = await fetch("/api/private/user");
-      const result: UserInfo = await response.json();
+      const result: User = await response.json();
       setUser(result);
     } catch (error) {
       console.error("Error fetching data:", error);
