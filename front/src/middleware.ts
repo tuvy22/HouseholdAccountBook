@@ -2,7 +2,7 @@ import axios from "axios";
 import { NextMiddleware, NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.match("/((?!login).*)")) {
+  if (request.nextUrl.pathname.match("/((?!login|register).*)")) {
     const jwtToken = request.cookies.get("jwt");
 
     if (!jwtToken) {

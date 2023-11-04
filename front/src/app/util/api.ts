@@ -126,7 +126,7 @@ export const deleteIncomeAndExpense = async (id: number) => {
 
 export const postUser = async (user: User) => {
   try {
-    const response = await axios.post("/api/private/user", user, {
+    const response = await axios.post("/api/public/user", user, {
       headers: {
         "Content-Type": "application/json",
       },

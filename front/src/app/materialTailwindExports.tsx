@@ -24,6 +24,7 @@ import {
   CardBody,
   Alert,
   IconButton,
+  CardFooter,
 } from "@material-tailwind/react";
 
 export {
@@ -50,4 +51,5 @@ export {
   CardBody,
   Alert,
   IconButton,
+  CardFooter,
 };

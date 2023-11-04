@@ -24,6 +24,8 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	public.Use(cors.New(config))
 	public.POST("/auth", userHandler.Authenticate)
 
+	public.POST("/user", userHandler.CreateUser)
+
 	localhost := r.Group("/api/localhost")
 	localhost.Use(middleware.LocalhostOnly())
 	localhost.GET("/user/all", userHandler.GetAllUser)
@@ -35,7 +37,6 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized.GET("/check-auth", responsedOKHandler.ResponsedOK)
 	authorized.POST("/auth-del", userHandler.DeleteAuthenticate)
 
-	authorized.POST("/user", userHandler.CreateUser)
 	authorized.GET("/user", userHandler.GetLoginUser)
 	authorized.DELETE("/user/:id", userHandler.DeleteUser)
 	authorized.PUT("/user/:id", userHandler.UpdateUser)
