@@ -10,6 +10,8 @@ type IncomeAndExpense struct {
 	Date           time.Time `json:"date" gorm:"column:date;type:date"`
 	RegisterUserID string    `json:"registerUserId" gorm:"column:register_user_id"`
 	GroupID        uint      `json:"groupId" gorm:"column:group_id"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 type IncomeAndExpenseMonthlyTotal struct {

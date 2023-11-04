@@ -1,4 +1,4 @@
-import { IncomeAndExpense, User } from "@/app/util/types";
+import { IncomeAndExpense, User, UserPost } from "@/app/util/types";
 import axios from "axios";
 
 const HTTP_OK = 200;
@@ -124,7 +124,7 @@ export const deleteIncomeAndExpense = async (id: number) => {
   } catch (error) {}
 };
 
-export const postUser = async (user: User) => {
+export const postUser = async (user: UserPost) => {
   try {
     const response = await axios.post("/api/public/user", user, {
       headers: {

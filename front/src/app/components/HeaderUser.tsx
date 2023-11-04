@@ -9,8 +9,8 @@ const HeaderUser = () => {
   return (
     <span className="mr-4">
       こんにちは&nbsp;
-      {user.id !== null ? (
-        <span className="text-lg font-semibold">{user.id}</span>
+      {user.name !== null ? (
+        <span className="text-lg font-semibold">{user.name}</span>
       ) : (
         <Spinner className="inline-block" />
       )}

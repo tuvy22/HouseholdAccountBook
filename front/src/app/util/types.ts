@@ -21,6 +21,11 @@ export interface IncomeAndExpenseMonthlyCategory {
 
 export interface User {
   id: string;
+  name: string;
+  groupId: number;
+}
+export interface UserPost {
+  id: string;
   password: string;
   name: string;
   groupId: number;

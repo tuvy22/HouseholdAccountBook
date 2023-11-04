@@ -18,4 +18,4 @@
 --     name VARCHAR(255)
 --     PRIMARY KEY (id)
 -- );
-
+default-time-zone = '+09:00'
