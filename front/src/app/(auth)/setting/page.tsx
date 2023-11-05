@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import Setting from "./Setting";
+import { Setting } from "./Setting";
 export const metadata: Metadata = {
   title: "設定",
 };

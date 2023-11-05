@@ -1,4 +1,9 @@
-import { IncomeAndExpense, User, UserPost } from "@/app/util/types";
+import {
+  IncomeAndExpense,
+  User,
+  UserNamePut,
+  UserPost,
+} from "@/app/util/types";
 import axios from "axios";
 
 const HTTP_OK = 200;
@@ -133,5 +138,17 @@ export const postUser = async (user: UserPost) => {
     });
   } catch (error) {
     throw new Error(DELETE_NG_MESSAGE);
+  }
+};
+
+export const updateUserName = async (userNamePut: UserNamePut) => {
+  try {
+    const response = await axios.put("/api/private/user/name", userNamePut, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    throw new Error(PUT_NG_MESSAGE);
   }
 };

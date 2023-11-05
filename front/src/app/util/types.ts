@@ -30,3 +30,6 @@ export interface UserPost {
   name: string;
   groupId: number;
 }
+export interface UserNamePut {
+  name: string;
+}

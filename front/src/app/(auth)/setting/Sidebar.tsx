@@ -13,18 +13,26 @@ import {
   AccordionBody,
 } from "@/app/materialTailwindExports";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import GroupIcon from "@mui/icons-material/Group";
 import BadgeIcon from "@mui/icons-material/Badge";
 import CurrencyYenIcon from "@mui/icons-material/CurrencyYen";
+import { SETTING_OPEN } from "./Setting";
 
-export function Sidebar() {
+export function Sidebar({
+  setOpenSetting,
+}: {
+  setOpenSetting: Dispatch<SetStateAction<string>>;
+}) {
   const [open, setOpen] = useState(0);
 
   const handleOpen = (value: number) => {
     setOpen(open === value ? 0 : value);
+  };
+  const handleUserName = () => {
+    setOpenSetting(SETTING_OPEN.USER_NAME);
   };
   return (
     <Card className="w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
@@ -34,7 +42,7 @@ export function Sidebar() {
         </Typography>
       </div>
       <List>
-        <ListItem>
+        <ListItem onClick={handleUserName}>
           <ListItemPrefix>
             <BadgeIcon className="h-5 w-5" />
           </ListItemPrefix>

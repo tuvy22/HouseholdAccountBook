@@ -18,6 +18,7 @@ type UserUsecase interface {
 	CreateUser(user entity.User) error
 	UpdateUser(user entity.User) error
 	DeleteUser(id string) error
+	UpdateUserName(id string, userName string) error
 }
 
 type userUsecaseImpl struct {
@@ -112,6 +113,19 @@ func (u *userUsecaseImpl) UpdateUser(user entity.User) error {
 
 	return u.repo.UpdateUser(&preUser)
 }
+
+func (u *userUsecaseImpl) UpdateUserName(id string, userName string) error {
+	preUser := entity.User{}
+	err := u.repo.GetUser(id, &preUser)
+	if err != nil {
+		return err
+	}
+	//更新値の設定
+	preUser.Name = userName
+
+	return u.repo.UpdateUser(&preUser)
+}
+
 func (u *userUsecaseImpl) DeleteUser(id string) error {
 
 	return u.repo.DeleteUser(id)

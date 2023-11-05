@@ -18,6 +18,7 @@ type UserHandler interface {
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
+	UpdateUserName(c *gin.Context)
 }
 
 type userHandlerImpl struct {
@@ -128,6 +129,28 @@ func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+	c.Status(http.StatusOK)
+}
+func (h *userHandlerImpl) UpdateUserName(c *gin.Context) {
+
+	user, err := h.bindUser(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	id, err := context_utils.GetLoginUserID(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = h.usecase.UpdateUserName(id, user.Name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	c.Status(http.StatusOK)
 }
 
