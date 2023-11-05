@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-export const schema = z
+const nameSchema = z
+  .string()
+  .min(1, { message: "ニックネームは必須項目です。" })
+  .max(10, { message: "ニックネームは10文字以下で入力してください。" });
+
+export const userCreateSchema = z
   .object({
     id: z
       .string()
@@ -21,14 +26,16 @@ export const schema = z
         }
       ),
     passwordConfirmation: z.string(),
-    name: z
-      .string()
-      .min(1, { message: "ニックネームは必須項目です。" })
-      .max(10, { message: "ニックネームは10文字以下で入力してください。" }),
+    name: nameSchema,
   })
   .refine((data) => data.password === data.passwordConfirmation, {
     path: ["passwordConfirmation"],
     message: "パスワードが一致しません。",
   });
 
-export type Schema = z.infer<typeof schema>;
+export const userUpdateSchema = z.object({
+  name: nameSchema,
+});
+
+export type UserCreateSchema = z.infer<typeof userCreateSchema>;
+export type UserUpdateSchema = z.infer<typeof userUpdateSchema>;

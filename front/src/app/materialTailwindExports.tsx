@@ -25,6 +25,14 @@ import {
   Alert,
   IconButton,
   CardFooter,
+  List,
+  ListItem,
+  ListItemPrefix,
+  ListItemSuffix,
+  Chip,
+  Accordion,
+  AccordionHeader,
+  AccordionBody,
 } from "@material-tailwind/react";
 
 export {
@@ -52,4 +60,12 @@ export {
   Alert,
   IconButton,
   CardFooter,
+  List,
+  ListItem,
+  ListItemPrefix,
+  ListItemSuffix,
+  Chip,
+  Accordion,
+  AccordionHeader,
+  AccordionBody,
 };

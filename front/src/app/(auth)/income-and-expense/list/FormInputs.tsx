@@ -5,7 +5,7 @@ import AmountForm from "./AmountForm";
 import CategoryForm from "./CategoryForm";
 import DateForm from "./DateForm";
 import MemoForm from "./MemoForm";
-import { Schema } from "./schema";
+import { IncomeAndExpenseSchema } from "./IncomeAndExpenseSchema";
 
 export default function FormInputs({
   errors,
@@ -14,9 +14,9 @@ export default function FormInputs({
 
   isMinus,
 }: {
-  errors: FieldErrors<Schema>;
-  register: UseFormRegister<Schema>;
-  control: Control<Schema>;
+  errors: FieldErrors<IncomeAndExpenseSchema>;
+  register: UseFormRegister<IncomeAndExpenseSchema>;
+  control: Control<IncomeAndExpenseSchema>;
 
   isMinus: boolean;
 }) {

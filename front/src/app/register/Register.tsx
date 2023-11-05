@@ -8,14 +8,19 @@ import {
   Typography,
 } from "@/app/materialTailwindExports";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { Schema, schema } from "./schema";
+import {
+  RegisterOptions,
+  UseFormRegisterReturn,
+  useForm,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPost } from "../util/types";
 import { useRouter } from "next/navigation";
 import { auth, postUser } from "../util/api";
 import { useState } from "react";
 import { useUser } from "../context/UserProvider";
+import NameForm from "../components/NameForm";
+import { UserCreateSchema, userCreateSchema } from "../components/UserSchema";
 
 export function Register() {
   const [error, setError] = useState("");
@@ -26,11 +31,11 @@ export function Register() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Schema>({
-    resolver: zodResolver(schema),
+  } = useForm<UserCreateSchema>({
+    resolver: zodResolver(userCreateSchema),
   });
 
-  const onSubmit = async (data: Schema) => {
+  const onSubmit = async (data: UserCreateSchema) => {
     const user: UserPost = {
       id: data.id,
       password: data.password,
@@ -67,7 +72,7 @@ export function Register() {
           アカウントをお持ちの方はこちら
         </Button>
       </Link>
-      <Card className="p-10">
+      <Card className="p-10" color="transparent" shadow={false}>
         <Typography variant="h4" color="blue-gray">
           アカウント作成
         </Typography>
@@ -80,22 +85,7 @@ export function Register() {
             className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
           >
             <div className="mb-1 flex flex-col gap-6">
-              <Typography variant="h6" color="blue-gray" className="-mb-3">
-                ニックネーム
-              </Typography>
-              <Input
-                type="text"
-                size="lg"
-                crossOrigin={undefined}
-                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-                {...register("name")}
-              />
-              {errors.name && (
-                <div className="text-red-500">{errors.name.message}</div>
-              )}
+              <NameForm errors={errors} createRegister={register} />
               <Typography variant="h6" color="blue-gray" className="-mb-3">
                 ユーザーID
               </Typography>

@@ -10,7 +10,10 @@ import {
 } from "@/app/materialTailwindExports";
 import { IncomeAndExpense } from "../../../util/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Schema, schema } from "./schema";
+import {
+  IncomeAndExpenseSchema,
+  incomeAndExpenseSchema,
+} from "./IncomeAndExpenseSchema";
 import { isMinus, toDateObject, toDateString } from "@/app/util/util";
 import FormInputs from "./FormInputs";
 import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
@@ -37,8 +40,8 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<Schema>({
-    resolver: zodResolver(schema),
+  } = useForm<IncomeAndExpenseSchema>({
+    resolver: zodResolver(incomeAndExpenseSchema),
   });
   useEffect(() => {
     if (open) {
@@ -61,7 +64,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     isDaialogMinus,
   ]);
 
-  const onSubmit = (data: Schema) => {
+  const onSubmit = (data: IncomeAndExpenseSchema) => {
     const newIncomeAndExpense: IncomeAndExpense = {
       id: updatedIncomeAndExpense.id,
       category: data.category,

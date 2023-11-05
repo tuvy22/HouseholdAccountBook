@@ -3,7 +3,7 @@
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
 import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
-import { Schema } from "./schema";
+import { IncomeAndExpenseSchema } from "./IncomeAndExpenseSchema";
 
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
@@ -22,7 +22,7 @@ export const IncomeAndExpenseForm = () => {
   const [triggerReset, setTriggerReset] = useState(0);
   const alert = useAlert();
 
-  const onSubmit = async (data: Schema, isMinus: boolean) => {
+  const onSubmit = async (data: IncomeAndExpenseSchema, isMinus: boolean) => {
     setIsLoading(true);
     setTriggerReset((prev) => prev + 1);
 

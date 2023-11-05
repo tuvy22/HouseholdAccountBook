@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const schema = z.object({
+export const incomeAndExpenseSchema = z.object({
   date: z.string().min(1, { message: "日付は必須項目です。" }),
   category: z.string().min(1, { message: "区分は必須項目です。" }),
   amount: z
@@ -18,4 +18,4 @@ export const schema = z.object({
   memo: z.string().max(50, { message: "メモは50文字以下で入力してください。" }),
 });
 
-export type Schema = z.infer<typeof schema>;
+export type IncomeAndExpenseSchema = z.infer<typeof incomeAndExpenseSchema>;

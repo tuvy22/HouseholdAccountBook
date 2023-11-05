@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Schema, schema } from "./schema";
+import {
+  IncomeAndExpenseSchema,
+  incomeAndExpenseSchema,
+} from "./IncomeAndExpenseSchema";
 import SubmitButtonForm from "./SubmitButtonForm";
 import FormInputs from "./FormInputs";
 import { toDateString } from "@/app/util/util";
@@ -12,7 +15,7 @@ export const ExpenseForm = ({
   onSubmit,
   triggerReset,
 }: {
-  onSubmit: (data: Schema, isMinus: boolean) => Promise<void>;
+  onSubmit: (data: IncomeAndExpenseSchema, isMinus: boolean) => Promise<void>;
   triggerReset: number;
 }) => {
   const {
@@ -22,8 +25,8 @@ export const ExpenseForm = ({
     reset,
     getValues,
     formState: { errors },
-  } = useForm<Schema>({
-    resolver: zodResolver(schema),
+  } = useForm<IncomeAndExpenseSchema>({
+    resolver: zodResolver(incomeAndExpenseSchema),
   });
 
   const resetForm = useCallback(() => {
