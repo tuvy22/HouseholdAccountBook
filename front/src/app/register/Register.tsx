@@ -14,7 +14,7 @@ import {
   useForm,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserPost } from "../util/types";
+import { UserCreate } from "../util/types";
 import { useRouter } from "next/navigation";
 import { auth, postUser } from "../util/api";
 import { useState } from "react";
@@ -36,11 +36,10 @@ export function Register() {
   });
 
   const onSubmit = async (data: UserCreateSchema) => {
-    const user: UserPost = {
+    const user: UserCreate = {
       id: data.id,
       password: data.password,
       name: data.name,
-      groupId: 0,
     };
 
     try {

@@ -2,7 +2,7 @@ import {
   IncomeAndExpense,
   User,
   UserNamePut,
-  UserPost,
+  UserCreate,
 } from "@/app/util/types";
 import axios from "axios";
 
@@ -129,7 +129,7 @@ export const deleteIncomeAndExpense = async (id: number) => {
   } catch (error) {}
 };
 
-export const postUser = async (user: UserPost) => {
+export const postUser = async (user: UserCreate) => {
   try {
     const response = await axios.post("/api/public/user", user, {
       headers: {

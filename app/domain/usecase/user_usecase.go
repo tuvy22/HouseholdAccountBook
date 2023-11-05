@@ -15,10 +15,10 @@ type UserUsecase interface {
 	Authenticate(creds entity.Credentials) (entity.UserResponse, string, error)
 	GetAllUser() ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
-	CreateUser(user entity.User) error
+	CreateUser(user entity.UserCreate) error
 	UpdateUser(user entity.User) error
 	DeleteUser(id string) error
-	UpdateUserName(id string, userName string) error
+	UpdateUserName(id string, userName entity.UserName) error
 }
 
 type userUsecaseImpl struct {
@@ -92,12 +92,17 @@ func (u *userUsecaseImpl) GetUser(id string) (entity.UserResponse, error) {
 
 	return u.convertToUserResponse(user), nil
 }
-func (u *userUsecaseImpl) CreateUser(user entity.User) error {
-	hashPassword, err := u.password.HashPassword(user.Password)
+func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate) error {
+	hashPassword, err := u.password.HashPassword(userCreate.Password)
 	if err != nil {
 		return err
 	}
-	user.Password = hashPassword
+	user := entity.User{
+		ID:       userCreate.ID,
+		Password: hashPassword,
+		Name:     userCreate.Name,
+		GroupID:  0,
+	}
 
 	return u.repo.CreateUser(&user)
 }
@@ -114,14 +119,14 @@ func (u *userUsecaseImpl) UpdateUser(user entity.User) error {
 	return u.repo.UpdateUser(&preUser)
 }
 
-func (u *userUsecaseImpl) UpdateUserName(id string, userName string) error {
+func (u *userUsecaseImpl) UpdateUserName(id string, userName entity.UserName) error {
 	preUser := entity.User{}
 	err := u.repo.GetUser(id, &preUser)
 	if err != nil {
 		return err
 	}
 	//更新値の設定
-	preUser.Name = userName
+	preUser.Name = userName.Name
 
 	return u.repo.UpdateUser(&preUser)
 }

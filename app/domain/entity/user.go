@@ -3,17 +3,26 @@ package entity
 import "time"
 
 type User struct {
-	ID        string    `json:"id" gorm:"primaryKey"`
-	Password  string    `json:"password" gorm:"column:Password"`
-	Name      string    `json:"name" gorm:"column:name"`
-	GroupID   uint      `json:"groupId" gorm:"column:group_id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        string    `gorm:"primaryKey"`
+	Password  string    `gorm:"column:Password"`
+	Name      string    `gorm:"column:name"`
+	GroupID   uint      `gorm:"column:group_id"`
+	CreatedAt time.Time `gorm:"created_at"`
+	UpdatedAt time.Time `gorm:"update_at"`
 }
+type UserCreate struct {
+	ID       string `json:"id"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+}
+type UserName struct {
+	Name string `json:"name"`
+}
+
 type UserResponse struct {
-	ID      string `json:"id" gorm:"primaryKey"`
-	Name    string `json:"name" gorm:"column:name"`
-	GroupID uint   `json:"groupId" gorm:"column:group_id"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	GroupID uint   `json:"groupId"`
 }
 
 type Credentials struct {

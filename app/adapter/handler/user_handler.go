@@ -89,13 +89,13 @@ func (h *userHandlerImpl) GetLoginUser(c *gin.Context) {
 }
 
 func (h *userHandlerImpl) CreateUser(c *gin.Context) {
-	user, err := h.bindUser(c)
+	userCreate, err := h.bindUserCreate(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err = h.usecase.CreateUser(user)
+	err = h.usecase.CreateUser(userCreate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -133,7 +133,7 @@ func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
 }
 func (h *userHandlerImpl) UpdateUserName(c *gin.Context) {
 
-	user, err := h.bindUser(c)
+	userName, err := h.bindUserName(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -145,7 +145,7 @@ func (h *userHandlerImpl) UpdateUserName(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.UpdateUserName(id, user.Name)
+	err = h.usecase.UpdateUserName(id, userName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -160,4 +160,18 @@ func (h *userHandlerImpl) bindUser(c *gin.Context) (entity.User, error) {
 		return user, err
 	}
 	return user, nil
+}
+func (h *userHandlerImpl) bindUserCreate(c *gin.Context) (entity.UserCreate, error) {
+	userCreate := entity.UserCreate{}
+	if err := c.ShouldBindJSON(&userCreate); err != nil {
+		return userCreate, err
+	}
+	return userCreate, nil
+}
+func (h *userHandlerImpl) bindUserName(c *gin.Context) (entity.UserName, error) {
+	userName := entity.UserName{}
+	if err := c.ShouldBindJSON(&userName); err != nil {
+		return userName, err
+	}
+	return userName, nil
 }

@@ -24,11 +24,10 @@ export interface User {
   name: string;
   groupId: number;
 }
-export interface UserPost {
+export interface UserCreate {
   id: string;
   password: string;
   name: string;
-  groupId: number;
 }
 export interface UserNamePut {
   name: string;
