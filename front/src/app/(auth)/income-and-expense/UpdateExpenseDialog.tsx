@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogBody,
 } from "@/app/materialTailwindExports";
-import { IncomeAndExpense } from "../../../util/types";
+import { IncomeAndExpense } from "../../util/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IncomeAndExpenseSchema,

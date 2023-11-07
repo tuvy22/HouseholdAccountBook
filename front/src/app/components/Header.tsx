@@ -32,7 +32,7 @@ const Header = () => {
     <header className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white">
       <div className="flex-1 flex">
         <Link
-          href="/income-and-expense/list"
+          href="/income-and-expense"
           className="p-1 flex flex-col items-left"
         >
           <span className="text-xs">家計簿サービス</span>
@@ -52,7 +52,7 @@ const Header = () => {
           </Typography>
         </Link>
         <Link
-          href="/income-and-expense/dashboard"
+          href="/dashboard"
           className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
         >
           <LineAxisIcon />

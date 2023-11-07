@@ -44,7 +44,7 @@ const Login = () => {
     setLoading(true);
     try {
       setUser(await auth(userId, password));
-      router.push("/income-and-expense/list");
+      router.push("/income-and-expense");
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

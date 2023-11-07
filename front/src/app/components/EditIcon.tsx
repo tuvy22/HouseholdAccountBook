@@ -3,7 +3,7 @@
 import { IncomeAndExpense } from "@/app/util/types";
 import ModeEdit from "@mui/icons-material/ModeEdit";
 import React, { useState } from "react";
-import { UpdateExpenseDialog } from "../(auth)/income-and-expense/list/UpdateExpenseDialog";
+import { UpdateExpenseDialog } from "../(auth)/income-and-expense/UpdateExpenseDialog";
 import { putIncomeAndExpense } from "@/app/util/api";
 import { useUser } from "@/app/context/UserProvider";
 import { useRouter } from "next/navigation";
