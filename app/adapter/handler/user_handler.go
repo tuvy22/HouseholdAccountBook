@@ -19,6 +19,7 @@ type UserHandler interface {
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
 	UpdateUserName(c *gin.Context)
+	GetUserInviteUrl(c *gin.Context)
 }
 
 type userHandlerImpl struct {
@@ -152,6 +153,28 @@ func (h *userHandlerImpl) UpdateUserName(c *gin.Context) {
 	}
 
 	c.Status(http.StatusOK)
+}
+
+func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
+	id, err := context_utils.GetLoginUserID(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	user, err := h.usecase.GetUser(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	inviteUrl, err := h.usecase.GetUserInviteUrl(user.GroupID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, inviteUrl)
+
 }
 
 func (h *userHandlerImpl) bindUser(c *gin.Context) (entity.User, error) {

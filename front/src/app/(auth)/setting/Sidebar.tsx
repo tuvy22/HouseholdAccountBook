@@ -26,13 +26,17 @@ export function Sidebar({
 }: {
   setOpenSetting: Dispatch<SetStateAction<string>>;
 }) {
-  const [open, setOpen] = useState(0);
+  const [openGroup, setOpenGroup] = useState(false);
+  const [openUser, setOpenUser] = useState(false);
 
-  const handleOpen = (value: number) => {
-    setOpen(open === value ? 0 : value);
+  const handleOpenGroup = () => {
+    setOpenGroup(!openGroup);
   };
-  const handleUserName = () => {
-    setOpenSetting(SETTING_OPEN.USER_NAME);
+  const handleOpenUser = () => {
+    setOpenUser(!openUser);
+  };
+  const handleOpenMenu = (menu: string) => {
+    setOpenSetting(menu);
   };
   return (
     <Card className="w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
@@ -42,26 +46,73 @@ export function Sidebar({
         </Typography>
       </div>
       <List>
-        <ListItem onClick={handleUserName}>
-          <ListItemPrefix>
-            <BadgeIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          ニックネーム変更
-        </ListItem>
         <Accordion
-          open={open === 1}
+          open={openUser}
           icon={
             <KeyboardArrowUpIcon
               strokeWidth={2.5}
               className={`mx-auto h-4 w-4 transition-transform ${
-                open === 1 ? "rotate-180" : ""
+                openUser ? "rotate-180" : ""
               }`}
             />
           }
         >
-          <ListItem className="p-0" selected={open === 1}>
+          <ListItem className="p-0" selected={openUser}>
             <AccordionHeader
-              onClick={() => handleOpen(1)}
+              onClick={() => handleOpenUser()}
+              className="border-b-0 p-3"
+            >
+              <ListItemPrefix>
+                <GroupIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              <Typography color="blue-gray" className="mr-auto font-normal">
+                ユーザー設定
+              </Typography>
+            </AccordionHeader>
+          </ListItem>
+          <AccordionBody className="py-1">
+            <List className="p-0">
+              <ListItem onClick={() => handleOpenMenu(SETTING_OPEN.USER_NAME)}>
+                <ListItemPrefix>
+                  <KeyboardArrowRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                ニックネーム変更
+              </ListItem>
+              <ListItem>
+                <ListItemPrefix>
+                  <KeyboardArrowRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                パスワード変更
+              </ListItem>
+              <ListItem>
+                <ListItemPrefix>
+                  <KeyboardArrowRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                グループからの脱退
+              </ListItem>
+              <ListItem>
+                <ListItemPrefix>
+                  <KeyboardArrowRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                退会
+              </ListItem>
+            </List>
+          </AccordionBody>
+        </Accordion>
+        <Accordion
+          open={openGroup}
+          icon={
+            <KeyboardArrowUpIcon
+              strokeWidth={2.5}
+              className={`mx-auto h-4 w-4 transition-transform ${
+                openGroup ? "rotate-180" : ""
+              }`}
+            />
+          }
+        >
+          <ListItem className="p-0" selected={openGroup}>
+            <AccordionHeader
+              onClick={() => handleOpenGroup()}
               className="border-b-0 p-3"
             >
               <ListItemPrefix>
@@ -74,17 +125,27 @@ export function Sidebar({
           </ListItem>
           <AccordionBody className="py-1">
             <List className="p-0">
-              <ListItem>
+              <ListItem
+                onClick={() =>
+                  handleOpenMenu(SETTING_OPEN.GROUP_USER_INVITATION)
+                }
+              >
                 <ListItemPrefix>
                   <KeyboardArrowRightIcon strokeWidth={3} className="h-3 w-5" />
                 </ListItemPrefix>
-                ユーザー確認
+                ユーザー招待
               </ListItem>
               <ListItem>
                 <ListItemPrefix>
                   <KeyboardArrowRightIcon strokeWidth={3} className="h-3 w-5" />
                 </ListItemPrefix>
-                ユーザー招待
+                グループへの加入
+              </ListItem>
+              <ListItem>
+                <ListItemPrefix>
+                  <KeyboardArrowRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                ユーザーの一覧
               </ListItem>
             </List>
           </AccordionBody>

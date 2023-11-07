@@ -29,8 +29,8 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	localhost := r.Group("/api/localhost")
 	localhost.Use(middleware.LocalhostOnly())
 	localhost.GET("/user/all", userHandler.GetAllUser)
-	localhost.GET("/incomeAndExpenseAll", incomeAndExpenseHandler.GetAllIncomeAndExpense)
-	localhost.GET("/incomeAndExpense/monthlyTotal", incomeAndExpenseHandler.GetMonthlyTotal)
+	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpense)
+	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)
 
 	authorized := r.Group("/api/private")
 	authorized.Use(middleware.CheckToken(cfg))
@@ -41,11 +41,12 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized.DELETE("/user/:id", userHandler.DeleteUser)
 	authorized.PUT("/user/:id", userHandler.UpdateUser)
 	authorized.PUT("/user/name", userHandler.UpdateUserName)
+	authorized.GET("/user-invite-url", userHandler.GetUserInviteUrl)
 
-	authorized.POST("/incomeAndExpense", incomeAndExpenseHandler.CreateIncomeAndExpense)
-	authorized.PUT("/incomeAndExpense/:id", incomeAndExpenseHandler.UpdateIncomeAndExpense)
-	authorized.DELETE("/incomeAndExpense/:id", incomeAndExpenseHandler.DeleteIncomeAndExpense)
-	authorized.GET("/incomeAndExpense/monthlyCategory", incomeAndExpenseHandler.GetMonthlyCategory)
+	authorized.POST("/income-and-expense", incomeAndExpenseHandler.CreateIncomeAndExpense)
+	authorized.PUT("/income-and-expense/:id", incomeAndExpenseHandler.UpdateIncomeAndExpense)
+	authorized.DELETE("/income-and-expense/:id", incomeAndExpenseHandler.DeleteIncomeAndExpense)
+	authorized.GET("/income-and-expense/monthly-category", incomeAndExpenseHandler.GetMonthlyCategory)
 
 	return r
 }

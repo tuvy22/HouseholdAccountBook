@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -17,18 +18,20 @@ type UserUsecase interface {
 	GetUser(id string) (entity.UserResponse, error)
 	CreateUser(user entity.UserCreate) error
 	UpdateUser(user entity.User) error
-	DeleteUser(id string) error
 	UpdateUserName(id string, userName entity.UserName) error
+	DeleteUser(id string) error
+	GetUserInviteUrl(groupId uint) (entity.InviteUrl, error)
 }
 
 type userUsecaseImpl struct {
-	repo     repository.UserRepository
-	password password.Password
-	config   config.Config
+	repo      repository.UserRepository
+	groupRepo repository.GroupRepository
+	password  password.Password
+	config    config.Config
 }
 
-func NewUserUsecase(repo repository.UserRepository, password password.Password, config config.Config) UserUsecase {
-	return &userUsecaseImpl{repo: repo, password: password, config: config}
+func NewUserUsecase(repo repository.UserRepository, groupRepo repository.GroupRepository, password password.Password, config config.Config) UserUsecase {
+	return &userUsecaseImpl{repo: repo, groupRepo: groupRepo, password: password, config: config}
 }
 
 func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserResponse, string, error) {
@@ -63,10 +66,10 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 	// JWTトークンの生成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": creds.UserID,
-		"exp":     time.Now().Add(time.Hour * 3).Unix(),
+		"exp":     time.Now().Add(time.Minute * 30).Unix(),
 	})
 
-	tokenString, err := token.SignedString(u.config.JWTKey)
+	tokenString, err := token.SignedString(u.config.LoginJWTKey)
 	if err != nil {
 		return u.convertToUserResponse(user), "", ErrInternalServer
 	}
@@ -97,11 +100,14 @@ func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate) error {
 	if err != nil {
 		return err
 	}
+	group := entity.Group{}
+	u.groupRepo.CreateGroup(&group)
+
 	user := entity.User{
 		ID:       userCreate.ID,
 		Password: hashPassword,
 		Name:     userCreate.Name,
-		GroupID:  0,
+		GroupID:  group.ID,
 	}
 
 	return u.repo.CreateUser(&user)
@@ -134,6 +140,27 @@ func (u *userUsecaseImpl) UpdateUserName(id string, userName entity.UserName) er
 func (u *userUsecaseImpl) DeleteUser(id string) error {
 
 	return u.repo.DeleteUser(id)
+}
+
+func (u *userUsecaseImpl) GetUserInviteUrl(groupId uint) (entity.InviteUrl, error) {
+	// JWTトークンの生成
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"group_id": groupId,
+		"exp":      time.Now().Add(time.Minute * 30).Unix(),
+	})
+
+	tokenString, err := token.SignedString(u.config.InviteJWTKey)
+	if err != nil {
+		return entity.InviteUrl{}, err
+	}
+	// 生成したトークンをURLに組み込む
+	inviteURLString := fmt.Sprintf("https://%s/user-invite?token=%s", os.Getenv("DOMAIN"), tokenString)
+
+	inviteUrl := entity.InviteUrl{
+		Url: inviteURLString,
+	}
+
+	return inviteUrl, nil
 }
 
 func (u *userUsecaseImpl) convertToUserResponse(user entity.User) entity.UserResponse {

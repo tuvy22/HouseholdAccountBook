@@ -32,3 +32,6 @@ export interface UserCreate {
 export interface UserNamePut {
   name: string;
 }
+export interface InviteUrl {
+  url: string;
+}

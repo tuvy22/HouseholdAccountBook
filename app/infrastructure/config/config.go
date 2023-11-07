@@ -3,11 +3,13 @@ package config
 import "os"
 
 type Config struct {
-	JWTKey []byte
+	LoginJWTKey  []byte
+	InviteJWTKey []byte
 }
 
 func LoadConfig() Config {
 	return Config{
-		JWTKey: []byte(os.Getenv("JWT_SECRET_KEY")),
+		LoginJWTKey:  []byte(os.Getenv("LOGIN_JWT_SECRET_KEY")),
+		InviteJWTKey: []byte(os.Getenv("INVITE_JWT_SECRET_KEY")),
 	}
 }

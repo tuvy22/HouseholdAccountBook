@@ -30,8 +30,9 @@ func main() {
 	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
 
 	userRepo := repository.NewUserRepository(db.GetDB())
+	groupRepo := repository.NewGroupRepository(db.GetDB())
 	password := password.NewPassWord()
-	userUsecase := usecase.NewUserUsecase(userRepo, password, originalConfig)
+	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, password, originalConfig)
 	userHandler := handler.NewUserHandler(userUsecase)
 
 	responsedOKHandler := handler.NewResponsedOKHandler()

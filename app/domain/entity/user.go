@@ -29,3 +29,7 @@ type Credentials struct {
 	UserID   string `json:"userId"`
 	Password string `json:"password"`
 }
+
+type InviteUrl struct {
+	Url string `json:"url"`
+}

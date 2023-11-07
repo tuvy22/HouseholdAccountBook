@@ -3,6 +3,7 @@ import {
   User,
   UserNamePut,
   UserCreate,
+  InviteUrl,
 } from "@/app/util/types";
 import axios from "axios";
 
@@ -37,7 +38,7 @@ export const auth = async (userId: string, password: string) => {
 export const getIncomeAndExpense = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:8080/api/localhost/incomeAndExpenseAll",
+      "http://localhost:8080/api/localhost/income-and-expense/all",
       {
         headers: {
           cache: "no-store",
@@ -53,7 +54,7 @@ export const getIncomeAndExpense = async () => {
 export const getIncomeAndExpenseMonthlyTotal = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:8080/api/localhost/incomeAndExpense/monthlyTotal",
+      "http://localhost:8080/api/localhost/income-and-expense/monthly-total",
       {
         headers: {
           cache: "no-store",
@@ -72,7 +73,7 @@ export const getIncomeAndExpenseMonthlyCategory = async (
 ) => {
   try {
     const response = await axios.get(
-      "/api/private/incomeAndExpense/monthlyCategory",
+      "/api/private/income-and-expense/monthly-category",
       {
         params: {
           yearMonth: yearMonth,
@@ -92,7 +93,7 @@ export const postIncomeAndExpense = async (
 ) => {
   try {
     const response = await axios.post(
-      "/api/private/incomeAndExpense",
+      "/api/private/income-and-expense",
       incomeAndExpense,
       {
         headers: {
@@ -110,7 +111,7 @@ export const putIncomeAndExpense = async (
 ) => {
   try {
     const response = await axios.put(
-      `/api/private/incomeAndExpense/${incomeAndExpense.id}`,
+      `/api/private/income-and-expense/${incomeAndExpense.id}`,
       incomeAndExpense,
       {
         headers: {
@@ -125,7 +126,7 @@ export const putIncomeAndExpense = async (
 
 export const deleteIncomeAndExpense = async (id: number) => {
   try {
-    await axios.delete(`/api/private/incomeAndExpense/${id}`);
+    await axios.delete(`/api/private/income-and-expense/${id}`);
   } catch (error) {}
 };
 
@@ -150,5 +151,17 @@ export const updateUserName = async (userNamePut: UserNamePut) => {
     });
   } catch (error) {
     throw new Error(PUT_NG_MESSAGE);
+  }
+};
+
+export const getUserInviteUrl = async () => {
+  try {
+    const response = await axios.get("/api/private/user-invite-url");
+
+    const inviteUrl: InviteUrl = response.data;
+
+    return inviteUrl.url;
+  } catch (error) {
+    throw new Error(GET_NG_MESSAGE);
   }
 };
