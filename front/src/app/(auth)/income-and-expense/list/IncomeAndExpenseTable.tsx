@@ -7,7 +7,7 @@ import EditIcon from "../../../components/EditIcon";
 import DeleteIcon from "../../../components/DeleteIcon";
 import { getIncomeAndExpense } from "@/app/util/api";
 
-const TABLE_HEAD = ["登録", "区分", "金額", "メモ", ""];
+const TABLE_HEAD = ["登録者", "区分", "金額", "メモ", ""];
 
 export const IncomeAndExpenseTable = async () => {
   const fetchData = await getIncomeAndExpense();

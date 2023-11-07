@@ -2,7 +2,9 @@ import axios from "axios";
 import { NextMiddleware, NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.match("/((?!login|register).*)")) {
+  if (
+    request.nextUrl.pathname.match("/((?!login|user-register|user-invite).*)")
+  ) {
     const jwtToken = request.cookies.get("jwt");
 
     if (!jwtToken) {
@@ -29,21 +31,6 @@ export async function middleware(request: NextRequest) {
     } catch (error) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-
-    // try {
-    //   const response = await axios.get(
-    //     "http://localhost:8080/api/private/check-auth",
-    //     {withCredentials: true
-    //       headers: {
-    //         cookie,
-    //         // cache: "no-store",
-    //       },
-    //     }
-    //   );
-    // } catch (error) {
-    //   console.log("errorAAAA");
-    //   return NextResponse.redirect(new URL("/login", request.url));
-    // }
   }
 }
 export const config = {

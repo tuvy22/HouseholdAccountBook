@@ -7,11 +7,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/ten313/HouseholdAccountBook/app/adapter/handler"
-	"github.com/ten313/HouseholdAccountBook/app/adapter/middleware"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
 )
 
-func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, responsedOKHandler handler.ResponsedOKHandler) *gin.Engine {
+func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, responsedOKHandler handler.ResponsedOKHandler, middlewareHandler handler.MiddlewareHandler) *gin.Engine {
 	r := gin.Default()
 
 	// CORS 設定
@@ -27,13 +26,13 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	public.POST("/user", userHandler.CreateUser)
 
 	localhost := r.Group("/api/localhost")
-	localhost.Use(middleware.LocalhostOnly())
+	localhost.Use(middlewareHandler.LocalhostOnly())
 	localhost.GET("/user/all", userHandler.GetAllUser)
 	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpense)
 	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)
 
 	authorized := r.Group("/api/private")
-	authorized.Use(middleware.CheckToken(cfg))
+	authorized.Use(middlewareHandler.CheckToken())
 	authorized.GET("/check-auth", responsedOKHandler.ResponsedOK)
 	authorized.POST("/auth-del", userHandler.DeleteAuthenticate)
 

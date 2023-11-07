@@ -14,13 +14,16 @@ import {
   useForm,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserCreate } from "../util/types";
+import { UserCreate } from "../../util/types";
 import { useRouter } from "next/navigation";
-import { auth, postUser } from "../util/api";
+import { auth, postUser } from "../../util/api";
 import { useState } from "react";
-import { useUser } from "../context/UserProvider";
-import NameForm from "../components/NameForm";
-import { UserCreateSchema, userCreateSchema } from "../components/UserSchema";
+import { useUser } from "../../context/UserProvider";
+import NameForm from "../../components/NameForm";
+import {
+  UserCreateSchema,
+  userCreateSchema,
+} from "../../components/UserSchema";
 
 export function Register() {
   const [error, setError] = useState("");
@@ -71,8 +74,8 @@ export function Register() {
           アカウントをお持ちの方はこちら
         </Button>
       </Link>
-      <Card className="p-10" color="transparent" shadow={false}>
-        <Typography variant="h4" color="blue-gray">
+      <Card className="p-10 flex items-center justify-center">
+        <Typography variant="h2" className="pt-5 text-xl" color="blue-gray">
           アカウント作成
         </Typography>
         <Typography color="gray" className="mt-1 font-normal">

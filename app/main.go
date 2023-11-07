@@ -34,10 +34,11 @@ func main() {
 	password := password.NewPassWord()
 	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, password, originalConfig)
 	userHandler := handler.NewUserHandler(userUsecase)
+	middlewareHandler := handler.NewMiddlewareHandler(userUsecase)
 
 	responsedOKHandler := handler.NewResponsedOKHandler()
 
-	r := router.NewRouter(originalConfig, userHandler, incomeAndExpenseHandler, responsedOKHandler)
+	r := router.NewRouter(originalConfig, userHandler, incomeAndExpenseHandler, responsedOKHandler, middlewareHandler)
 
 	r.Run(":8080")
 }

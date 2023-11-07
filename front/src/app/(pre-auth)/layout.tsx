@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import AlertProvider from "../context/AlertProvider";
 
-export const metadata: Metadata = {
-  title: "サインアップ",
-};
-
 export default function LoginLayout({
   children,
 }: {

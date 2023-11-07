@@ -14,6 +14,7 @@ import (
 
 type UserUsecase interface {
 	Authenticate(creds entity.Credentials) (entity.UserResponse, string, error)
+	CheckLoginToken(tokenString string) (string, error)
 	GetAllUser() ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
 	CreateUser(user entity.UserCreate) error
@@ -75,6 +76,23 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 	}
 	return u.convertToUserResponse(user), tokenString, nil
 }
+
+func (u *userUsecaseImpl) CheckLoginToken(tokenString string) (string, error) {
+
+	claims, err := u.checkToken(tokenString)
+	if err != nil {
+		return "", err
+	}
+	userId := claims["user_id"]
+
+	str, ok := userId.(string)
+	if ok {
+		return str, nil
+	} else {
+		return "", ErrInternalServer
+	}
+}
+
 func (u *userUsecaseImpl) GetAllUser() ([]entity.UserResponse, error) {
 	users := []entity.User{}
 
@@ -184,4 +202,25 @@ func (u *userUsecaseImpl) convertToUserResponses(users []entity.User) []entity.U
 	}
 
 	return userResponses
+}
+
+func (u *userUsecaseImpl) checkToken(tokenString string) (jwt.MapClaims, error) {
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return u.config.LoginJWTKey, nil
+	})
+
+	if err != nil {
+		return nil, ErrInvalidCredentials
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if ok && token.Valid {
+		return claims, nil
+	} else {
+		return nil, nil
+	}
 }

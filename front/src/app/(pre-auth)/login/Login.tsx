@@ -9,13 +9,13 @@ import {
   CardBody,
   Typography,
   Button,
-} from "../materialTailwindExports";
+} from "../../materialTailwindExports";
 import { useUser } from "@/app/context/UserProvider";
 import LockIcon from "@mui/icons-material/Lock";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { auth } from "../util/api";
+import { auth } from "../../util/api";
 import Link from "next/link";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 
@@ -55,23 +55,32 @@ const Login = () => {
 
   return (
     <>
-      <Link href="/register" className="fixed top-4 right-4">
-        <Button
+      <Link href="/user-register" className="fixed top-4 right-4">
+        {/* <Button
           type="submit"
           variant="outlined"
           color="green"
           size="lg"
           className="group relative rounded-full flex items-center overflow-hidden pr-[72px]"
         >
-          アカウント作成
+          アカウントをお持ちではない方はこちら
           <span className="absolute right-0 grid h-full w-12 place-items-center bg-green-500">
             <AssignmentIndIcon className="text-white" />
           </span>
+        </Button> */}
+        <Button
+          type="submit"
+          variant="outlined"
+          color="green"
+          size="lg"
+          className="rounded-full"
+        >
+          アカウントをお持ちではない方はこちら
         </Button>
       </Link>
 
-      <Card className="p-10">
-        <Typography variant="h2" className="text-center pt-5 text-xl">
+      <Card className="p-10 flex items-center justify-center">
+        <Typography variant="h2" className="pt-5 text-xl">
           ログイン
         </Typography>
         <CardBody>
