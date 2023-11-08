@@ -8,15 +8,11 @@ import {
   Typography,
 } from "@/app/materialTailwindExports";
 import Link from "next/link";
-import {
-  RegisterOptions,
-  UseFormRegisterReturn,
-  useForm,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserCreate } from "../../util/types";
 import { useRouter } from "next/navigation";
-import { auth, postUser } from "../../util/api";
+import { postUser } from "../../util/api";
 import { useState } from "react";
 import { useUser } from "../../context/UserProvider";
 import NameForm from "../../components/NameForm";
@@ -46,20 +42,13 @@ export function Register() {
     };
 
     try {
-      await postUser(user);
+      setUser(await postUser(user));
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       }
     }
-    try {
-      setUser(await auth(user.id, user.password));
-      router.push("/income-and-expense");
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      }
-    }
+    router.push("/income-and-expense");
   };
   return (
     <>

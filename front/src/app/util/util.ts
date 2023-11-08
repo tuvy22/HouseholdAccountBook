@@ -1,20 +1,3 @@
-import { IncomeAndExpenseMonthlyTotal } from "./types";
-
-export const expenseCategory = [
-  "食費",
-  "衣類",
-  "住居",
-  "電気",
-  "ガス",
-  "水道",
-  "通信",
-  "交通費",
-  "交際費",
-  "家具・家電",
-  "その他",
-];
-export const incomeCategory = ["給与", "ボーナス", "その他収入"];
-
 export const isMinus = (amount: number) => {
   return amount < 0;
 };

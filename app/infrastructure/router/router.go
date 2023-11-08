@@ -20,10 +20,11 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	config.AllowCredentials = true
 
 	public := r.Group("/api/public")
-	public.Use(cors.New(config))
+	public.Use(middlewareHandler.CheckInviteToken())
 	public.POST("/auth", userHandler.Authenticate)
-
 	public.POST("/user", userHandler.CreateUser)
+	publicSetInviteCookie := r.Group("/api/public")
+	publicSetInviteCookie.POST("/set-invite-cookie", userHandler.SetInviteCookie)
 
 	localhost := r.Group("/api/localhost")
 	localhost.Use(middlewareHandler.LocalhostOnly())
@@ -32,7 +33,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)
 
 	authorized := r.Group("/api/private")
-	authorized.Use(middlewareHandler.CheckToken())
+	authorized.Use(middlewareHandler.CheckLoginToken())
 	authorized.GET("/check-auth", responsedOKHandler.ResponsedOK)
 	authorized.POST("/auth-del", userHandler.DeleteAuthenticate)
 

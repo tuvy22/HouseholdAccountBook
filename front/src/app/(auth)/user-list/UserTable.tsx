@@ -12,7 +12,7 @@ import React from "react";
 import { User } from "@/app/util/types";
 import { UpdateUserDialog } from "./UpdateUserDialog";
 
-const TABLE_HEAD = ["ID", "名前", ""];
+const TABLE_HEAD = ["ID", "名前", "グループID", ""];
 
 export const UserTable = ({ fetchData }: { fetchData: User[] }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -124,6 +124,15 @@ export const UserTable = ({ fetchData }: { fetchData: User[] }) => {
                       className="font-normal"
                     >
                       {user.name}
+                    </Typography>
+                  </td>
+                  <td className="p-2 md:p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {user.groupId}
                     </Typography>
                   </td>
 

@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ten313/HouseholdAccountBook/app/adapter/handler/context_utils"
+
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -20,6 +20,7 @@ type UserHandler interface {
 	DeleteUser(c *gin.Context)
 	UpdateUserName(c *gin.Context)
 	GetUserInviteUrl(c *gin.Context)
+	SetInviteCookie(c *gin.Context)
 }
 
 type userHandlerImpl struct {
@@ -39,17 +40,28 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 
 	user, token, err := h.usecase.Authenticate(creds)
 	if err != nil {
-		if err == usecase.ErrInvalidCredentials {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-			return
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+		errorResponder(c, err)
+		return
 	}
 	// クッキーにトークンを保存
 	c.SetSameSite(http.SameSiteNoneMode)
-	c.SetCookie("jwt", token, 3600, "/", os.Getenv("ALLOWED_ORIGINS"), true, false)
+	c.SetCookie(LonginCookieToken, token, 1800, "/", os.Getenv("ALLOWED_ORIGINS"), true, true)
+
+	inviteGroupID, err := GetInviteGroupID(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	//招待された場合の処理
+	if inviteGroupID != entity.GroupIDNone {
+		err := h.usecase.ChangeGroup(user.ID, inviteGroupID)
+		if err != nil {
+			errorResponder(c, err)
+			return
+		}
+
+		h.deleteInviteCookieToken(c)
+	}
 
 	c.JSON(http.StatusOK, user)
 }
@@ -58,8 +70,7 @@ func (h *userHandlerImpl) DeleteAuthenticate(c *gin.Context) {
 
 	// トークンを持つクッキーの有効期限を過去の日時に設定して削除
 	c.SetSameSite(http.SameSiteNoneMode)
-	c.SetCookie("jwt", "", -1, "/", os.Getenv("ALLOWED_ORIGINS"), true, false)
-	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+	c.SetCookie(LonginCookieToken, "", -1, "/", os.Getenv("ALLOWED_ORIGINS"), true, true)
 
 	c.Status(http.StatusOK)
 }
@@ -75,7 +86,7 @@ func (h *userHandlerImpl) GetAllUser(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 func (h *userHandlerImpl) GetLoginUser(c *gin.Context) {
-	id, err := context_utils.GetLoginUserID(c)
+	id, err := GetLoginUserID(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -96,13 +107,26 @@ func (h *userHandlerImpl) CreateUser(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.CreateUser(userCreate)
+	inviteGroupID, err := GetInviteGroupID(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.Status(http.StatusOK)
+	user, token, err := h.usecase.CreateUser(userCreate, inviteGroupID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	// クッキーにトークンを保存
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie(LonginCookieToken, token, 1800, "/", os.Getenv("ALLOWED_ORIGINS"), true, true)
+
+	//招待された場合の処理
+	if inviteGroupID != entity.GroupIDNone {
+		h.deleteInviteCookieToken(c)
+	}
+	c.JSON(http.StatusOK, user)
 }
 func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 
@@ -140,7 +164,7 @@ func (h *userHandlerImpl) UpdateUserName(c *gin.Context) {
 		return
 	}
 
-	id, err := context_utils.GetLoginUserID(c)
+	id, err := GetLoginUserID(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -156,7 +180,7 @@ func (h *userHandlerImpl) UpdateUserName(c *gin.Context) {
 }
 
 func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
-	id, err := context_utils.GetLoginUserID(c)
+	id, err := GetLoginUserID(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -175,6 +199,22 @@ func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
 
 	c.JSON(http.StatusOK, inviteUrl)
 
+}
+
+func (h *userHandlerImpl) SetInviteCookie(c *gin.Context) {
+	inviteToken, err := h.bindInviteToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	_, err = h.usecase.CheckInviteToken(inviteToken.Token)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	// クッキーにトークンを保存
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie(InviteCookieToken, inviteToken.Token, 1800, "/", os.Getenv("ALLOWED_ORIGINS"), true, true)
 }
 
 func (h *userHandlerImpl) bindUser(c *gin.Context) (entity.User, error) {
@@ -197,4 +237,17 @@ func (h *userHandlerImpl) bindUserName(c *gin.Context) (entity.UserName, error) 
 		return userName, err
 	}
 	return userName, nil
+}
+func (h *userHandlerImpl) bindInviteToken(c *gin.Context) (entity.InviteToken, error) {
+	inviteToken := entity.InviteToken{}
+	if err := c.ShouldBindJSON(&inviteToken); err != nil {
+		return inviteToken, err
+	}
+	return inviteToken, nil
+}
+func (h *userHandlerImpl) deleteInviteCookieToken(c *gin.Context) {
+
+	// トークン(招待用)を持つクッキーの有効期限を過去の日時に設定して削除
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie(InviteCookieToken, "", -1, "/", os.Getenv("ALLOWED_ORIGINS"), true, true)
 }

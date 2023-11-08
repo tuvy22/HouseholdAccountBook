@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/ten313/HouseholdAccountBook/app/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/password"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
@@ -15,13 +16,15 @@ import (
 type UserUsecase interface {
 	Authenticate(creds entity.Credentials) (entity.UserResponse, string, error)
 	CheckLoginToken(tokenString string) (string, error)
+	CheckInviteToken(tokenString string) (uint, error)
 	GetAllUser() ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
-	CreateUser(user entity.UserCreate) error
+	CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, string, error)
 	UpdateUser(user entity.User) error
 	UpdateUserName(id string, userName entity.UserName) error
 	DeleteUser(id string) error
 	GetUserInviteUrl(groupId uint) (entity.InviteUrl, error)
+	ChangeGroup(userId string, inviteGroupID uint) error
 }
 
 type userUsecaseImpl struct {
@@ -47,7 +50,7 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 		if creds.UserID == storedUserID && creds.Password == storedPassword {
 			hashPassword, err := u.password.HashPassword(creds.Password)
 			if err != nil {
-				return u.convertToUserResponse(user), "", ErrInternalServer
+				return entity.UserResponse{}, "", ErrInvalidCredentials
 			}
 			user = entity.User{
 				ID:       creds.UserID,
@@ -55,31 +58,40 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 				Name:     creds.UserID,
 			}
 		} else {
-			return u.convertToUserResponse(user), "", ErrInvalidCredentials
+			return entity.UserResponse{}, "", customerrors.NewCustomError(customerrors.ErrInvalidLogin)
 		}
 	}
 
 	err = u.password.CheckPassword(user.Password, creds.Password)
 	if err != nil {
-		return u.convertToUserResponse(user), "", ErrInvalidCredentials
+		return entity.UserResponse{}, "", customerrors.NewCustomError(customerrors.ErrInvalidLogin)
 	}
 
 	// JWTトークンの生成
+	tokenString, err := u.createLoginToken(creds.UserID)
+	if err != nil {
+		return entity.UserResponse{}, "", ErrInvalidCredentials
+	}
+	return u.convertToUserResponse(user), tokenString, nil
+}
+
+func (u *userUsecaseImpl) createLoginToken(userId string) (string, error) {
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": creds.UserID,
+		"user_id": userId,
 		"exp":     time.Now().Add(time.Minute * 30).Unix(),
 	})
 
 	tokenString, err := token.SignedString(u.config.LoginJWTKey)
 	if err != nil {
-		return u.convertToUserResponse(user), "", ErrInternalServer
+		return "", err
 	}
-	return u.convertToUserResponse(user), tokenString, nil
+	return tokenString, nil
 }
 
 func (u *userUsecaseImpl) CheckLoginToken(tokenString string) (string, error) {
 
-	claims, err := u.checkToken(tokenString)
+	claims, err := u.checkToken(tokenString, u.config.LoginJWTKey)
 	if err != nil {
 		return "", err
 	}
@@ -90,6 +102,24 @@ func (u *userUsecaseImpl) CheckLoginToken(tokenString string) (string, error) {
 		return str, nil
 	} else {
 		return "", ErrInternalServer
+	}
+}
+func (u *userUsecaseImpl) CheckInviteToken(tokenString string) (uint, error) {
+
+	claims, err := u.checkToken(tokenString, u.config.InviteJWTKey)
+	if err != nil {
+		return entity.GroupIDNone, err
+	}
+	groupIdInterface, ok := claims["group_id"]
+	if !ok {
+		return entity.GroupIDNone, ErrInternalServer
+	}
+
+	if floatValue, ok := groupIdInterface.(float64); ok {
+		groupId := uint(floatValue)
+		return groupId, nil
+	} else {
+		return entity.GroupIDNone, ErrInternalServer
 	}
 }
 
@@ -113,22 +143,45 @@ func (u *userUsecaseImpl) GetUser(id string) (entity.UserResponse, error) {
 
 	return u.convertToUserResponse(user), nil
 }
-func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate) error {
+func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, string, error) {
 	hashPassword, err := u.password.HashPassword(userCreate.Password)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, "", err
 	}
-	group := entity.Group{}
-	u.groupRepo.CreateGroup(&group)
+	var groupId uint
+	if inviteGroupID == entity.GroupIDNone {
+		//グループ新規作成
+		group := entity.Group{}
+		u.groupRepo.CreateGroup(&group)
+		groupId = group.ID
+	} else {
+		//招待されたグループに入る
+		groupId = inviteGroupID
 
-	user := entity.User{
+	}
+
+	createUser := entity.User{
 		ID:       userCreate.ID,
 		Password: hashPassword,
 		Name:     userCreate.Name,
-		GroupID:  group.ID,
+		GroupID:  groupId,
+	}
+	err = u.repo.CreateUser(&createUser)
+	if err != nil {
+		return entity.UserResponse{}, "", err
+	}
+	userResponse, err := u.GetUser(userCreate.ID)
+	if err != nil {
+		return entity.UserResponse{}, "", err
 	}
 
-	return u.repo.CreateUser(&user)
+	// JWTトークンの生成
+	tokenString, err := u.createLoginToken(userResponse.ID)
+	if err != nil {
+		return entity.UserResponse{}, "", err
+	}
+
+	return userResponse, tokenString, nil
 }
 func (u *userUsecaseImpl) UpdateUser(user entity.User) error {
 	preUser := entity.User{}
@@ -204,13 +257,13 @@ func (u *userUsecaseImpl) convertToUserResponses(users []entity.User) []entity.U
 	return userResponses
 }
 
-func (u *userUsecaseImpl) checkToken(tokenString string) (jwt.MapClaims, error) {
+func (u *userUsecaseImpl) checkToken(tokenString string, key []byte) (jwt.MapClaims, error) {
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, ErrInvalidCredentials
 		}
-		return u.config.LoginJWTKey, nil
+		return key, nil
 	})
 
 	if err != nil {
@@ -221,6 +274,44 @@ func (u *userUsecaseImpl) checkToken(tokenString string) (jwt.MapClaims, error) 
 	if ok && token.Valid {
 		return claims, nil
 	} else {
-		return nil, nil
+		return nil, ErrInvalidCredentials
 	}
+}
+
+func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) error {
+
+	//更新前のユーザー取得
+	preUser := entity.User{}
+	err := u.repo.GetUser(userId, &preUser)
+	if err != nil {
+		return err
+	}
+	if inviteGroupID == preUser.GroupID {
+		//変更後のグループにすでに属している場合はエラー
+		return customerrors.NewCustomError(customerrors.ErrGroupUpdateFailed)
+	}
+	//グループ変更
+	preUser.GroupID = inviteGroupID
+
+	//ユーザー情報更新
+	err = u.repo.UpdateUser(&preUser)
+	if err != nil {
+		return err
+	}
+
+	//グループ変更後に元いたグループにまだユーザーがいるか確認
+	users := []entity.User{}
+	err = u.repo.GetAllUser(&users)
+	if err != nil {
+		return err
+	}
+	if len(users) == 0 {
+		//いなければグループ削除
+		err = u.groupRepo.DeleteGroup(inviteGroupID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

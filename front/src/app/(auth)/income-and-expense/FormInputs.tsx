@@ -1,4 +1,3 @@
-import { incomeCategory, expenseCategory } from "@/app/util/util";
 import React from "react";
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import AmountForm from "./AmountForm";
@@ -6,6 +5,7 @@ import CategoryForm from "./CategoryForm";
 import DateForm from "./DateForm";
 import MemoForm from "./MemoForm";
 import { IncomeAndExpenseSchema } from "./IncomeAndExpenseSchema";
+import { EXPENSE_CATEGORY, INCOME_CATEGORY } from "@/app/util/constants";
 
 export default function FormInputs({
   errors,
@@ -27,7 +27,7 @@ export default function FormInputs({
         errors={errors}
         register={register}
         control={control}
-        options={isMinus ? expenseCategory : incomeCategory}
+        options={isMinus ? EXPENSE_CATEGORY : INCOME_CATEGORY}
       />
       <AmountForm errors={errors} register={register} />
       <MemoForm errors={errors} register={register} />

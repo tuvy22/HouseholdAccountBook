@@ -1,19 +1,40 @@
 import {
   IncomeAndExpense,
-  User,
-  UserNamePut,
+  UserName,
   UserCreate,
   InviteUrl,
 } from "@/app/util/types";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
-const HTTP_OK = 200;
-const HTTP_STATUS_UNAUTHORIZED = 401;
 const GET_NG_MESSAGE = "データの取得に失敗しました。";
 const POST_NG_MESSAGE = "データの送信に失敗しました。";
 const PUT_NG_MESSAGE = "データの更新に失敗しました。";
 const DELETE_NG_MESSAGE = "データの削除に失敗しました。";
-const INVALID_CREDENTIALS = "IDまたはパスワードが間違っています。";
+
+function handleApiError(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      const code = error.response.data.code;
+      switch (code) {
+        case "already_in_group":
+          return "すでに所属するグループに加入することはできません。";
+        case "invalid_credentials":
+          return "認証に失敗しました。";
+        case "invalid_login":
+          return "IDまたはパスワードが間違っています。";
+        case "internal_server_error":
+          return "サーバーでエラーが発生しました。";
+        default:
+          return "予期せぬエラーが発生しました。";
+      }
+    } else if (error.request) {
+      return "サーバーに接続できませんでした。";
+    } else {
+      return "送信中にエラーが発生しました。";
+    }
+  }
+  return "送信中にエラーが発生しました。";
+}
 
 export const auth = async (userId: string, password: string) => {
   try {
@@ -23,15 +44,7 @@ export const auth = async (userId: string, password: string) => {
     });
     return response.data;
   } catch (error) {
-    if (
-      axios.isAxiosError(error) &&
-      error.response &&
-      error.response.status === HTTP_STATUS_UNAUTHORIZED
-    ) {
-      throw new Error(INVALID_CREDENTIALS);
-    } else {
-      throw new Error(POST_NG_MESSAGE);
-    }
+    throw new Error(handleApiError(error));
   }
 };
 
@@ -127,7 +140,9 @@ export const putIncomeAndExpense = async (
 export const deleteIncomeAndExpense = async (id: number) => {
   try {
     await axios.delete(`/api/private/income-and-expense/${id}`);
-  } catch (error) {}
+  } catch (error) {
+    throw new Error(DELETE_NG_MESSAGE);
+  }
 };
 
 export const postUser = async (user: UserCreate) => {
@@ -137,12 +152,13 @@ export const postUser = async (user: UserCreate) => {
         "Content-Type": "application/json",
       },
     });
+    return response.data;
   } catch (error) {
-    throw new Error(DELETE_NG_MESSAGE);
+    throw new Error(PUT_NG_MESSAGE);
   }
 };
 
-export const updateUserName = async (userNamePut: UserNamePut) => {
+export const updateUserName = async (userNamePut: UserName) => {
   try {
     const response = await axios.put("/api/private/user/name", userNamePut, {
       headers: {
@@ -163,5 +179,20 @@ export const getUserInviteUrl = async () => {
     return inviteUrl.url;
   } catch (error) {
     throw new Error(GET_NG_MESSAGE);
+  }
+};
+export const putInviteToken = async (token: string) => {
+  try {
+    const response = await axios.post(
+      "/api/public/set-invite-cookie",
+      { token: token },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    throw new Error(POST_NG_MESSAGE);
   }
 };

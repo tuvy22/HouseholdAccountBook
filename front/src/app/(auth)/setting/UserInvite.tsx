@@ -7,23 +7,15 @@ import {
   Typography,
 } from "@/app/materialTailwindExports";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import {
-  UserUpdateSchema,
-  userUpdateSchema,
-} from "@/app/components/UserSchema";
-import NameForm from "@/app/components/NameForm";
-import { getUserInviteUrl, updateUserName } from "@/app/util/api";
+
+import { getUserInviteUrl } from "@/app/util/api";
 import { useUser } from "@/app/context/UserProvider";
-import { User, UserNamePut } from "@/app/util/types";
 import { useAlert } from "@/app/context/AlertProvider";
-import { AlertValue } from "@/app/components/AlertCustoms";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 export function UserInvite() {
-  const [error, setError] = useState("");
+  const [error] = useState("");
   const [url, setUrl] = useState("");
   const user = useUser();
   const alert = useAlert();

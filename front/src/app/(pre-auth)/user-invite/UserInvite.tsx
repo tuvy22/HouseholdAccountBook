@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
   Card,
@@ -9,15 +9,21 @@ import {
   Button,
 } from "../../materialTailwindExports";
 import Link from "next/link";
-import { useEffect } from "react";
+import { putInviteToken } from "@/app/util/api";
 
 const UserInvite = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const router = useRouter();
 
-  useEffect(() => {
-    // fetchUserInviteUrl();
-  }, []);
+  const onSubmitLogin = async () => {
+    putInviteToken(token ? token : "");
+    router.push("/login");
+  };
+  const onSubmitRegister = async () => {
+    putInviteToken(token ? token : "");
+    router.push("/user-register");
+  };
 
   return (
     <>
@@ -28,29 +34,44 @@ const UserInvite = () => {
         <Typography color="gray" className="mt-1 font-normal">
           以下からログインまたは、ユーザー作成をお願いします。
         </Typography>
-        <CardBody className="flex gap-3">
-          <Link href="/login">
+        <CardBody className="flex flex-col gap-10">
+          <div className="flex gap-3">
             <Button
+              onClick={() => onSubmitLogin()}
               type="submit"
               variant="outlined"
               color="green"
               size="lg"
-              className="rounded-full"
+              className="rounded-full flex-1"
             >
               アカウントをお持ちの方はこちら
             </Button>
-          </Link>
-          <Link href="/user-register">
             <Button
+              onClick={() => onSubmitRegister()}
               type="submit"
               variant="outlined"
               color="green"
               size="lg"
-              className="rounded-full"
+              className="rounded-full flex-1"
             >
-              アカウントをお持ちではない方はこちら
+              アカウントをお持ちではない方は
+              <br />
+              こちら
             </Button>
-          </Link>
+          </div>
+          <div>
+            <Link href="/" className="col-span-2 flex justify-end">
+              <Button
+                type="submit"
+                variant="outlined"
+                color="gray"
+                size="lg"
+                className="rounded-full"
+              >
+                グループへは加入しない
+              </Button>
+            </Link>
+          </div>
         </CardBody>
       </Card>
     </>

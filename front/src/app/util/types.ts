@@ -29,9 +29,13 @@ export interface UserCreate {
   password: string;
   name: string;
 }
-export interface UserNamePut {
+export interface UserName {
   name: string;
 }
 export interface InviteUrl {
   url: string;
+}
+
+export interface InviteToken {
+  token: string;
 }

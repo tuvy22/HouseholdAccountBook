@@ -33,3 +33,6 @@ type Credentials struct {
 type InviteUrl struct {
 	Url string `json:"url"`
 }
+type InviteToken struct {
+	Token string `json:"token"`
+}

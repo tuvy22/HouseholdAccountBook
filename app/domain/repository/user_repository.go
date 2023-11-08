@@ -7,6 +7,7 @@ import (
 
 type UserRepository interface {
 	GetAllUser(users *[]entity.User) error
+	GetAllUserByGroupId(groupId uint, users []*entity.User) error
 	GetUser(id string, user *entity.User) error
 	CreateUser(user *entity.User) error
 	UpdateUser(user *entity.User) error
@@ -27,6 +28,14 @@ func (r *userRepositoryImpl) GetAllUser(users *[]entity.User) error {
 		return err
 	}
 	return nil
+}
+func (r *userRepositoryImpl) GetAllUserByGroupId(groupId uint, users []*entity.User) error {
+
+	if err := r.DB.Where("group_id = ?", groupId).Order("id").Find(&users).Error; err != nil {
+		return err
+	}
+	return nil
+
 }
 
 func (r *userRepositoryImpl) GetUser(id string, user *entity.User) error {

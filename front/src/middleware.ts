@@ -1,11 +1,11 @@
-import axios from "axios";
-import { NextMiddleware, NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { LOGIN_COOKIE_TOKEN } from "./app/util/constants";
 
 export async function middleware(request: NextRequest) {
   if (
     request.nextUrl.pathname.match("/((?!login|user-register|user-invite).*)")
   ) {
-    const jwtToken = request.cookies.get("jwt");
+    const jwtToken = request.cookies.get(LOGIN_COOKIE_TOKEN);
 
     if (!jwtToken) {
       //JWTが存在しない場合、ログインページに

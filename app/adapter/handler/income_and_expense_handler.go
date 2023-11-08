@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/ten313/HouseholdAccountBook/app/adapter/handler/context_utils"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -33,7 +32,7 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
 
 	incomeAndExpenses, err := h.usecase.GetAllIncomeAndExpense()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		errorResponder(c, err)
 		return
 	}
 
@@ -46,7 +45,7 @@ func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	userIdStr, err := context_utils.GetLoginUserID(c)
+	userIdStr, err := GetLoginUserID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -68,7 +67,7 @@ func (h *incomeAndExpenseHandlerImpl) UpdateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	userIdStr, err := context_utils.GetLoginUserID(c)
+	userIdStr, err := GetLoginUserID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return

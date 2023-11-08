@@ -56,18 +56,6 @@ const Login = () => {
   return (
     <>
       <Link href="/user-register" className="fixed top-4 right-4">
-        {/* <Button
-          type="submit"
-          variant="outlined"
-          color="green"
-          size="lg"
-          className="group relative rounded-full flex items-center overflow-hidden pr-[72px]"
-        >
-          アカウントをお持ちではない方はこちら
-          <span className="absolute right-0 grid h-full w-12 place-items-center bg-green-500">
-            <AssignmentIndIcon className="text-white" />
-          </span>
-        </Button> */}
         <Button
           type="submit"
           variant="outlined"

@@ -5,12 +5,14 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
 
 type MiddlewareHandler interface {
 	LocalhostOnly() gin.HandlerFunc
-	CheckToken() gin.HandlerFunc
+	CheckLoginToken() gin.HandlerFunc
+	CheckInviteToken() gin.HandlerFunc
 }
 
 type middlewareHandlerImpl struct {
@@ -38,20 +40,45 @@ func (h *middlewareHandlerImpl) LocalhostOnly() gin.HandlerFunc {
 	}
 }
 
-func (h *middlewareHandlerImpl) CheckToken() gin.HandlerFunc {
+func (h *middlewareHandlerImpl) CheckLoginToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString, err := c.Cookie("jwt")
+		tokenString, err := c.Cookie(LonginCookieToken)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token not found"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
-		userID, err := h.usecase.CheckLoginToken(tokenString)
+		userId, err := h.usecase.CheckLoginToken(tokenString)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token not found"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.Set("user_id", userID)
+		c.Set("user_id", userId)
+
+		c.Next()
+	}
+}
+func (h *middlewareHandlerImpl) CheckInviteToken() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString, err := c.Cookie(InviteCookieToken)
+		if err != nil {
+			if err == http.ErrNoCookie {
+				//グループ招待時以外は存在しないため、エラーではない。
+				c.Set("group_id", entity.GroupIDNone)
+				c.Next()
+			} else {
+				// 他のエラーの場合は、エラーレスポンスを返す
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			}
+			return
+		}
+		groupId, err := h.usecase.CheckInviteToken(tokenString)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.Set("group_id", groupId)
 
 		c.Next()
 	}

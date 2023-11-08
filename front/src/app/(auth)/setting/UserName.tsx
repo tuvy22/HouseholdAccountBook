@@ -17,7 +17,7 @@ import {
 import NameForm from "@/app/components/NameForm";
 import { updateUserName } from "@/app/util/api";
 import { useUser } from "@/app/context/UserProvider";
-import { User, UserNamePut } from "@/app/util/types";
+import { User, UserName } from "@/app/util/types";
 import { useAlert } from "@/app/context/AlertProvider";
 import { AlertValue } from "@/app/components/AlertCustoms";
 
@@ -37,7 +37,7 @@ export function UserName() {
     },
   });
   const onSubmit = async (data: UserUpdateSchema) => {
-    const userNamePut: UserNamePut = {
+    const userNamePut: UserName = {
       name: data.name,
     };
     try {
