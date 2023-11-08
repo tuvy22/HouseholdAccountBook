@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/ten313/HouseholdAccountBook/app/adapter/handler"
+	"github.com/ten313/HouseholdAccountBook/app/handler"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
 )
 

@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/gin-contrib/cors"
-	"github.com/ten313/HouseholdAccountBook/app/adapter/handler"
 	"github.com/ten313/HouseholdAccountBook/app/domain/password"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
+	"github.com/ten313/HouseholdAccountBook/app/handler"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/db"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/router"
