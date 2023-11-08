@@ -5,36 +5,13 @@ import {
   InviteUrl,
 } from "@/app/util/types";
 import axios, { AxiosError } from "axios";
-
-const GET_NG_MESSAGE = "データの取得に失敗しました。";
-const POST_NG_MESSAGE = "データの送信に失敗しました。";
-const PUT_NG_MESSAGE = "データの更新に失敗しました。";
-const DELETE_NG_MESSAGE = "データの削除に失敗しました。";
-
-function handleApiError(error: unknown): string {
-  if (axios.isAxiosError(error)) {
-    if (error.response) {
-      const code = error.response.data.code;
-      switch (code) {
-        case "already_in_group":
-          return "すでに所属するグループに加入することはできません。";
-        case "invalid_credentials":
-          return "認証に失敗しました。";
-        case "invalid_login":
-          return "IDまたはパスワードが間違っています。";
-        case "internal_server_error":
-          return "サーバーでエラーが発生しました。";
-        default:
-          return "予期せぬエラーが発生しました。";
-      }
-    } else if (error.request) {
-      return "サーバーに接続できませんでした。";
-    } else {
-      return "送信中にエラーが発生しました。";
-    }
-  }
-  return "送信中にエラーが発生しました。";
-}
+import {
+  DELETE_NG_MESSAGE,
+  GET_NG_MESSAGE,
+  POST_NG_MESSAGE,
+  PUT_NG_MESSAGE,
+  apiHandleError,
+} from "./apiHandleError";
 
 export const auth = async (userId: string, password: string) => {
   try {
@@ -44,42 +21,10 @@ export const auth = async (userId: string, password: string) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(handleApiError(error));
+    throw new Error(apiHandleError(error));
   }
 };
 
-export const getIncomeAndExpense = async () => {
-  try {
-    const response = await axios.get(
-      "http://localhost:8080/api/localhost/income-and-expense/all",
-      {
-        headers: {
-          cache: "no-store",
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
-  }
-};
-export const getIncomeAndExpenseMonthlyTotal = async () => {
-  try {
-    const response = await axios.get(
-      "http://localhost:8080/api/localhost/income-and-expense/monthly-total",
-      {
-        headers: {
-          cache: "no-store",
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
-  }
-};
 export const getIncomeAndExpenseMonthlyCategory = async (
   yearMonth: string,
   isMinus: boolean

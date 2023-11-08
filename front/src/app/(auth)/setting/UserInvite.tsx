@@ -9,7 +9,7 @@ import {
 
 import { useEffect, useState } from "react";
 
-import { getUserInviteUrl } from "@/app/util/api";
+import { getUserInviteUrl } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
 import { useAlert } from "@/app/context/AlertProvider";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";

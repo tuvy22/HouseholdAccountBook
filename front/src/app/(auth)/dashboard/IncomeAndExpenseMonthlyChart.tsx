@@ -15,9 +15,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { CategoricalChartState } from "recharts/types/chart/generateCategoricalChart";
-import { IconButton, Typography } from "@/app/materialTailwindExports";
-import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { Typography } from "@/app/materialTailwindExports";
 import { useEffect, useState } from "react";
 import {
   getNextYearMonth,

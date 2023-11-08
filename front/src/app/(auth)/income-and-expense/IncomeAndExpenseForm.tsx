@@ -8,7 +8,7 @@ import { IncomeAndExpenseSchema } from "./IncomeAndExpenseSchema";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
 import { useState } from "react";
-import { postIncomeAndExpense } from "@/app/util/api";
+import { postIncomeAndExpense } from "@/app/util/apiClient";
 import { IncomeAndExpense } from "@/app/util/types";
 import { useAlert } from "@/app/context/AlertProvider";
 import { Spinner } from "@/app/materialTailwindExports";

@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserCreate } from "../../util/types";
 import { useRouter } from "next/navigation";
-import { deleteInviteToken, postUser } from "../../util/api";
+import { deleteInviteToken, postUser } from "../../util/apiClient";
 import { useState } from "react";
 import { useUser } from "../../context/UserProvider";
 import NameForm from "../../components/NameForm";

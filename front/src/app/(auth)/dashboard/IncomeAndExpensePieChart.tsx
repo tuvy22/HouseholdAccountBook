@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import { scaleOrdinal } from "d3-scale";
 import { useEffect, useState } from "react";
-import { getIncomeAndExpenseMonthlyCategory } from "@/app/util/api";
+import { getIncomeAndExpenseMonthlyCategory } from "@/app/util/apiClient";
 import { Typography } from "@/app/materialTailwindExports";
 
 export const IncomeAndExpensePieChart = ({

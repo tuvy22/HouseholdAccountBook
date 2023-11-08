@@ -3,7 +3,7 @@
 import { IncomeAndExpenseMonthlyChart } from "./IncomeAndExpenseMonthlyChart";
 import { IncomeAndExpensePieChart } from "./IncomeAndExpensePieChart";
 import { CategoricalChartState } from "recharts/types/chart/generateCategoricalChart";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { toYearMonthString } from "@/app/util/util";
 import { IncomeAndExpenseMonthlyTotal } from "@/app/util/types";
 const Dashboard = ({

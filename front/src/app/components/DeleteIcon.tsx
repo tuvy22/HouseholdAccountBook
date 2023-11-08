@@ -2,7 +2,7 @@
 
 import { IncomeAndExpense } from "@/app/util/types";
 import React, { useState } from "react";
-import { deleteIncomeAndExpense } from "@/app/util/api";
+import { deleteIncomeAndExpense } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
 import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "@/app/components/ConfirmDialog";

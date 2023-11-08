@@ -1,5 +1,4 @@
-import { getIncomeAndExpenseMonthlyTotal } from "@/app/util/api";
-
+import { getIncomeAndExpenseMonthlyTotal } from "@/app/util/apiServer";
 import Dashboard from "./Dashboard";
 import { Metadata } from "next";
 export const metadata: Metadata = {

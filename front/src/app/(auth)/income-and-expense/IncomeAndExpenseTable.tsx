@@ -5,7 +5,7 @@ import React from "react";
 import { Card, Typography } from "@/app/materialTailwindExports";
 import EditIcon from "../../components/EditIcon";
 import DeleteIcon from "../../components/DeleteIcon";
-import { getIncomeAndExpense } from "@/app/util/api";
+import { getIncomeAndExpense } from "@/app/util/apiServer";
 
 const TABLE_HEAD = ["登録者", "区分", "金額", "メモ", ""];
 

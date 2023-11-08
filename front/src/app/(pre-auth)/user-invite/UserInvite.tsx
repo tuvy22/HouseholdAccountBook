@@ -9,7 +9,7 @@ import {
   Button,
 } from "../../materialTailwindExports";
 import Link from "next/link";
-import { putInviteToken } from "@/app/util/api";
+import { putInviteToken } from "@/app/util/apiClient";
 
 const UserInvite = () => {
   const searchParams = useSearchParams();

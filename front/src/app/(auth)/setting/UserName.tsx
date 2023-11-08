@@ -15,7 +15,7 @@ import {
   userUpdateSchema,
 } from "@/app/components/UserSchema";
 import NameForm from "@/app/components/NameForm";
-import { updateUserName } from "@/app/util/api";
+import { updateUserName } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
 import { User, UserName } from "@/app/util/types";
 import { useAlert } from "@/app/context/AlertProvider";
