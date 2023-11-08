@@ -4,7 +4,7 @@ import { Card, Spinner, Typography } from "@/app/materialTailwindExports";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { DeleteConfirmDialog } from "@/app/components/DeleteConfirmDialog";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useUser } from "@/app/context/UserProvider";
@@ -165,10 +165,10 @@ export const UserTable = ({ fetchData }: { fetchData: User[] }) => {
         />
       )}
       {deletedUser && (
-        <DeleteConfirmDialog
+        <ConfirmDialog
           open={openDeleteDialog}
           handleOpen={() => setOpenDeleteDialog(!openDeleteDialog)}
-          handleDelete={handleDelete}
+          handleOk={handleDelete}
         />
       )}
       {isLoading && (

@@ -21,6 +21,7 @@ type UserHandler interface {
 	UpdateUserName(c *gin.Context)
 	GetUserInviteUrl(c *gin.Context)
 	SetInviteCookie(c *gin.Context)
+	DeleteInviteCookie(c *gin.Context)
 }
 
 type userHandlerImpl struct {
@@ -60,7 +61,7 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 			return
 		}
 
-		h.deleteInviteCookieToken(c)
+		h.deleteInviteCookie(c)
 	}
 
 	c.JSON(http.StatusOK, user)
@@ -124,7 +125,7 @@ func (h *userHandlerImpl) CreateUser(c *gin.Context) {
 
 	//招待された場合の処理
 	if inviteGroupID != entity.GroupIDNone {
-		h.deleteInviteCookieToken(c)
+		h.deleteInviteCookie(c)
 	}
 	c.JSON(http.StatusOK, user)
 }
@@ -245,7 +246,12 @@ func (h *userHandlerImpl) bindInviteToken(c *gin.Context) (entity.InviteToken, e
 	}
 	return inviteToken, nil
 }
-func (h *userHandlerImpl) deleteInviteCookieToken(c *gin.Context) {
+func (h *userHandlerImpl) DeleteInviteCookie(c *gin.Context) {
+	h.deleteInviteCookie(c)
+	c.Status(http.StatusOK)
+}
+
+func (h *userHandlerImpl) deleteInviteCookie(c *gin.Context) {
 
 	// トークン(招待用)を持つクッキーの有効期限を過去の日時に設定して削除
 	c.SetSameSite(http.SameSiteNoneMode)

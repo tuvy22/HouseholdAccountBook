@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserCreate } from "../../util/types";
 import { useRouter } from "next/navigation";
-import { postUser } from "../../util/api";
+import { deleteInviteToken, postUser } from "../../util/api";
 import { useState } from "react";
 import { useUser } from "../../context/UserProvider";
 import NameForm from "../../components/NameForm";
@@ -20,8 +20,10 @@ import {
   UserCreateSchema,
   userCreateSchema,
 } from "../../components/UserSchema";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 
-export function Register() {
+export const Register = ({ isInvite }: { isInvite: boolean }) => {
+  const [openDialog, setOpenDialog] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
   const { setUser } = useUser();
@@ -29,16 +31,34 @@ export function Register() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<UserCreateSchema>({
     resolver: zodResolver(userCreateSchema),
   });
 
-  const onSubmit = async (data: UserCreateSchema) => {
+  const handleOk = () => {
+    submit(getValues().id, getValues().password, getValues().name);
+  };
+
+  const handleCancel = async () => {
+    await deleteInviteToken();
+    submit(getValues().id, getValues().password, getValues().name);
+  };
+
+  const onSubmit = (data: UserCreateSchema) => {
+    if (isInvite) {
+      setOpenDialog(true);
+      return;
+    }
+    submit(data.id, data.password, data.name);
+  };
+
+  const submit = async (id: string, password: string, name: string) => {
     const user: UserCreate = {
-      id: data.id,
-      password: data.password,
-      name: data.name,
+      id: id,
+      password: password,
+      name: name,
     };
 
     try {
@@ -50,6 +70,7 @@ export function Register() {
     }
     router.push("/income-and-expense");
   };
+
   return (
     <>
       <Link href="/login" className="fixed top-4 right-4">
@@ -144,6 +165,17 @@ export function Register() {
           )}
         </CardBody>
       </Card>
+      <ConfirmDialog
+        open={openDialog}
+        handleOpen={() => setOpenDialog(!openDialog)}
+        handleCancel={handleCancel}
+        handleOk={handleOk}
+        title="グループへの加入"
+        message="招待されたグループに加入してよろしいですか？"
+        cancelBtnName="加入しない"
+        okBtnName="加入する"
+        isOkBtnFocus={true}
+      />
     </>
   );
-}
+};

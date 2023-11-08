@@ -34,44 +34,29 @@ const UserInvite = () => {
         <Typography color="gray" className="mt-1 font-normal">
           以下からログインまたは、ユーザー作成をお願いします。
         </Typography>
-        <CardBody className="flex flex-col gap-10">
-          <div className="flex gap-3">
-            <Button
-              onClick={() => onSubmitLogin()}
-              type="submit"
-              variant="outlined"
-              color="green"
-              size="lg"
-              className="rounded-full flex-1"
-            >
-              アカウントをお持ちの方はこちら
-            </Button>
-            <Button
-              onClick={() => onSubmitRegister()}
-              type="submit"
-              variant="outlined"
-              color="green"
-              size="lg"
-              className="rounded-full flex-1"
-            >
-              アカウントをお持ちではない方は
-              <br />
-              こちら
-            </Button>
-          </div>
-          <div>
-            <Link href="/" className="col-span-2 flex justify-end">
-              <Button
-                type="submit"
-                variant="outlined"
-                color="gray"
-                size="lg"
-                className="rounded-full"
-              >
-                グループへは加入しない
-              </Button>
-            </Link>
-          </div>
+        <CardBody className="flex  gap-3">
+          <Button
+            onClick={() => onSubmitLogin()}
+            type="submit"
+            variant="outlined"
+            color="green"
+            size="lg"
+            className="rounded-full flex-1"
+          >
+            アカウントをお持ちの方はこちら
+          </Button>
+          <Button
+            onClick={() => onSubmitRegister()}
+            type="submit"
+            variant="outlined"
+            color="green"
+            size="lg"
+            className="rounded-full flex-1"
+          >
+            アカウントをお持ちではない方は
+            <br />
+            こちら
+          </Button>
         </CardBody>
       </Card>
     </>

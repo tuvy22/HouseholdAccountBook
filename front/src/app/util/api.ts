@@ -184,7 +184,7 @@ export const getUserInviteUrl = async () => {
 export const putInviteToken = async (token: string) => {
   try {
     const response = await axios.post(
-      "/api/public/set-invite-cookie",
+      "/api/public/invite-cookie",
       { token: token },
       {
         headers: {
@@ -194,5 +194,12 @@ export const putInviteToken = async (token: string) => {
     );
   } catch (error) {
     throw new Error(POST_NG_MESSAGE);
+  }
+};
+export const deleteInviteToken = async () => {
+  try {
+    await axios.delete("/api/public/invite-cookie");
+  } catch (error) {
+    throw new Error(DELETE_NG_MESSAGE);
   }
 };

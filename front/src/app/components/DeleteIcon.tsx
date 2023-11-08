@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { deleteIncomeAndExpense } from "@/app/util/api";
 import { useUser } from "@/app/context/UserProvider";
 import { useRouter } from "next/navigation";
-import { DeleteConfirmDialog } from "@/app/components/DeleteConfirmDialog";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import Delete from "@mui/icons-material/Delete";
 import { Spinner } from "@/app/materialTailwindExports";
 
@@ -50,10 +50,14 @@ export default function DeleteIcon({
       )}
 
       {deletedIncomeAndExpense && (
-        <DeleteConfirmDialog
+        <ConfirmDialog
           open={openDeleteDialog}
           handleOpen={() => setOpenDeleteDialog(!openDeleteDialog)}
-          handleDelete={handleDelete}
+          handleOk={handleDelete}
+          title="削除の確認"
+          message="本当にこのデータを削除してよろしいですか？"
+          cancelBtnName="キャンセル"
+          okBtnName="削除"
         />
       )}
     </>

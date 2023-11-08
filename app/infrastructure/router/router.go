@@ -24,7 +24,8 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	public.POST("/auth", userHandler.Authenticate)
 	public.POST("/user", userHandler.CreateUser)
 	publicSetInviteCookie := r.Group("/api/public")
-	publicSetInviteCookie.POST("/set-invite-cookie", userHandler.SetInviteCookie)
+	publicSetInviteCookie.POST("/invite-cookie", userHandler.SetInviteCookie)
+	publicSetInviteCookie.DELETE("/invite-cookie", userHandler.DeleteInviteCookie)
 
 	localhost := r.Group("/api/localhost")
 	localhost.Use(middlewareHandler.LocalhostOnly())

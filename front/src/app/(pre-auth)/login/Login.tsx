@@ -15,16 +15,17 @@ import LockIcon from "@mui/icons-material/Lock";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { auth } from "../../util/api";
+import { auth, deleteInviteToken } from "../../util/api";
 import Link from "next/link";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 
 interface IFormInput {
   id: string;
   password: string;
 }
 
-const Login = () => {
+const Login = ({ isInvite }: { isInvite: boolean }) => {
+  const [openDialog, setOpenDialog] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -34,13 +35,27 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<IFormInput>();
 
-  const onSubmit = async (data: IFormInput) => {
-    let userId: string = data.id;
-    let password: string = data.password;
+  const handleOk = () => {
+    submit(getValues().id, getValues().password);
+  };
 
+  const handleCancel = async () => {
+    await deleteInviteToken();
+    submit(getValues().id, getValues().password);
+  };
+
+  const onSubmit = (data: IFormInput) => {
+    if (isInvite) {
+      setOpenDialog(true);
+      return;
+    }
+    submit(data.id, data.password);
+  };
+  const submit = async (userId: string, password: string) => {
     setLoading(true);
     try {
       setUser(await auth(userId, password));
@@ -120,6 +135,18 @@ const Login = () => {
           )}
         </CardBody>
       </Card>
+
+      <ConfirmDialog
+        open={openDialog}
+        handleOpen={() => setOpenDialog(!openDialog)}
+        handleCancel={handleCancel}
+        handleOk={handleOk}
+        title="グループへの加入"
+        message="招待されたグループに加入してよろしいですか？"
+        cancelBtnName="加入しないでログイン"
+        okBtnName="加入してログイン"
+        isOkBtnFocus={true}
+      />
     </>
   );
 };
