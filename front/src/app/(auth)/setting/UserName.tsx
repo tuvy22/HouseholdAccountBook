@@ -63,31 +63,23 @@ export function UserName() {
     alert.setAlertValues([...alert.alertValues, newAlertValue]);
   };
   return (
-    <Card className="p-10 flex items-center justify-center">
-      <Typography variant="h4" color="blue-gray">
-        ニックネーム変更
-      </Typography>
-      <CardBody>
-        <form
-          className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
-          onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
-        >
-          <div className="mb-1 flex flex-col gap-6">
-            <NameForm errors={errors} updateRegister={register} />
-          </div>
-          <Button
-            type="submit"
-            variant="filled"
-            color="green"
-            size="lg"
-            className="mt-6"
-            fullWidth
-          >
-            更新
-          </Button>
-        </form>
-        {error && <div className="text-red-500 text-center mt-4">{error}</div>}
-      </CardBody>
-    </Card>
+    <form
+      className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
+      onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
+    >
+      <div className="mb-1 flex flex-col gap-6">
+        <NameForm errors={errors} updateRegister={register} />
+      </div>
+      <Button
+        type="submit"
+        variant="filled"
+        color="green"
+        size="lg"
+        className="mt-6"
+        fullWidth
+      >
+        更新
+      </Button>
+    </form>
   );
 }

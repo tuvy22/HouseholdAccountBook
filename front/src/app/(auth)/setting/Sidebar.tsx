@@ -139,12 +139,6 @@ export function Sidebar({
                 <ListItemPrefix>
                   <KeyboardArrowRightIcon strokeWidth={3} className="h-3 w-5" />
                 </ListItemPrefix>
-                グループへの加入
-              </ListItem>
-              <ListItem>
-                <ListItemPrefix>
-                  <KeyboardArrowRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
                 ユーザーの一覧
               </ListItem>
             </List>

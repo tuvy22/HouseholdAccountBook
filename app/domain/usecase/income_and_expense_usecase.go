@@ -14,33 +14,40 @@ const (
 )
 
 type IncomeAndExpenseUsecase interface {
-	GetAllIncomeAndExpense() ([]entity.IncomeAndExpense, error)
+	GetGroupAllIncomeAndExpense(userID string) ([]entity.IncomeAndExpense, error)
 	CreateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	DeleteIncomeAndExpense(id uint) error
 
-	GetMonthlyTotal() ([]entity.IncomeAndExpenseMonthlyTotal, error)
-	GetMonthlyCategory(yearMonth string, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error)
+	GetMonthlyTotal(userID string) ([]entity.IncomeAndExpenseMonthlyTotal, error)
+	GetMonthlyCategory(yearMonth string, userID string, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error)
 }
 
 type incomeAndExpenseUsecaseImpl struct {
-	repo repository.IncomeAndExpenseRepository
+	repo     repository.IncomeAndExpenseRepository
+	userRepo repository.UserRepository
 }
 
-func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository) IncomeAndExpenseUsecase {
-	return &incomeAndExpenseUsecaseImpl{repo: repo}
+func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository, userRepo repository.UserRepository) IncomeAndExpenseUsecase {
+	return &incomeAndExpenseUsecaseImpl{repo: repo, userRepo: userRepo}
 }
 
-func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpense() ([]entity.IncomeAndExpense, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetGroupAllIncomeAndExpense(userID string) ([]entity.IncomeAndExpense, error) {
 	incomeAndExpenses := []entity.IncomeAndExpense{}
 
-	err := u.repo.GetAllIncomeAndExpense(&incomeAndExpenses)
+	userIDs, err := u.getGroupUserIDs(userID)
+	if err != nil {
+		return incomeAndExpenses, err
+	}
+
+	err = u.repo.GetAllIncomeAndExpense(&incomeAndExpenses, userIDs)
 	if err != nil {
 		return incomeAndExpenses, err
 	}
 
 	return incomeAndExpenses, nil
 }
+
 func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error {
 
 	err := u.validateUserID(incomeAndExpense, userId, ErrFailedCreate)
@@ -74,10 +81,14 @@ func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint) error {
 
 	return u.repo.DeleteIncomeAndExpense(id)
 }
-func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal() ([]entity.IncomeAndExpenseMonthlyTotal, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(userID string) ([]entity.IncomeAndExpenseMonthlyTotal, error) {
 	monthlyTotals := []entity.IncomeAndExpenseMonthlyTotal{}
+	userIDs, err := u.getGroupUserIDs(userID)
+	if err != nil {
+		return monthlyTotals, err
+	}
 
-	err := u.repo.GetMonthlyTotal(&monthlyTotals)
+	err = u.repo.GetMonthlyTotal(&monthlyTotals, userIDs)
 	if err != nil {
 		return monthlyTotals, err
 	}
@@ -96,10 +107,15 @@ func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal() ([]entity.IncomeAndExpen
 	return result, nil
 }
 
-func (u *incomeAndExpenseUsecaseImpl) GetMonthlyCategory(yearMonth string, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetMonthlyCategory(yearMonth string, userID string, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error) {
 	monthlyCategorys := []entity.IncomeAndExpenseMonthlyCategory{}
 
-	err := u.repo.GetMonthlyCategory(&monthlyCategorys, yearMonth, isMinus)
+	userIDs, err := u.getGroupUserIDs(userID)
+	if err != nil {
+		return monthlyCategorys, err
+	}
+
+	err = u.repo.GetMonthlyCategory(&monthlyCategorys, yearMonth, userIDs, isMinus)
 	if err != nil {
 		return monthlyCategorys, err
 	}
@@ -157,4 +173,22 @@ func (u *incomeAndExpenseUsecaseImpl) filterByYearMonth(incomes []entity.IncomeA
 		}
 	}
 	return result
+}
+func (u *incomeAndExpenseUsecaseImpl) getGroupUserIDs(userID string) ([]string, error) {
+	user := entity.User{}
+	err := u.userRepo.GetUser(userID, &user)
+	if err != nil {
+		return []string{}, err
+	}
+	users := []entity.User{}
+	err = u.userRepo.GetAllUserByGroupId(user.GroupID, &users)
+	if err != nil {
+		return []string{}, err
+	}
+
+	userIDs := make([]string, 0, len(users))
+	for _, user := range users {
+		userIDs = append(userIDs, user.ID)
+	}
+	return userIDs, nil
 }

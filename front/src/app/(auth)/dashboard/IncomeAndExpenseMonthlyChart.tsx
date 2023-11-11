@@ -118,33 +118,39 @@ export const IncomeAndExpenseMonthlyChart = ({
           />
         </div>
         <ResponsiveContainer height={250}>
-          <LineChart
-            data={data}
-            margin={{ top: 0, right: 10, left: 40, bottom: 10 }}
-            onClick={handlePointClick}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="yearMonth" dy={15} />
-            <YAxis tickFormatter={(value) => `${value}円`} dx={-10} />
+          {data.length > 0 ? (
+            <LineChart
+              data={data}
+              margin={{ top: 0, right: 10, left: 40, bottom: 10 }}
+              onClick={handlePointClick}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="yearMonth" dy={15} />
+              <YAxis tickFormatter={(value) => `${value}円`} dx={-10} />
 
-            <Tooltip />
-            <Legend
-              verticalAlign="top"
-              align="right"
-              wrapperStyle={{
-                marginTop: 0,
-                marginRight: -10,
-              }}
-            />
+              <Tooltip />
+              <Legend
+                verticalAlign="top"
+                align="right"
+                wrapperStyle={{
+                  marginTop: 0,
+                  marginRight: -10,
+                }}
+              />
 
-            <Line
-              type="linear"
-              dataKey="totalAmount"
-              stroke="#67b7dc"
-              activeDot={{ r: 8 }}
-              name="残高"
-            />
-          </LineChart>
+              <Line
+                type="linear"
+                dataKey="totalAmount"
+                stroke="#67b7dc"
+                activeDot={{ r: 8 }}
+                name="残高"
+              />
+            </LineChart>
+          ) : (
+            <div className="h-full flex flex-col justify-center items-center">
+              データは存在しません。
+            </div>
+          )}
         </ResponsiveContainer>
         <div className="hidden md:block">
           <PreOrNextIcon

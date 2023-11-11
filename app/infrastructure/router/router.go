@@ -28,7 +28,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	publicSetInviteCookie.DELETE("/invite-cookie", userHandler.DeleteInviteCookie)
 
 	localhost := r.Group("/api/localhost")
-	localhost.Use(middlewareHandler.LocalhostOnly())
+	localhost.Use(middlewareHandler.LocalhostOnly(), middlewareHandler.CheckLoginToken())
 	localhost.GET("/user/all", userHandler.GetAllUser)
 	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpense)
 	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)

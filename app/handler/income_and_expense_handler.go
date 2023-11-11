@@ -29,8 +29,12 @@ func NewIncomeAndExpenseHandler(u usecase.IncomeAndExpenseUsecase) IncomeAndExpe
 }
 
 func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
-
-	incomeAndExpenses, err := h.usecase.GetAllIncomeAndExpense()
+	userIdStr, err := GetLoginUserID(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+	incomeAndExpenses, err := h.usecase.GetGroupAllIncomeAndExpense(userIdStr)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -104,8 +108,13 @@ func (h *incomeAndExpenseHandlerImpl) DeleteIncomeAndExpense(c *gin.Context) {
 }
 
 func (h *incomeAndExpenseHandlerImpl) GetMonthlyTotal(c *gin.Context) {
+	userIdStr, err := GetLoginUserID(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
 
-	monthlyTotals, err := h.usecase.GetMonthlyTotal()
+	monthlyTotals, err := h.usecase.GetMonthlyTotal(userIdStr)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -122,7 +131,13 @@ func (h *incomeAndExpenseHandlerImpl) GetMonthlyCategory(c *gin.Context) {
 		return
 	}
 
-	monthlyCategorys, err := h.usecase.GetMonthlyCategory(yearMonth, isMinus)
+	userIdStr, err := GetLoginUserID(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	monthlyCategorys, err := h.usecase.GetMonthlyCategory(yearMonth, userIdStr, isMinus)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

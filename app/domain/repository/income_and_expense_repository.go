@@ -6,14 +6,14 @@ import (
 )
 
 type IncomeAndExpenseRepository interface {
-	GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense) error
+	GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string) error
 	GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error
 	CreateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
 	UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
 	DeleteIncomeAndExpense(id uint) error
 
-	GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal) error
-	GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, isMinus bool) error
+	GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal, registerUserIDs []string) error
+	GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, registerUserIDs []string, isMinus bool) error
 }
 
 type incomeAndExpenseRepositoryImpl struct {
@@ -24,9 +24,8 @@ func NewIncomeAndExpenseRepository(db *gorm.DB) IncomeAndExpenseRepository {
 	return &incomeAndExpenseRepositoryImpl{DB: db}
 }
 
-func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense) error {
-
-	if err := r.DB.Order("Date desc, id desc").Find(&incomeAndExpenses).Error; err != nil {
+func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string) error {
+	if err := r.DB.Where("register_user_id IN ?", registerUserIDs).Order("Date desc, id desc").Find(&incomeAndExpenses).Error; err != nil {
 		return err
 	}
 	return nil
@@ -62,29 +61,31 @@ func (r *incomeAndExpenseRepositoryImpl) DeleteIncomeAndExpense(id uint) error {
 }
 
 // 月ごとの合計
-func (r *incomeAndExpenseRepositoryImpl) GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal) error {
+func (r *incomeAndExpenseRepositoryImpl) GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal, registerUserIDs []string) error {
 	sql := `
-    SELECT 
-        t1.year_month,
-        SUM(t2.monthTotalAmount) AS 'total_amount'
-    FROM
-        (SELECT 
-            DATE_FORMAT(date, '%Y-%m') as 'year_month',
-            SUM(amount) as 'monthTotalAmount'
-        FROM income_and_expenses
-        GROUP BY DATE_FORMAT(date, '%Y-%m')) t1
-    JOIN 
-        (SELECT 
-            DATE_FORMAT(date, '%Y-%m') as 'year_month',
-            SUM(amount) as 'monthTotalAmount'
-        FROM income_and_expenses
-        GROUP BY DATE_FORMAT(date, '%Y-%m')) t2
-    ON t1.year_month >= t2.year_month
-    GROUP BY t1.year_month
-    ORDER BY t1.year_month;
+	SELECT 
+		t1.year_month,
+		SUM(t2.monthTotalAmount) AS 'total_amount'
+	FROM
+		(SELECT 
+			DATE_FORMAT(date, '%Y-%m') as 'year_month',
+			SUM(amount) as 'monthTotalAmount'
+		FROM income_and_expenses
+		WHERE register_user_id IN ?
+		GROUP BY DATE_FORMAT(date, '%Y-%m')) t1
+	JOIN 
+		(SELECT 
+			DATE_FORMAT(date, '%Y-%m') as 'year_month',
+			SUM(amount) as 'monthTotalAmount'
+		FROM income_and_expenses
+		WHERE register_user_id IN ?
+		GROUP BY DATE_FORMAT(date, '%Y-%m')) t2
+	ON t1.year_month >= t2.year_month
+	GROUP BY t1.year_month
+	ORDER BY t1.year_month;
 	`
 
-	if err := r.DB.Raw(sql).Scan(&monthlyTotals).Error; err != nil {
+	if err := r.DB.Raw(sql, registerUserIDs, registerUserIDs).Scan(&monthlyTotals).Error; err != nil {
 		return err
 	}
 
@@ -92,11 +93,11 @@ func (r *incomeAndExpenseRepositoryImpl) GetMonthlyTotal(monthlyTotals *[]entity
 }
 
 // 月ごとのカテゴリー別の集計
-func (r *incomeAndExpenseRepositoryImpl) GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, isMinus bool) error {
+func (r *incomeAndExpenseRepositoryImpl) GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, registerUserIDs []string, isMinus bool) error {
 
 	queryBuilder := r.DB.Table("income_and_expenses").
 		Select(`DATE_FORMAT(date, '%Y-%m') as 'year_month', category, ABS(SUM(amount)) as 'category_amount'`).
-		Where("DATE_FORMAT(date, '%Y-%m') = ?", yearMonth).
+		Where("DATE_FORMAT(date, '%Y-%m') = ? AND register_user_id IN ?", yearMonth, registerUserIDs).
 		Group("DATE_FORMAT(date, '%Y-%m'), category").
 		Order("category_amount desc, category desc")
 

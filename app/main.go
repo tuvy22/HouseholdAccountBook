@@ -24,13 +24,13 @@ func main() {
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 	config.AllowOrigins = strings.Split(allowedOrigins, ",")
 	config.AllowCredentials = true
-
-	incomeAndExpenseRepo := repository.NewIncomeAndExpenseRepository(db.GetDB())
-	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo)
-	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
-
 	userRepo := repository.NewUserRepository(db.GetDB())
 	groupRepo := repository.NewGroupRepository(db.GetDB())
+	incomeAndExpenseRepo := repository.NewIncomeAndExpenseRepository(db.GetDB())
+
+	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo, userRepo)
+	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
+
 	password := password.NewPassWord()
 	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, password, originalConfig)
 	userHandler := handler.NewUserHandler(userUsecase)
