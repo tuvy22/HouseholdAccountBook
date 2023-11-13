@@ -49,7 +49,7 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 		if creds.UserID == storedUserID && creds.Password == storedPassword {
 			hashPassword, err := u.password.HashPassword(creds.Password)
 			if err != nil {
-				return entity.UserResponse{}, entity.UserSession{}, ErrInvalidCredentials
+				return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrInvalidCredentials)
 			}
 			user = entity.User{
 				ID:       creds.UserID,
@@ -91,14 +91,14 @@ func (u *userUsecaseImpl) CheckInviteToken(tokenString string) (uint, error) {
 	}
 	groupIdInterface, ok := claims["group_id"]
 	if !ok {
-		return entity.GroupIDNone, ErrInternalServer
+		return entity.GroupIDNone, customerrors.NewCustomError(customerrors.ErrInternalServer)
 	}
 
 	if floatValue, ok := groupIdInterface.(float64); ok {
 		groupId := uint(floatValue)
 		return groupId, nil
 	} else {
-		return entity.GroupIDNone, ErrInternalServer
+		return entity.GroupIDNone, customerrors.NewCustomError(customerrors.ErrInternalServer)
 	}
 }
 
@@ -242,20 +242,20 @@ func (u *userUsecaseImpl) checkToken(tokenString string, key []byte) (jwt.MapCla
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, ErrInvalidCredentials
+			return nil, customerrors.NewCustomError(customerrors.ErrInvalidCredentials)
 		}
 		return key, nil
 	})
 
 	if err != nil {
-		return nil, ErrInvalidCredentials
+		return nil, customerrors.NewCustomError(customerrors.ErrInvalidCredentials)
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if ok && token.Valid {
 		return claims, nil
 	} else {
-		return nil, ErrInvalidCredentials
+		return nil, customerrors.NewCustomError(customerrors.ErrInvalidCredentials)
 	}
 }
 

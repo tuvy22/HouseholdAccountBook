@@ -7,6 +7,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/ten313/HouseholdAccountBook/app/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -103,20 +104,12 @@ func (h *userHandlerImpl) GetAllUser(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 func (h *userHandlerImpl) GetLoginUser(c *gin.Context) {
-	// セッションからデータを取得
-	session := sessions.Default(c)
-	user := session.Get("user")
-	userSession, ok := user.(entity.UserSession)
-	if !ok {
-		c.Status(http.StatusInternalServerError)
+	// ログインデータ取得
+	userResponse, err := h.getLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
 		return
 	}
-	userResponse := entity.UserResponse{
-		ID:      userSession.ID,
-		Name:    userSession.Name,
-		GroupID: userSession.GroupID,
-	}
-
 	c.JSON(http.StatusOK, userResponse)
 }
 
@@ -189,13 +182,14 @@ func (h *userHandlerImpl) UpdateUserName(c *gin.Context) {
 		return
 	}
 
-	id, err := GetLoginUserID(c)
+	// ログインデータ取得
+	userResponse, err := h.getLoginUser(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		errorResponder(c, err)
 		return
 	}
 
-	err = h.usecase.UpdateUserName(id, userName)
+	err = h.usecase.UpdateUserName(userResponse.ID, userName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -205,18 +199,14 @@ func (h *userHandlerImpl) UpdateUserName(c *gin.Context) {
 }
 
 func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
-	id, err := GetLoginUserID(c)
+	// ログインデータ取得
+	userResponse, err := h.getLoginUser(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-	user, err := h.usecase.GetUser(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		errorResponder(c, err)
 		return
 	}
 
-	inviteUrl, err := h.usecase.GetUserInviteUrl(user.GroupID)
+	inviteUrl, err := h.usecase.GetUserInviteUrl(userResponse.GroupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -280,4 +270,21 @@ func (h *userHandlerImpl) deleteInviteCookie(c *gin.Context) {
 	// トークン(招待用)を持つクッキーの有効期限を過去の日時に設定して削除
 	c.SetSameSite(http.SameSiteNoneMode)
 	c.SetCookie(InviteCookieToken, "", -1, "/", os.Getenv("ALLOWED_ORIGINS"), true, true)
+}
+
+func (h *userHandlerImpl) getLoginUser(c *gin.Context) (entity.UserResponse, error) {
+	// セッションからデータを取得
+	session := sessions.Default(c)
+	user := session.Get("user")
+	userSession, ok := user.(entity.UserSession)
+	if !ok {
+		return entity.UserResponse{}, customerrors.NewCustomError(customerrors.ErrInvalidCredentials)
+	}
+	userResponse := entity.UserResponse{
+		ID:      userSession.ID,
+		Name:    userSession.Name,
+		GroupID: userSession.GroupID,
+	}
+
+	return userResponse, nil
 }

@@ -2,7 +2,6 @@ import axios from "axios";
 import { GET_NG_MESSAGE } from "./apiHandleError";
 import { cookies } from "next/headers";
 import { SESSION_ID_COOKIE } from "./constants";
-import { IncomeAndExpense } from "./types";
 
 export const getIncomeAndExpense = async () => {
   try {

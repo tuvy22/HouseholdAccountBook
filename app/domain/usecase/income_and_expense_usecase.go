@@ -72,7 +72,6 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense en
 	preIncomeAndExpense.Amount = incomeAndExpense.Amount
 	preIncomeAndExpense.Category = incomeAndExpense.Category
 	preIncomeAndExpense.Date = incomeAndExpense.Date
-	preIncomeAndExpense.GroupID = incomeAndExpense.GroupID
 	preIncomeAndExpense.Memo = incomeAndExpense.Memo
 
 	return u.repo.UpdateIncomeAndExpense(&preIncomeAndExpense)

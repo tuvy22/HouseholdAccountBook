@@ -5,18 +5,17 @@ export interface IncomeAndExpense {
   amount: number;
   memo: string;
   registerUserId: string;
+  IsInitial: boolean;
 }
 
 export interface IncomeAndExpenseMonthlyTotal {
   yearMonth: string;
   totalAmount: number;
-  groupId: number;
 }
 export interface IncomeAndExpenseMonthlyCategory {
   yearMonth: string;
   category: string;
   categoryAmount: number;
-  groupId: number;
 }
 
 export interface User {
