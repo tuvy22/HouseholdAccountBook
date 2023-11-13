@@ -14,14 +14,13 @@ import (
 )
 
 type UserUsecase interface {
-	Authenticate(creds entity.Credentials) (entity.UserResponse, string, error)
-	CheckLoginToken(tokenString string) (string, error)
+	Authenticate(creds entity.Credentials) (entity.UserResponse, entity.UserSession, error)
 	CheckInviteToken(tokenString string) (uint, error)
 	GetAllUser() ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
-	CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, string, error)
+	CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error)
 	UpdateUser(user entity.User) error
-	UpdateUserName(id string, userName entity.UserName) error
+	UpdateUserName(id string, userName entity.UserNameUpdate) error
 	DeleteUser(id string) error
 	GetUserInviteUrl(groupId uint) (entity.InviteUrl, error)
 	ChangeGroup(userId string, inviteGroupID uint) error
@@ -38,7 +37,7 @@ func NewUserUsecase(repo repository.UserRepository, groupRepo repository.GroupRe
 	return &userUsecaseImpl{repo: repo, groupRepo: groupRepo, password: password, config: config}
 }
 
-func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserResponse, string, error) {
+func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserResponse, entity.UserSession, error) {
 
 	user := entity.User{}
 
@@ -50,7 +49,7 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 		if creds.UserID == storedUserID && creds.Password == storedPassword {
 			hashPassword, err := u.password.HashPassword(creds.Password)
 			if err != nil {
-				return entity.UserResponse{}, "", ErrInvalidCredentials
+				return entity.UserResponse{}, entity.UserSession{}, ErrInvalidCredentials
 			}
 			user = entity.User{
 				ID:       creds.UserID,
@@ -58,21 +57,16 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 				Name:     creds.UserID,
 			}
 		} else {
-			return entity.UserResponse{}, "", customerrors.NewCustomError(customerrors.ErrInvalidLogin)
+			return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrInvalidLogin)
 		}
 	}
 
 	err = u.password.CheckPassword(user.Password, creds.Password)
 	if err != nil {
-		return entity.UserResponse{}, "", customerrors.NewCustomError(customerrors.ErrInvalidLogin)
+		return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrInvalidLogin)
 	}
 
-	// JWTトークンの生成
-	tokenString, err := u.createLoginToken(creds.UserID)
-	if err != nil {
-		return entity.UserResponse{}, "", ErrInvalidCredentials
-	}
-	return u.convertToUserResponse(user), tokenString, nil
+	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
 }
 
 func (u *userUsecaseImpl) createLoginToken(userId string) (string, error) {
@@ -89,21 +83,6 @@ func (u *userUsecaseImpl) createLoginToken(userId string) (string, error) {
 	return tokenString, nil
 }
 
-func (u *userUsecaseImpl) CheckLoginToken(tokenString string) (string, error) {
-
-	claims, err := u.checkToken(tokenString, u.config.LoginJWTKey)
-	if err != nil {
-		return "", err
-	}
-	userId := claims["user_id"]
-
-	str, ok := userId.(string)
-	if ok {
-		return str, nil
-	} else {
-		return "", ErrInternalServer
-	}
-}
 func (u *userUsecaseImpl) CheckInviteToken(tokenString string) (uint, error) {
 
 	claims, err := u.checkToken(tokenString, u.config.InviteJWTKey)
@@ -143,10 +122,10 @@ func (u *userUsecaseImpl) GetUser(id string) (entity.UserResponse, error) {
 
 	return u.convertToUserResponse(user), nil
 }
-func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, string, error) {
+func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error) {
 	hashPassword, err := u.password.HashPassword(userCreate.Password)
 	if err != nil {
-		return entity.UserResponse{}, "", err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 	var groupId uint
 	if inviteGroupID == entity.GroupIDNone {
@@ -168,20 +147,15 @@ func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID
 	}
 	err = u.repo.CreateUser(&createUser)
 	if err != nil {
-		return entity.UserResponse{}, "", err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
-	userResponse, err := u.GetUser(userCreate.ID)
+	user := entity.User{}
+	err = u.repo.GetUser(userCreate.ID, &user)
 	if err != nil {
-		return entity.UserResponse{}, "", err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
-	// JWTトークンの生成
-	tokenString, err := u.createLoginToken(userResponse.ID)
-	if err != nil {
-		return entity.UserResponse{}, "", err
-	}
-
-	return userResponse, tokenString, nil
+	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
 }
 func (u *userUsecaseImpl) UpdateUser(user entity.User) error {
 	preUser := entity.User{}
@@ -196,7 +170,7 @@ func (u *userUsecaseImpl) UpdateUser(user entity.User) error {
 	return u.repo.UpdateUser(&preUser)
 }
 
-func (u *userUsecaseImpl) UpdateUserName(id string, userName entity.UserName) error {
+func (u *userUsecaseImpl) UpdateUserName(id string, userName entity.UserNameUpdate) error {
 	preUser := entity.User{}
 	err := u.repo.GetUser(id, &preUser)
 	if err != nil {
@@ -236,6 +210,13 @@ func (u *userUsecaseImpl) GetUserInviteUrl(groupId uint) (entity.InviteUrl, erro
 
 func (u *userUsecaseImpl) convertToUserResponse(user entity.User) entity.UserResponse {
 	return entity.UserResponse{
+		ID:      user.ID,
+		Name:    user.Name,
+		GroupID: user.GroupID,
+	}
+}
+func (u *userUsecaseImpl) convertToUserSession(user entity.User) entity.UserSession {
+	return entity.UserSession{
 		ID:      user.ID,
 		Name:    user.Name,
 		GroupID: user.GroupID,

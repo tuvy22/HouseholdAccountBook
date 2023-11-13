@@ -15,7 +15,7 @@ type UserCreate struct {
 	Password string `json:"password"`
 	Name     string `json:"name"`
 }
-type UserName struct {
+type UserNameUpdate struct {
 	Name string `json:"name"`
 }
 
@@ -23,6 +23,11 @@ type UserResponse struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`
 	GroupID uint   `json:"groupId"`
+}
+type UserSession struct {
+	ID      string
+	Name    string
+	GroupID uint
 }
 
 type Credentials struct {

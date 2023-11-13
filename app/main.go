@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/gob"
 	"os"
 	"strings"
 
 	"github.com/gin-contrib/cors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/password"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
@@ -13,6 +15,11 @@ import (
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/db"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/router"
 )
+
+func init() {
+	// gob に UserSession 型を登録
+	gob.Register(entity.UserSession{})
+}
 
 func main() {
 

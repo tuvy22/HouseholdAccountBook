@@ -14,13 +14,13 @@ const (
 )
 
 type IncomeAndExpenseUsecase interface {
-	GetGroupAllIncomeAndExpense(userID string) ([]entity.IncomeAndExpense, error)
+	GetGroupAllIncomeAndExpense(groupID uint) ([]entity.IncomeAndExpense, error)
 	CreateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	DeleteIncomeAndExpense(id uint) error
 
-	GetMonthlyTotal(userID string) ([]entity.IncomeAndExpenseMonthlyTotal, error)
-	GetMonthlyCategory(yearMonth string, userID string, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error)
+	GetMonthlyTotal(groupID uint) ([]entity.IncomeAndExpenseMonthlyTotal, error)
+	GetMonthlyCategory(yearMonth string, groupID uint, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error)
 }
 
 type incomeAndExpenseUsecaseImpl struct {
@@ -32,10 +32,10 @@ func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository, user
 	return &incomeAndExpenseUsecaseImpl{repo: repo, userRepo: userRepo}
 }
 
-func (u *incomeAndExpenseUsecaseImpl) GetGroupAllIncomeAndExpense(userID string) ([]entity.IncomeAndExpense, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetGroupAllIncomeAndExpense(groupID uint) ([]entity.IncomeAndExpense, error) {
 	incomeAndExpenses := []entity.IncomeAndExpense{}
 
-	userIDs, err := u.getGroupUserIDs(userID)
+	userIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
 		return incomeAndExpenses, err
 	}
@@ -81,9 +81,9 @@ func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint) error {
 
 	return u.repo.DeleteIncomeAndExpense(id)
 }
-func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(userID string) ([]entity.IncomeAndExpenseMonthlyTotal, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(groupID uint) ([]entity.IncomeAndExpenseMonthlyTotal, error) {
 	monthlyTotals := []entity.IncomeAndExpenseMonthlyTotal{}
-	userIDs, err := u.getGroupUserIDs(userID)
+	userIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
 		return monthlyTotals, err
 	}
@@ -107,10 +107,10 @@ func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(userID string) ([]entity.I
 	return result, nil
 }
 
-func (u *incomeAndExpenseUsecaseImpl) GetMonthlyCategory(yearMonth string, userID string, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetMonthlyCategory(yearMonth string, groupID uint, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error) {
 	monthlyCategorys := []entity.IncomeAndExpenseMonthlyCategory{}
 
-	userIDs, err := u.getGroupUserIDs(userID)
+	userIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
 		return monthlyCategorys, err
 	}
@@ -174,14 +174,9 @@ func (u *incomeAndExpenseUsecaseImpl) filterByYearMonth(incomes []entity.IncomeA
 	}
 	return result
 }
-func (u *incomeAndExpenseUsecaseImpl) getGroupUserIDs(userID string) ([]string, error) {
-	user := entity.User{}
-	err := u.userRepo.GetUser(userID, &user)
-	if err != nil {
-		return []string{}, err
-	}
+func (u *incomeAndExpenseUsecaseImpl) getGroupUserIDs(groupID uint) ([]string, error) {
 	users := []entity.User{}
-	err = u.userRepo.GetAllUserByGroupId(user.GroupID, &users)
+	err := u.userRepo.GetAllUserByGroupId(groupID, &users)
 	if err != nil {
 		return []string{}, err
 	}

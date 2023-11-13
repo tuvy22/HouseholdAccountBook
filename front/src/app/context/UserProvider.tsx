@@ -4,31 +4,27 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext, UserContextProps } from "./UserContext";
 import { User } from "../util/types";
 
-const UserProvider = ({
-  children,
-  token,
-}: {
-  children: React.ReactNode;
-  token: string;
-}) => {
+const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const userInfo: User = {
     id: "",
     name: "",
-    groupId: 0,
+    groupId: -1,
   };
   const [user, setUser] = useState<User>(userInfo);
 
   useEffect(() => {
-    if (token) {
-      fetchDataFromServer();
-    }
-  }, [token]);
+    fetchDataFromServer().then((data) => {
+      if (data) {
+        setUser(data);
+      }
+    });
+  }, []);
 
   const fetchDataFromServer = async () => {
     try {
       const response = await fetch("/api/private/user");
       const result: User = await response.json();
-      setUser(result);
+      return result;
     } catch (error) {
       console.error("Error fetching data:", error);
     }

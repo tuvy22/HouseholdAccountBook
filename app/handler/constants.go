@@ -1,4 +1,4 @@
 package handler
 
-const LonginCookieToken = "fsaku_user_token"
+const SessionIDCookie = "fsaku_session_id"
 const InviteCookieToken = "fsaku_invite_token"

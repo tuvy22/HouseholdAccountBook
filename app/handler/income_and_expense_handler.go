@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
@@ -29,12 +30,16 @@ func NewIncomeAndExpenseHandler(u usecase.IncomeAndExpenseUsecase) IncomeAndExpe
 }
 
 func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
-	userIdStr, err := GetLoginUserID(c)
-	if err != nil {
-		errorResponder(c, err)
+	// セッションからデータを取得
+	session := sessions.Default(c)
+	user := session.Get("user")
+	userSession, ok := user.(entity.UserSession)
+	if !ok {
+		c.Status(http.StatusInternalServerError)
 		return
 	}
-	incomeAndExpenses, err := h.usecase.GetGroupAllIncomeAndExpense(userIdStr)
+
+	incomeAndExpenses, err := h.usecase.GetGroupAllIncomeAndExpense(userSession.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -108,13 +113,17 @@ func (h *incomeAndExpenseHandlerImpl) DeleteIncomeAndExpense(c *gin.Context) {
 }
 
 func (h *incomeAndExpenseHandlerImpl) GetMonthlyTotal(c *gin.Context) {
-	userIdStr, err := GetLoginUserID(c)
-	if err != nil {
-		errorResponder(c, err)
+
+	// セッションからデータを取得
+	session := sessions.Default(c)
+	user := session.Get("user")
+	userSession, ok := user.(entity.UserSession)
+	if !ok {
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	monthlyTotals, err := h.usecase.GetMonthlyTotal(userIdStr)
+	monthlyTotals, err := h.usecase.GetMonthlyTotal(userSession.GroupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -130,14 +139,16 @@ func (h *incomeAndExpenseHandlerImpl) GetMonthlyCategory(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	userIdStr, err := GetLoginUserID(c)
-	if err != nil {
-		errorResponder(c, err)
+	// セッションからデータを取得
+	session := sessions.Default(c)
+	user := session.Get("user")
+	userSession, ok := user.(entity.UserSession)
+	if !ok {
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	monthlyCategorys, err := h.usecase.GetMonthlyCategory(yearMonth, userIdStr, isMinus)
+	monthlyCategorys, err := h.usecase.GetMonthlyCategory(yearMonth, userSession.GroupID, isMinus)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

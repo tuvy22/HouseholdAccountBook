@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LOGIN_COOKIE_TOKEN } from "./app/util/constants";
+import { SESSION_ID_COOKIE } from "./app/util/constants";
 
 export async function middleware(request: NextRequest) {
   if (
     request.nextUrl.pathname.match("/((?!login|user-register|user-invite).*)")
   ) {
-    const jwtToken = request.cookies.get(LOGIN_COOKIE_TOKEN);
+    const sessionId = request.cookies.get(SESSION_ID_COOKIE);
 
-    if (!jwtToken) {
-      //JWTが存在しない場合、ログインページに
+    if (!sessionId) {
+      //セッションIDが存在しない場合、ログインページに
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    const cookie = `${jwtToken.name}=${jwtToken.value}`;
+    const cookie = `${sessionId.name}=${sessionId.value}`;
 
     const options: RequestInit = {
       headers: {

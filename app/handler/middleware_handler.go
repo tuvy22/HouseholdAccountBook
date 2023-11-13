@@ -11,7 +11,7 @@ import (
 
 type MiddlewareHandler interface {
 	LocalhostOnly() gin.HandlerFunc
-	CheckLoginToken() gin.HandlerFunc
+	CheckSessionId() gin.HandlerFunc
 	CheckInviteToken() gin.HandlerFunc
 }
 
@@ -40,20 +40,14 @@ func (h *middlewareHandlerImpl) LocalhostOnly() gin.HandlerFunc {
 	}
 }
 
-func (h *middlewareHandlerImpl) CheckLoginToken() gin.HandlerFunc {
+func (h *middlewareHandlerImpl) CheckSessionId() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString, err := c.Cookie(LonginCookieToken)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-			return
-		}
-		userId, err := h.usecase.CheckLoginToken(tokenString)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-			return
-		}
+		sessionID, err := c.Cookie(SessionIDCookie)
 
-		c.Set("user_id", userId)
+		if err != nil || sessionID == "" {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
 		c.Next()
 	}

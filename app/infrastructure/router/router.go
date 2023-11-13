@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/ten313/HouseholdAccountBook/app/handler"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
@@ -12,6 +14,15 @@ import (
 
 func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, responsedOKHandler handler.ResponsedOKHandler, middlewareHandler handler.MiddlewareHandler) *gin.Engine {
 	r := gin.Default()
+
+	// クッキーストアの設定
+	store := cookie.NewStore([]byte(os.Getenv("SESSION_SECRET_KEY")))
+	store.Options(sessions.Options{
+		Path:     "/",
+		MaxAge:   1800, // 30分
+		HttpOnly: true, // セキュリティ強化のためHttpOnlyに設定
+	})
+	r.Use(sessions.Sessions(handler.SessionIDCookie, store))
 
 	// CORS 設定
 	config := cors.DefaultConfig()
@@ -28,13 +39,13 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	publicSetInviteCookie.DELETE("/invite-cookie", userHandler.DeleteInviteCookie)
 
 	localhost := r.Group("/api/localhost")
-	localhost.Use(middlewareHandler.LocalhostOnly(), middlewareHandler.CheckLoginToken())
+	localhost.Use(middlewareHandler.LocalhostOnly())
 	localhost.GET("/user/all", userHandler.GetAllUser)
 	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpense)
 	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)
 
 	authorized := r.Group("/api/private")
-	authorized.Use(middlewareHandler.CheckLoginToken())
+	authorized.Use(middlewareHandler.CheckSessionId())
 	authorized.GET("/check-auth", responsedOKHandler.ResponsedOK)
 	authorized.POST("/auth-del", userHandler.DeleteAuthenticate)
 

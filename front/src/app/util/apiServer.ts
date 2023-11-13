@@ -1,13 +1,14 @@
 import axios from "axios";
 import { GET_NG_MESSAGE } from "./apiHandleError";
 import { cookies } from "next/headers";
-import { LOGIN_COOKIE_TOKEN } from "./constants";
+import { SESSION_ID_COOKIE } from "./constants";
 import { IncomeAndExpense } from "./types";
 
 export const getIncomeAndExpense = async () => {
-  const cookieStore = cookies();
-  const cookie = cookieStore.get(LOGIN_COOKIE_TOKEN);
   try {
+    const cookieStore = cookies();
+    const cookie = cookieStore.get(SESSION_ID_COOKIE);
+
     const response = await axios.get(
       "http://localhost:8080/api/localhost/income-and-expense/all",
       {
@@ -26,7 +27,7 @@ export const getIncomeAndExpense = async () => {
 export const getIncomeAndExpenseMonthlyTotal = async () => {
   try {
     const cookieStore = cookies();
-    const cookie = cookieStore.get(LOGIN_COOKIE_TOKEN);
+    const cookie = cookieStore.get(SESSION_ID_COOKIE);
     const response = await axios.get(
       "http://localhost:8080/api/localhost/income-and-expense/monthly-total",
       {

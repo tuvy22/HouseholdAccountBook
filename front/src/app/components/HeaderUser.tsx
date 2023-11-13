@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useUser } from "../context/UserProvider";
 import { Spinner } from "../materialTailwindExports";
+import { User } from "../util/types";
 
 const HeaderUser = () => {
   const user = useUser().user;
