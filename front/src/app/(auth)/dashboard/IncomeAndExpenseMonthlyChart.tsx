@@ -23,6 +23,8 @@ import {
   toYearMonthString,
 } from "@/app/util/util";
 import PreOrNextIcon from "./PreOrNextIcon";
+import { SETTING_OPEN } from "../setting/Setting";
+import Link from "next/link";
 
 export const IncomeAndExpenseMonthlyChart = ({
   incomeAndExpenseMonthlyTotal,
@@ -109,7 +111,15 @@ export const IncomeAndExpenseMonthlyChart = ({
           />
         </div>
       </div>
-      <div className="flex items-center gap-5">
+      <div className="flex justify-end">
+        <Link
+          href={`/setting?open=${SETTING_OPEN.INIT_AMOUNT}`}
+          className="text-blue-600 underline hover:no-underline"
+        >
+          初期残高はこちらから
+        </Link>
+      </div>
+      <div className="flex items-center gap-5 mt-3">
         <div className="hidden md:block">
           <PreOrNextIcon
             isPreIcon={true}

@@ -3,23 +3,28 @@ package handler
 import (
 	"fmt"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/ten313/HouseholdAccountBook/app/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 )
 
-func GetLoginUserID(c *gin.Context) (string, error) {
-	userId, exists := c.Get("user_id")
-	if !exists {
-		return "", fmt.Errorf("User ID not found in context")
-	}
-
-	userIdStr, ok := userId.(string)
+func GetLoginUser(c *gin.Context) (entity.UserResponse, error) {
+	// セッションからデータを取得
+	session := sessions.Default(c)
+	user := session.Get("user")
+	userSession, ok := user.(entity.UserSession)
 	if !ok {
-		return "", fmt.Errorf("User ID is not a string")
+		return entity.UserResponse{}, customerrors.NewCustomError(customerrors.ErrInvalidCredentials)
+	}
+	userResponse := entity.UserResponse{
+		ID:            userSession.ID,
+		Name:          userSession.Name,
+		GroupID:       userSession.GroupID,
+		InitialAmount: userSession.InitialAmount,
 	}
 
-	return userIdStr, nil
-
+	return userResponse, nil
 }
 
 func GetInviteGroupID(c *gin.Context) (uint, error) {

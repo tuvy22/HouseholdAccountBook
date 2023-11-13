@@ -54,13 +54,14 @@ func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	userIdStr, err := GetLoginUserID(c)
+	// ログインデータ取得
+	userResponse, err := GetLoginUser(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		errorResponder(c, err)
 		return
 	}
 
-	err = h.usecase.CreateIncomeAndExpense(incomeAndExpense, userIdStr)
+	err = h.usecase.CreateIncomeAndExpense(incomeAndExpense, userResponse.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -76,9 +77,10 @@ func (h *incomeAndExpenseHandlerImpl) UpdateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	userIdStr, err := GetLoginUserID(c)
+	// ログインデータ取得
+	userResponse, err := GetLoginUser(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		errorResponder(c, err)
 		return
 	}
 
@@ -88,7 +90,7 @@ func (h *incomeAndExpenseHandlerImpl) UpdateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.UpdateIncomeAndExpense(incomeAndExpense, userIdStr)
+	err = h.usecase.UpdateIncomeAndExpense(incomeAndExpense, userResponse.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { UserInvite } from "./UserInvite";
 import RightPage from "./RightPage";
 import { InitialAmount } from "./InitialAmount";
+import { useSearchParams } from "next/navigation";
 
 export const SETTING_OPEN = {
   USER_NAME: "userName",
@@ -15,7 +16,9 @@ export const SETTING_OPEN = {
 };
 
 export function Setting() {
-  const [openSetting, setOpenSetting] = useState("");
+  const searchParams = useSearchParams();
+  const open = searchParams.get("open");
+  const [openSetting, setOpenSetting] = useState(open ? open : "");
 
   const renderSetting = () => {
     switch (openSetting) {

@@ -97,7 +97,7 @@ export const IncomeAndExpensePieChart = ({
           {`${isMinus ? "-" : ""}${totalCategoryAmount}円`}
         </div>
       </Typography>
-      <ResponsiveContainer height={400}>
+      <ResponsiveContainer height={370}>
         {data.length > 0 ? (
           <PieChart>
             <Pie
