@@ -5,7 +5,6 @@ export interface IncomeAndExpense {
   amount: number;
   memo: string;
   registerUserId: string;
-  IsInitial: boolean;
 }
 
 export interface IncomeAndExpenseMonthlyTotal {
@@ -22,13 +21,11 @@ export interface User {
   id: string;
   name: string;
   groupId: number;
+  initialAmount: number;
 }
 export interface UserCreate {
   id: string;
   password: string;
-  name: string;
-}
-export interface UserName {
   name: string;
 }
 export interface InviteUrl {

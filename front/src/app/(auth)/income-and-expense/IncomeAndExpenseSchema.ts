@@ -10,7 +10,7 @@ export const incomeAndExpenseSchema = z.object({
       message: "金額には数値に変換できる値を入力してください。",
     })
     .refine((value) => Number(value) >= 1, {
-      message: "金額は0より大きい数値を入力してください。",
+      message: "金額は1以上の数値を入力してください。",
     })
     .refine((value) => Number(value) < 100000000, {
       message: "金額は100,000,000より小さい数値を入力してください。",

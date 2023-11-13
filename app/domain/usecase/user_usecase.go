@@ -19,8 +19,7 @@ type UserUsecase interface {
 	GetAllUser() ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
 	CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error)
-	UpdateUser(user entity.User) error
-	UpdateUserName(id string, userName entity.UserNameUpdate) error
+	UpdateUser(user entity.User) (entity.UserResponse, entity.UserSession, error)
 	DeleteUser(id string) error
 	GetUserInviteUrl(groupId uint) (entity.InviteUrl, error)
 	ChangeGroup(userId string, inviteGroupID uint) error
@@ -157,29 +156,18 @@ func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID
 
 	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
 }
-func (u *userUsecaseImpl) UpdateUser(user entity.User) error {
+func (u *userUsecaseImpl) UpdateUser(user entity.User) (entity.UserResponse, entity.UserSession, error) {
 	preUser := entity.User{}
 	err := u.repo.GetUser(user.ID, &preUser)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 	//更新値の設定
 	preUser.Name = user.Name
 	preUser.GroupID = user.GroupID
+	preUser.InitialAmount = user.InitialAmount
 
-	return u.repo.UpdateUser(&preUser)
-}
-
-func (u *userUsecaseImpl) UpdateUserName(id string, userName entity.UserNameUpdate) error {
-	preUser := entity.User{}
-	err := u.repo.GetUser(id, &preUser)
-	if err != nil {
-		return err
-	}
-	//更新値の設定
-	preUser.Name = userName.Name
-
-	return u.repo.UpdateUser(&preUser)
+	return u.convertToUserResponse(user), u.convertToUserSession(user), u.repo.UpdateUser(&preUser)
 }
 
 func (u *userUsecaseImpl) DeleteUser(id string) error {
@@ -210,16 +198,18 @@ func (u *userUsecaseImpl) GetUserInviteUrl(groupId uint) (entity.InviteUrl, erro
 
 func (u *userUsecaseImpl) convertToUserResponse(user entity.User) entity.UserResponse {
 	return entity.UserResponse{
-		ID:      user.ID,
-		Name:    user.Name,
-		GroupID: user.GroupID,
+		ID:            user.ID,
+		Name:          user.Name,
+		GroupID:       user.GroupID,
+		InitialAmount: user.InitialAmount,
 	}
 }
 func (u *userUsecaseImpl) convertToUserSession(user entity.User) entity.UserSession {
 	return entity.UserSession{
-		ID:      user.ID,
-		Name:    user.Name,
-		GroupID: user.GroupID,
+		ID:            user.ID,
+		Name:          user.Name,
+		GroupID:       user.GroupID,
+		InitialAmount: user.InitialAmount,
 	}
 }
 
@@ -228,9 +218,10 @@ func (u *userUsecaseImpl) convertToUserResponses(users []entity.User) []entity.U
 
 	for _, user := range users {
 		userResponse := entity.UserResponse{
-			ID:      user.ID,
-			Name:    user.Name,
-			GroupID: user.GroupID,
+			ID:            user.ID,
+			Name:          user.Name,
+			GroupID:       user.GroupID,
+			InitialAmount: user.InitialAmount,
 		}
 		userResponses = append(userResponses, userResponse)
 	}

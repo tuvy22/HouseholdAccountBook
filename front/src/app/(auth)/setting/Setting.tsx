@@ -5,6 +5,7 @@ import { Sidebar } from "./Sidebar";
 import { useState } from "react";
 import { UserInvite } from "./UserInvite";
 import RightPage from "./RightPage";
+import { InitialAmount } from "./InitialAmount";
 
 export const SETTING_OPEN = {
   USER_NAME: "userName",
@@ -14,7 +15,7 @@ export const SETTING_OPEN = {
 };
 
 export function Setting() {
-  const [openSetting, setOpenSetting] = useState(SETTING_OPEN.USER_NAME);
+  const [openSetting, setOpenSetting] = useState("");
 
   const renderSetting = () => {
     switch (openSetting) {
@@ -37,8 +38,14 @@ export function Setting() {
             <UserInvite />
           </RightPage>
         );
+      case SETTING_OPEN.INIT_AMOUNT:
+        return (
+          <RightPage title="初期残高設定">
+            <InitialAmount />
+          </RightPage>
+        );
       default:
-        return <></>;
+        return <RightPage>左のメニューから選択してください。</RightPage>;
     }
   };
 

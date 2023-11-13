@@ -1,8 +1,8 @@
 import {
   IncomeAndExpense,
-  UserName,
   UserCreate,
   InviteUrl,
+  User,
 } from "@/app/util/types";
 import axios, { AxiosError } from "axios";
 import {
@@ -99,17 +99,17 @@ export const postUser = async (user: UserCreate) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(PUT_NG_MESSAGE);
+    throw new Error(POST_NG_MESSAGE);
   }
 };
-
-export const updateUserName = async (userNamePut: UserName) => {
+export const updateUser = async (user: User) => {
   try {
-    const response = await axios.put("/api/private/user/name", userNamePut, {
+    const response = await axios.put(`/api/private/user/${user.id}`, user, {
       headers: {
         "Content-Type": "application/json",
       },
     });
+    return response.data;
   } catch (error) {
     throw new Error(PUT_NG_MESSAGE);
   }

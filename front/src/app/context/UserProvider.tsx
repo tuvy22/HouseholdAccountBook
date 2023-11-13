@@ -9,6 +9,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
     id: "",
     name: "",
     groupId: -1,
+    initialAmount: 0,
   };
   const [user, setUser] = useState<User>(userInfo);
 

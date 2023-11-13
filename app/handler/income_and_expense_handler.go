@@ -123,7 +123,7 @@ func (h *incomeAndExpenseHandlerImpl) GetMonthlyTotal(c *gin.Context) {
 		return
 	}
 
-	monthlyTotals, err := h.usecase.GetMonthlyTotal(userSession.GroupID)
+	monthlyTotals, err := h.usecase.GetMonthlyTotal(userSession.GroupID, userSession.InitialAmount)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

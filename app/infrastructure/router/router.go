@@ -52,7 +52,6 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized.GET("/user", userHandler.GetLoginUser)
 	authorized.DELETE("/user/:id", userHandler.DeleteUser)
 	authorized.PUT("/user/:id", userHandler.UpdateUser)
-	authorized.PUT("/user/name", userHandler.UpdateUserName)
 	authorized.GET("/user-invite-url", userHandler.GetUserInviteUrl)
 
 	authorized.POST("/income-and-expense", incomeAndExpenseHandler.CreateIncomeAndExpense)

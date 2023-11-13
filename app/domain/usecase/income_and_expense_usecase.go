@@ -19,7 +19,7 @@ type IncomeAndExpenseUsecase interface {
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	DeleteIncomeAndExpense(id uint) error
 
-	GetMonthlyTotal(groupID uint) ([]entity.IncomeAndExpenseMonthlyTotal, error)
+	GetMonthlyTotal(groupID uint, InitialAmount int) ([]entity.IncomeAndExpenseMonthlyTotal, error)
 	GetMonthlyCategory(yearMonth string, groupID uint, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error)
 }
 
@@ -80,7 +80,7 @@ func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint) error {
 
 	return u.repo.DeleteIncomeAndExpense(id)
 }
-func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(groupID uint) ([]entity.IncomeAndExpenseMonthlyTotal, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(groupID uint, InitialAmount int) ([]entity.IncomeAndExpenseMonthlyTotal, error) {
 	monthlyTotals := []entity.IncomeAndExpenseMonthlyTotal{}
 	userIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
@@ -100,8 +100,9 @@ func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(groupID uint) ([]entity.In
 	allMonths := u.generateAllMonths(monthlyTotals[0].YearMonth, monthlyTotals[len(monthlyTotals)-1].YearMonth)
 	// データをマージ
 	result := u.mergeData(monthlyTotals, allMonths)
-	// データをフィルター
-	//result = u.filterByYearMonth(result, startDate, endDate)
+
+	//ユーザーの初期残高と合算
+	result[0].TotalAmount = result[0].TotalAmount + InitialAmount
 
 	return result, nil
 }

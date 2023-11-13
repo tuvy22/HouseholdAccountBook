@@ -33,7 +33,6 @@ export const IncomeAndExpenseForm = () => {
       memo: data.memo,
       date: toDateObject(data.date),
       registerUserId: user.id == null ? "" : user.id,
-      IsInitial: false,
     };
 
     try {

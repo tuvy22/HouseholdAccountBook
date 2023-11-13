@@ -12,7 +12,7 @@ import React from "react";
 import { User } from "@/app/util/types";
 import { UpdateUserDialog } from "./UpdateUserDialog";
 
-const TABLE_HEAD = ["ID", "名前", "グループID", ""];
+const TABLE_HEAD = ["ID", "名前", "グループID", "初期残高", ""];
 
 export const UserTable = ({ fetchData }: { fetchData: User[] }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -135,6 +135,15 @@ export const UserTable = ({ fetchData }: { fetchData: User[] }) => {
                       {user.groupId}
                     </Typography>
                   </td>
+                  <td className="p-2 md:p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {user.initialAmount}
+                    </Typography>
+                  </td>
 
                   <td className="p-2 md:p-4 border-b border-blue-gray-50">
                     <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row">
@@ -164,13 +173,17 @@ export const UserTable = ({ fetchData }: { fetchData: User[] }) => {
           handleUpdate={handleUpdate}
         />
       )}
-      {deletedUser && (
+      {/* {deletedUser && (
         <ConfirmDialog
           open={openDeleteDialog}
           handleOpen={() => setOpenDeleteDialog(!openDeleteDialog)}
           handleOk={handleDelete}
+          title={""}
+          message={""}
+          cancelBtnName={""}
+          okBtnName={""}
         />
-      )}
+      )} */}
       {isLoading && (
         <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">
           <Spinner />

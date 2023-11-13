@@ -20,7 +20,6 @@ type UserHandler interface {
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
-	UpdateUserName(c *gin.Context)
 	GetUserInviteUrl(c *gin.Context)
 	SetInviteCookie(c *gin.Context)
 	DeleteInviteCookie(c *gin.Context)
@@ -156,9 +155,18 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 
 	user.ID = c.Param("id")
 
-	err = h.usecase.UpdateUser(user)
+	_, userSession, err := h.usecase.UpdateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// セッションにデータを設定
+	session := sessions.Default(c)
+	session.Set("user", userSession)
+	err = session.Save()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -172,29 +180,6 @@ func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.Status(http.StatusOK)
-}
-func (h *userHandlerImpl) UpdateUserName(c *gin.Context) {
-
-	userName, err := h.bindUserName(c)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	// ログインデータ取得
-	userResponse, err := h.getLoginUser(c)
-	if err != nil {
-		errorResponder(c, err)
-		return
-	}
-
-	err = h.usecase.UpdateUserName(userResponse.ID, userName)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
 	c.Status(http.StatusOK)
 }
 
@@ -246,13 +231,7 @@ func (h *userHandlerImpl) bindUserCreate(c *gin.Context) (entity.UserCreate, err
 	}
 	return userCreate, nil
 }
-func (h *userHandlerImpl) bindUserName(c *gin.Context) (entity.UserNameUpdate, error) {
-	userName := entity.UserNameUpdate{}
-	if err := c.ShouldBindJSON(&userName); err != nil {
-		return userName, err
-	}
-	return userName, nil
-}
+
 func (h *userHandlerImpl) bindInviteToken(c *gin.Context) (entity.InviteToken, error) {
 	inviteToken := entity.InviteToken{}
 	if err := c.ShouldBindJSON(&inviteToken); err != nil {
@@ -281,9 +260,10 @@ func (h *userHandlerImpl) getLoginUser(c *gin.Context) (entity.UserResponse, err
 		return entity.UserResponse{}, customerrors.NewCustomError(customerrors.ErrInvalidCredentials)
 	}
 	userResponse := entity.UserResponse{
-		ID:      userSession.ID,
-		Name:    userSession.Name,
-		GroupID: userSession.GroupID,
+		ID:            userSession.ID,
+		Name:          userSession.Name,
+		GroupID:       userSession.GroupID,
+		InitialAmount: userSession.InitialAmount,
 	}
 
 	return userResponse, nil

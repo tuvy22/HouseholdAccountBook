@@ -2,11 +2,11 @@ import { Card, CardBody, Typography } from "@/app/materialTailwindExports";
 import React from "react";
 
 export default function RightPage({
-  title,
+  title = "",
   message = "",
   children,
 }: {
-  title: string;
+  title?: string;
   message?: string | Array<string | JSX.Element>;
   children: React.ReactNode;
 }) {

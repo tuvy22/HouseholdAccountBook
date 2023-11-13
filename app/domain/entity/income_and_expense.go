@@ -9,7 +9,6 @@ type IncomeAndExpense struct {
 	Memo           string    `json:"memo" gorm:"column:memo"`
 	Date           time.Time `json:"date" gorm:"column:date;type:date"`
 	RegisterUserID string    `json:"registerUserId" gorm:"column:register_user_id"`
-	IsInitial      bool      `json:"isInitial" gorm:"column:is_initial"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
