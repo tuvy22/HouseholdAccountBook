@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typography } from "../materialTailwindExports";
 import Link from "next/link";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HeaderUser from "./HeaderUser";
 import BuildIcon from "@mui/icons-material/Build";
@@ -42,6 +43,15 @@ const Header = () => {
         </Link>
       </div>
       <div className="flex-[2] flex items-center justify-between">
+        <Link
+          href="/income-and-expense"
+          className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
+        >
+          <MenuBookIcon />
+          <Typography variant="h3" className="text-xl">
+            入力
+          </Typography>
+        </Link>
         <Link
           href="/liquidation"
           className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
