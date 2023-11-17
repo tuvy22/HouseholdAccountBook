@@ -53,6 +53,7 @@ export const UpdateUserDialog: React.FC<Props> = ({
       id: data.id,
       name: data.name,
       groupId: 0,
+      initialAmount: 0,
     };
     handleUpdate(newUser);
     handleOpen();

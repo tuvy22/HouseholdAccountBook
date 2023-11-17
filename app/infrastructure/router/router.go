@@ -41,6 +41,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	localhost := r.Group("/api/localhost")
 	localhost.Use(middlewareHandler.LocalhostOnly())
 	localhost.GET("/user/all", userHandler.GetAllUser)
+	localhost.GET("/user/group-all", userHandler.GetGroupAllUser)
 	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpense)
 	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)
 
@@ -52,6 +53,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized.GET("/user", userHandler.GetLoginUser)
 	authorized.DELETE("/user/:id", userHandler.DeleteUser)
 	authorized.PUT("/user/:id", userHandler.UpdateUser)
+	authorized.GET("/user/group-all", userHandler.GetGroupAllUser)
 	authorized.GET("/user-invite-url", userHandler.GetUserInviteUrl)
 
 	authorized.POST("/income-and-expense", incomeAndExpenseHandler.CreateIncomeAndExpense)

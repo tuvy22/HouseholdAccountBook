@@ -3,7 +3,7 @@
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
 import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
-import { IncomeAndExpenseSchema } from "./IncomeAndExpenseSchema";
+import { IncomeExpenseSchema } from "./IncomeAndExpenseSchema";
 
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
@@ -13,16 +13,18 @@ import { IncomeAndExpense } from "@/app/util/types";
 import { useAlert } from "@/app/context/AlertProvider";
 import { Spinner } from "@/app/materialTailwindExports";
 import { toDateObject } from "@/app/util/util";
+import { BillingUser } from "./BillingUserType";
 
 export const IncomeAndExpenseForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
   const user = useUser().user;
+  const [billingUsers, setBillingUsers] = useState<BillingUser[]>([]);
   const [triggerReset, setTriggerReset] = useState(0);
   const alert = useAlert();
 
-  const onSubmit = async (data: IncomeAndExpenseSchema, isMinus: boolean) => {
+  const onSubmit = async (data: IncomeExpenseSchema, isMinus: boolean) => {
     setIsLoading(true);
     setTriggerReset((prev) => prev + 1);
 
@@ -55,7 +57,12 @@ export const IncomeAndExpenseForm = () => {
     <>
       <IncomeAndExpenseTabs isIncome={true} isExpense={true}>
         <IncomeForm onSubmit={onSubmit} triggerReset={triggerReset} />
-        <ExpenseForm onSubmit={onSubmit} triggerReset={triggerReset} />
+        <ExpenseForm
+          onSubmit={onSubmit}
+          triggerReset={triggerReset}
+          billingUsers={billingUsers}
+          setBillingUsers={setBillingUsers}
+        />
       </IncomeAndExpenseTabs>
       {isLoading && (
         <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-80 flex items-center justify-center z-50">

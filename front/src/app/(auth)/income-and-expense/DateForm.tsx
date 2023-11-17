@@ -1,15 +1,15 @@
 "use client";
 
 import { FieldErrors, UseFormRegister } from "react-hook-form";
-import { IncomeAndExpenseSchema } from "./IncomeAndExpenseSchema";
+import { IncomeExpenseSchema } from "./IncomeAndExpenseSchema";
 import { Input } from "@/app/materialTailwindExports";
 
 export default function DateForm({
   errors,
   register,
 }: {
-  errors: FieldErrors<IncomeAndExpenseSchema>;
-  register: UseFormRegister<IncomeAndExpenseSchema>;
+  errors: FieldErrors<IncomeExpenseSchema>;
+  register: UseFormRegister<IncomeExpenseSchema>;
 }) {
   return (
     <div className="flex flex-col flex-grow">

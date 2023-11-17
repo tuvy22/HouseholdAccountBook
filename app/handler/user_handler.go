@@ -16,6 +16,7 @@ type UserHandler interface {
 	DeleteAuthenticate(c *gin.Context)
 	GetAllUser(c *gin.Context)
 	GetLoginUser(c *gin.Context)
+	GetGroupAllUser(c *gin.Context)
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
@@ -101,6 +102,23 @@ func (h *userHandlerImpl) GetAllUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, users)
 }
+func (h *userHandlerImpl) GetGroupAllUser(c *gin.Context) {
+	// ログインデータ取得
+	userResponse, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	users, err := h.usecase.GetGroupAllUser(userResponse.GroupID, userResponse.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, users)
+}
+
 func (h *userHandlerImpl) GetLoginUser(c *gin.Context) {
 	// ログインデータ取得
 	userResponse, err := GetLoginUser(c)

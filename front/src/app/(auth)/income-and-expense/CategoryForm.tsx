@@ -1,7 +1,7 @@
 "use client";
 
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import { IncomeAndExpenseSchema } from "./IncomeAndExpenseSchema";
+import { IncomeExpenseSchema } from "./IncomeAndExpenseSchema";
 import { Controller } from "react-hook-form";
 import { Select, Option } from "@/app/materialTailwindExports";
 
@@ -11,9 +11,9 @@ export default function CategoryForm({
   control,
   options,
 }: {
-  errors: FieldErrors<IncomeAndExpenseSchema>;
-  register: UseFormRegister<IncomeAndExpenseSchema>;
-  control: Control<IncomeAndExpenseSchema>;
+  errors: FieldErrors<IncomeExpenseSchema>;
+  register: UseFormRegister<IncomeExpenseSchema>;
+  control: Control<IncomeExpenseSchema>;
   options: string[];
 }) {
   return (

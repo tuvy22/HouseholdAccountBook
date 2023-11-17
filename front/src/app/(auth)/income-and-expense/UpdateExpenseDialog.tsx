@@ -11,13 +11,17 @@ import {
 import { IncomeAndExpense } from "../../util/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  IncomeAndExpenseSchema,
-  incomeAndExpenseSchema,
+  IncomeExpenseSchema,
+  incomeExpenseSchema,
 } from "./IncomeAndExpenseSchema";
 import { isMinus, toDateObject, toDateString } from "@/app/util/util";
-import FormInputs from "./FormInputs";
 import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
 import { useForm } from "react-hook-form";
+import DateForm from "./DateForm";
+import CategoryForm from "./CategoryForm";
+import { EXPENSE_CATEGORY, INCOME_CATEGORY } from "@/app/util/constants";
+import AmountForm from "./AmountForm";
+import MemoForm from "./MemoForm";
 
 type Props = {
   open: boolean;
@@ -40,8 +44,8 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<IncomeAndExpenseSchema>({
-    resolver: zodResolver(incomeAndExpenseSchema),
+  } = useForm<IncomeExpenseSchema>({
+    resolver: zodResolver(incomeExpenseSchema),
   });
   useEffect(() => {
     if (open) {
@@ -64,7 +68,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     isDaialogMinus,
   ]);
 
-  const onSubmit = (data: IncomeAndExpenseSchema) => {
+  const onSubmit = (data: IncomeExpenseSchema) => {
     const newIncomeAndExpense: IncomeAndExpense = {
       id: updatedIncomeAndExpense.id,
       category: data.category,
@@ -87,12 +91,17 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
               isIncome={!isDaialogMinus}
               isExpense={isDaialogMinus}
             >
-              <FormInputs
-                errors={errors}
-                register={register}
-                control={control}
-                isMinus={isDaialogMinus}
-              />
+              <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
+                <DateForm errors={errors} register={register} />
+                <CategoryForm
+                  errors={errors}
+                  register={register}
+                  control={control}
+                  options={isDaialogMinus ? EXPENSE_CATEGORY : INCOME_CATEGORY}
+                />
+                <AmountForm errors={errors} register={register} />
+                <MemoForm errors={errors} register={register} />
+              </div>
             </IncomeAndExpenseTabs>
           </DialogBody>
 

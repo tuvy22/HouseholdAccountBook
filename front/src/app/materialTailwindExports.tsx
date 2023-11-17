@@ -33,6 +33,11 @@ import {
   Accordion,
   AccordionHeader,
   AccordionBody,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  Checkbox,
 } from "@material-tailwind/react";
 
 export {
@@ -68,4 +73,9 @@ export {
   Accordion,
   AccordionHeader,
   AccordionBody,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  Checkbox,
 };

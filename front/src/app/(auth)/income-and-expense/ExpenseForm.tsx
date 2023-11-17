@@ -1,22 +1,38 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  IncomeAndExpenseSchema,
-  incomeAndExpenseSchema,
+  IncomeExpenseSchema,
+  incomeExpenseSchema,
 } from "./IncomeAndExpenseSchema";
 import SubmitButtonForm from "./SubmitButtonForm";
-import FormInputs from "./FormInputs";
 import { toDateString } from "@/app/util/util";
+import { EXPENSE_CATEGORY } from "@/app/util/constants";
+import DateForm from "./DateForm";
+import CategoryForm from "./CategoryForm";
+import AmountForm from "./AmountForm";
+import MemoForm from "./MemoForm";
+import { BillingUserCheckboxForm } from "./BillingUserCheckboxForm";
+import { BillingUser } from "./BillingUserType";
 
 export const ExpenseForm = ({
   onSubmit,
   triggerReset,
+  billingUsers,
+  setBillingUsers,
 }: {
-  onSubmit: (data: IncomeAndExpenseSchema, isMinus: boolean) => Promise<void>;
+  onSubmit: (data: IncomeExpenseSchema, isMinus: boolean) => Promise<void>;
   triggerReset: number;
+  billingUsers: BillingUser[];
+  setBillingUsers: Dispatch<SetStateAction<BillingUser[]>>;
 }) => {
   const {
     control,
@@ -24,9 +40,10 @@ export const ExpenseForm = ({
     handleSubmit,
     reset,
     getValues,
+    watch,
     formState: { errors },
-  } = useForm<IncomeAndExpenseSchema>({
-    resolver: zodResolver(incomeAndExpenseSchema),
+  } = useForm<IncomeExpenseSchema>({
+    resolver: zodResolver(incomeExpenseSchema),
   });
 
   const resetForm = useCallback(() => {
@@ -45,12 +62,22 @@ export const ExpenseForm = ({
   return (
     <>
       <form onSubmit={(e) => handleSubmit((data) => onSubmit(data, true))(e)}>
-        <FormInputs
-          errors={errors}
-          register={register}
-          control={control}
-          isMinus={true}
-        />
+        <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
+          <DateForm errors={errors} register={register} />
+          <CategoryForm
+            errors={errors}
+            register={register}
+            control={control}
+            options={EXPENSE_CATEGORY}
+          />
+          <AmountForm errors={errors} register={register} />
+          <MemoForm errors={errors} register={register} />
+          <BillingUserCheckboxForm
+            watch={watch}
+            billingUsers={billingUsers}
+            setBillingUsers={setBillingUsers}
+          />
+        </div>
         <div className="flex justify-end">
           <SubmitButtonForm />
         </div>

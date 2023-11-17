@@ -17,6 +17,7 @@ type UserUsecase interface {
 	Authenticate(creds entity.Credentials) (entity.UserResponse, entity.UserSession, error)
 	CheckInviteToken(tokenString string) (uint, error)
 	GetAllUser() ([]entity.UserResponse, error)
+	GetGroupAllUser(groupID uint, firstUserID string) ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
 	CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error)
 	UpdateUser(user entity.User) (entity.UserResponse, entity.UserSession, error)
@@ -111,6 +112,15 @@ func (u *userUsecaseImpl) GetAllUser() ([]entity.UserResponse, error) {
 
 	return u.convertToUserResponses(users), nil
 }
+func (u *userUsecaseImpl) GetGroupAllUser(groupID uint, firstUserID string) ([]entity.UserResponse, error) {
+	users := []entity.User{}
+	err := u.repo.GetAllUserByGroupId(groupID, &users)
+	if err != nil {
+		return u.convertToUserResponses(users), err
+	}
+	return u.convertToUserResponses(u.moveToFirst(users, firstUserID)), nil
+}
+
 func (u *userUsecaseImpl) GetUser(id string) (entity.UserResponse, error) {
 	user := entity.User{}
 
@@ -286,4 +296,20 @@ func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) error {
 	}
 
 	return nil
+}
+func (u *userUsecaseImpl) moveToFirst(users []entity.User, targetID string) []entity.User {
+	targetIndex := -1
+	for i, user := range users {
+		if user.ID == targetID {
+			targetIndex = i
+			break
+		}
+	}
+
+	if targetIndex == -1 {
+		return users // IDが見つからなかった場合、元の配列を返す
+	}
+
+	// 特定のIDを持つ要素を先頭に移動
+	return append([]entity.User{users[targetIndex]}, append(users[:targetIndex], users[targetIndex+1:]...)...)
 }

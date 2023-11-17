@@ -3,6 +3,7 @@ import {
   UserCreate,
   InviteUrl,
   User,
+  IncomeAndExpenseMonthlyCategory,
 } from "@/app/util/types";
 import axios, { AxiosError } from "axios";
 import {
@@ -19,7 +20,8 @@ export const auth = async (userId: string, password: string) => {
       userId,
       password,
     });
-    return response.data;
+    const result: User = response.data;
+    return result;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }
@@ -39,8 +41,19 @@ export const getIncomeAndExpenseMonthlyCategory = async (
         },
       }
     );
+    const result: IncomeAndExpenseMonthlyCategory[] = response.data;
+    return result;
+  } catch (error) {
+    throw new Error(GET_NG_MESSAGE);
+  }
+};
 
-    return response.data;
+export const getGroupAllUser = async () => {
+  try {
+    const response = await axios.get("/api/private/user/group-all");
+
+    const result: User[] = response.data;
+    return result;
   } catch (error) {
     throw new Error(GET_NG_MESSAGE);
   }
@@ -97,7 +110,8 @@ export const postUser = async (user: UserCreate) => {
         "Content-Type": "application/json",
       },
     });
-    return response.data;
+    const result: User = response.data;
+    return result;
   } catch (error) {
     throw new Error(POST_NG_MESSAGE);
   }
@@ -109,7 +123,8 @@ export const updateUser = async (user: User) => {
         "Content-Type": "application/json",
       },
     });
-    return response.data;
+    const result: User = response.data;
+    return result;
   } catch (error) {
     throw new Error(PUT_NG_MESSAGE);
   }
