@@ -83,22 +83,7 @@ export const IncomeAndExpenseTable = async () => {
                           </Typography>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <div>
-                            {incomeAndExpense.billingUsers.length > 1 ||
-                            (incomeAndExpense.billingUsers.length == 1 &&
-                              incomeAndExpense.billingUsers[0].userID !==
-                                incomeAndExpense.registerUserId) ? (
-                              <BillingPopover
-                                incomeAndExpense={incomeAndExpense}
-                              />
-                            ) : (
-                              <span>
-                                {incomeAndExpense.billingUsers.length === 1
-                                  ? incomeAndExpense.billingUsers[0].userID
-                                  : ""}
-                              </span>
-                            )}
-                          </div>
+                          <BillingPopover incomeAndExpense={incomeAndExpense} />
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <Typography
