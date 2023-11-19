@@ -7,8 +7,10 @@ import (
 
 type IncomeAndExpenseRepository interface {
 	GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string) error
+	GetAllIncomeAndExpenseWithBillingUser(data *[]entity.IncomeAndExpense, registerUserIDs []string) error
 	GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error
 	CreateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
+	CreateIncomeAndExpenseWithBillingUser(data *entity.IncomeAndExpense) error
 	UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
 	DeleteIncomeAndExpense(id uint) error
 
@@ -30,6 +32,13 @@ func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpense
 	}
 	return nil
 }
+func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpenseWithBillingUser(data *[]entity.IncomeAndExpense, registerUserIDs []string) error {
+	if err := r.DB.Preload("BillingUsers").Where("register_user_id IN ?", registerUserIDs).Order("Date desc, id desc").Find(data).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error {
 
 	if err := r.DB.Where("id = ?", id).First(&incomeAndExpense).Error; err != nil {
@@ -45,6 +54,31 @@ func (r *incomeAndExpenseRepositoryImpl) CreateIncomeAndExpense(incomeAndExpense
 	}
 	return nil
 }
+func (r *incomeAndExpenseRepositoryImpl) CreateIncomeAndExpenseWithBillingUser(data *entity.IncomeAndExpense) error {
+	// トランザクション開始
+	tx := r.DB.Begin()
+
+	// 親モデル（IncomeAndExpense）を先に保存
+	if err := tx.Create(&data).Error; err != nil {
+		tx.Rollback() // エラーが発生した場合はロールバック
+		return err
+	}
+
+	// IncomeAndExpenseID を子モデルにセット
+	for i := range data.BillingUsers {
+		data.BillingUsers[i].IncomeAndExpenseID = data.ID
+	}
+
+	// 子モデル（BillingUserのスライス）を保存
+	if err := tx.Create(&data.BillingUsers).Error; err != nil {
+		tx.Rollback() // エラーが発生した場合はロールバック
+		return err
+	}
+
+	// トランザクションをコミット
+	return tx.Commit().Error
+}
+
 func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error {
 
 	if err := r.DB.Save(&incomeAndExpense).Error; err != nil {

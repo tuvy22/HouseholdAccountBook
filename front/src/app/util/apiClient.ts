@@ -53,25 +53,20 @@ export const getGroupAllUser = async () => {
     const response = await axios.get("/api/private/user/group-all");
 
     const result: User[] = response.data;
+
     return result;
   } catch (error) {
     throw new Error(GET_NG_MESSAGE);
   }
 };
 
-export const postIncomeAndExpense = async (
-  incomeAndExpense: IncomeAndExpense
-) => {
+export const postIncomeAndExpense = async (data: IncomeAndExpense) => {
   try {
-    const response = await axios.post(
-      "/api/private/income-and-expense",
-      incomeAndExpense,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axios.post("/api/private/income-and-expense", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error) {
     throw new Error(POST_NG_MESSAGE);
   }

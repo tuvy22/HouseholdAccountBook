@@ -9,24 +9,43 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
 import { useState } from "react";
 import { postIncomeAndExpense } from "@/app/util/apiClient";
-import { IncomeAndExpense } from "@/app/util/types";
+import {
+  IncomeAndExpenseBillingUser,
+  IncomeAndExpense,
+} from "@/app/util/types";
 import { useAlert } from "@/app/context/AlertProvider";
 import { Spinner } from "@/app/materialTailwindExports";
 import { toDateObject } from "@/app/util/util";
-import { BillingUser } from "./BillingUserType";
+import { BillingUserFormType } from "./BillingUserFormType";
 
 export const IncomeAndExpenseForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
   const user = useUser().user;
-  const [billingUsers, setBillingUsers] = useState<BillingUser[]>([]);
+  const [billingUsers, setBillingUsers] = useState<BillingUserFormType[]>([]);
   const [triggerReset, setTriggerReset] = useState(0);
   const alert = useAlert();
 
   const onSubmit = async (data: IncomeExpenseSchema, isMinus: boolean) => {
     setIsLoading(true);
     setTriggerReset((prev) => prev + 1);
+
+    let postBillingUsers: IncomeAndExpenseBillingUser[] = [];
+
+    billingUsers.map((user: BillingUserFormType) => {
+      if (user.checked) {
+        const newBillingUser: IncomeAndExpenseBillingUser = {
+          incomeAndExpenseID: 0,
+          userID: user.id,
+          amount: isMinus
+            ? -parseInt(user.amount, 10) || 0
+            : parseInt(user.amount, 10) || 0,
+          liquidationFg: false,
+        };
+        postBillingUsers = [...postBillingUsers, newBillingUser];
+      }
+    });
 
     const newIncomeAndExpense: IncomeAndExpense = {
       id: 0,
@@ -35,6 +54,7 @@ export const IncomeAndExpenseForm = () => {
       memo: data.memo,
       date: toDateObject(data.date),
       registerUserId: user.id == null ? "" : user.id,
+      billingUsers: postBillingUsers,
     };
 
     try {

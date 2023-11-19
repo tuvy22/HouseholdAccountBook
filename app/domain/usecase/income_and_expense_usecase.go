@@ -14,8 +14,8 @@ const (
 )
 
 type IncomeAndExpenseUsecase interface {
-	GetGroupAllIncomeAndExpense(groupID uint) ([]entity.IncomeAndExpense, error)
-	CreateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
+	GetAllIncomeAndExpenseWithBillingUser(groupID uint) ([]entity.IncomeAndExpense, error)
+	CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string) error
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	DeleteIncomeAndExpense(id uint) error
 
@@ -32,30 +32,34 @@ func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository, user
 	return &incomeAndExpenseUsecaseImpl{repo: repo, userRepo: userRepo}
 }
 
-func (u *incomeAndExpenseUsecaseImpl) GetGroupAllIncomeAndExpense(groupID uint) ([]entity.IncomeAndExpense, error) {
-	incomeAndExpenses := []entity.IncomeAndExpense{}
+func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpenseWithBillingUser(groupID uint) ([]entity.IncomeAndExpense, error) {
+	result := []entity.IncomeAndExpense{}
 
 	userIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
-		return incomeAndExpenses, err
+		return result, err
 	}
 
-	err = u.repo.GetAllIncomeAndExpense(&incomeAndExpenses, userIDs)
+	err = u.repo.GetAllIncomeAndExpenseWithBillingUser(&result, userIDs)
 	if err != nil {
-		return incomeAndExpenses, err
+		return result, err
 	}
 
-	return incomeAndExpenses, nil
+	return result, nil
 }
 
-func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error {
+func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string) error {
 
-	err := u.validateUserID(incomeAndExpense, userId, ErrFailedCreate)
+	err := u.validateUserID(data, userId, ErrFailedCreate)
+	if err != nil {
+		return err
+	}
+	err = u.validateBillingUser(data, ErrFailedCreate)
 	if err != nil {
 		return err
 	}
 
-	return u.repo.CreateIncomeAndExpense(&incomeAndExpense)
+	return u.repo.CreateIncomeAndExpense(&data)
 }
 func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error {
 	preIncomeAndExpense := entity.IncomeAndExpense{}
@@ -126,6 +130,24 @@ func (u *incomeAndExpenseUsecaseImpl) validateUserID(incomeAndExpense entity.Inc
 	if incomeAndExpense.RegisterUserID != userId {
 		return fmt.Errorf(errMessage)
 	}
+	return nil
+}
+func (u *incomeAndExpenseUsecaseImpl) validateBillingUser(data entity.IncomeAndExpense, errMessage string) error {
+	if len(data.BillingUsers) == 0 {
+		return fmt.Errorf(errMessage)
+	}
+
+	total := 0
+	for _, billingUser := range data.BillingUsers {
+		total += billingUser.Amount
+		if data.RegisterUserID != billingUser.UserID {
+		}
+	}
+	//ユーザーへの請求が合計金額と一致するか確認
+	if total != data.Amount {
+		return fmt.Errorf(errMessage)
+	}
+
 	return nil
 }
 

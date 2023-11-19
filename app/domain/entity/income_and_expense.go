@@ -1,16 +1,19 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type IncomeAndExpense struct {
-	ID             uint      `json:"id" gorm:"primaryKey"`
-	Category       string    `json:"category" gorm:"column:category"`
-	Amount         int       `json:"amount" gorm:"column:amount"`
-	Memo           string    `json:"memo" gorm:"column:memo"`
-	Date           time.Time `json:"date" gorm:"column:date;type:date"`
-	RegisterUserID string    `json:"registerUserId" gorm:"column:register_user_id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	gorm.Model
+	Category       string                        `json:"category" gorm:"column:category"`
+	Amount         int                           `json:"amount" gorm:"column:amount"`
+	Memo           string                        `json:"memo" gorm:"column:memo"`
+	Date           time.Time                     `json:"date" gorm:"column:date;type:date"`
+	RegisterUserID string                        `json:"registerUserId" gorm:"column:register_user_id"`
+	BillingUsers   []IncomeAndExpenseBillingUser `json:"billingUsers" gorm:"foreignKey:IncomeAndExpenseID"`
 }
 
 type IncomeAndExpenseMonthlyTotal struct {
@@ -23,3 +26,8 @@ type IncomeAndExpenseMonthlyCategory struct {
 	Category       string `json:"category" gorm:"column:category"`
 	CategoryAmount int    `json:"categoryAmount" gorm:"column:category_amount"`
 }
+
+// type IncomeAndExpenseWithBillingUser struct {
+// 	IncomeAndExpense             `json:"incomeAndExpense"`
+// 	IncomeAndExpenseBillingUsers []IncomeAndExpenseBillingUser `json:"incomeAndExpenseBillingUsers" gorm:"foreignKey:IncomeAndExpenseID"`
+// }

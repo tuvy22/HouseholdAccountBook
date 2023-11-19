@@ -17,16 +17,11 @@ const memoSchema = z
   .string()
   .max(50, { message: "メモは50文字以下で入力してください。" });
 
-const billingUserCheckboxSchema = z.array(z.any());
-const billingAmountSchema = z.array(amountSchema);
-
 export const incomeExpenseSchema = z.object({
   date: dateSchema,
   category: categorySchema,
   amount: amountSchema,
   memo: memoSchema,
-  // billingUserCheckbox: billingUserCheckboxSchema,
-  billingAmount: billingAmountSchema,
 });
 
 export type IncomeExpenseSchema = z.infer<typeof incomeExpenseSchema>;

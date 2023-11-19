@@ -12,7 +12,7 @@ import (
 )
 
 type IncomeAndExpenseHandler interface {
-	GetAllIncomeAndExpense(c *gin.Context)
+	GetAllIncomeAndExpenseWithBillingUser(c *gin.Context)
 	CreateIncomeAndExpense(c *gin.Context)
 	UpdateIncomeAndExpense(c *gin.Context)
 	DeleteIncomeAndExpense(c *gin.Context)
@@ -29,7 +29,7 @@ func NewIncomeAndExpenseHandler(u usecase.IncomeAndExpenseUsecase) IncomeAndExpe
 	return &incomeAndExpenseHandlerImpl{usecase: u}
 }
 
-func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
+func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpenseWithBillingUser(c *gin.Context) {
 	// セッションからデータを取得
 	session := sessions.Default(c)
 	user := session.Get("user")
@@ -39,29 +39,29 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	incomeAndExpenses, err := h.usecase.GetGroupAllIncomeAndExpense(userSession.GroupID)
+	result, err := h.usecase.GetAllIncomeAndExpenseWithBillingUser(userSession.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, incomeAndExpenses)
+	c.JSON(http.StatusOK, result)
 }
 func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
-	incomeAndExpense, err := h.bindIncomeAndExpense(c)
+	data, err := h.bindIncomeAndExpenseWithBillingUser(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	// ログインデータ取得
+	//ログインデータ取得
 	userResponse, err := GetLoginUser(c)
 	if err != nil {
 		errorResponder(c, err)
 		return
 	}
 
-	err = h.usecase.CreateIncomeAndExpense(incomeAndExpense, userResponse.ID)
+	err = h.usecase.CreateIncomeAndExpenseWithBillingUser(data, userResponse.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -159,10 +159,18 @@ func (h *incomeAndExpenseHandlerImpl) GetMonthlyCategory(c *gin.Context) {
 	c.JSON(http.StatusOK, monthlyCategorys)
 
 }
-
 func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpense(c *gin.Context) (entity.IncomeAndExpense, error) {
 	incomeAndExpense := entity.IncomeAndExpense{}
 	if err := c.ShouldBindJSON(&incomeAndExpense); err != nil {
+		return incomeAndExpense, err
+	}
+
+	return incomeAndExpense, nil
+}
+
+func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpenseWithBillingUser(c *gin.Context) (entity.IncomeAndExpense, error) {
+	incomeAndExpense := entity.IncomeAndExpense{}
+	if err := c.BindJSON(&incomeAndExpense); err != nil {
 		return incomeAndExpense, err
 	}
 

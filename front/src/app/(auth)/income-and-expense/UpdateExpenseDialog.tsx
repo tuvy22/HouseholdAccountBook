@@ -76,6 +76,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
       memo: data.memo,
       date: toDateObject(data.date),
       registerUserId: updatedIncomeAndExpense.registerUserId,
+      billingUsers: [], //TODO
     };
     handleUpdate(newIncomeAndExpense);
     handleOpen();

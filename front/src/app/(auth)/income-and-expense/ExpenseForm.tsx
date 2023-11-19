@@ -20,8 +20,8 @@ import DateForm from "./DateForm";
 import CategoryForm from "./CategoryForm";
 import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
-import { BillingUserCheckboxForm } from "./BillingUserCheckboxForm";
-import { BillingUser } from "./BillingUserType";
+import { BillingUserFormType } from "./BillingUserFormType";
+import { BillingUserForm } from "./BillingUserForm";
 
 export const ExpenseForm = ({
   onSubmit,
@@ -31,8 +31,8 @@ export const ExpenseForm = ({
 }: {
   onSubmit: (data: IncomeExpenseSchema, isMinus: boolean) => Promise<void>;
   triggerReset: number;
-  billingUsers: BillingUser[];
-  setBillingUsers: Dispatch<SetStateAction<BillingUser[]>>;
+  billingUsers: BillingUserFormType[];
+  setBillingUsers: Dispatch<SetStateAction<BillingUserFormType[]>>;
 }) => {
   const {
     control,
@@ -63,6 +63,11 @@ export const ExpenseForm = ({
     <>
       <form onSubmit={(e) => handleSubmit((data) => onSubmit(data, true))(e)}>
         <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
+          <BillingUserForm
+            watch={watch}
+            billingUsers={billingUsers}
+            setBillingUsers={setBillingUsers}
+          />
           <DateForm errors={errors} register={register} />
           <CategoryForm
             errors={errors}
@@ -72,11 +77,6 @@ export const ExpenseForm = ({
           />
           <AmountForm errors={errors} register={register} />
           <MemoForm errors={errors} register={register} />
-          <BillingUserCheckboxForm
-            watch={watch}
-            billingUsers={billingUsers}
-            setBillingUsers={setBillingUsers}
-          />
         </div>
         <div className="flex justify-end">
           <SubmitButtonForm />

@@ -16,16 +16,16 @@ import React, { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
 import { UseFormWatch } from "react-hook-form";
 import { IncomeExpenseSchema } from "./IncomeAndExpenseSchema";
-import { BillingUser } from "./BillingUserType";
+import { BillingUserFormType } from "./BillingUserFormType";
 
-export function BillingUserCheckboxForm({
+export function BillingUserForm({
   watch,
   billingUsers,
   setBillingUsers,
 }: {
   watch: UseFormWatch<IncomeExpenseSchema>;
-  billingUsers: BillingUser[];
-  setBillingUsers: Dispatch<SetStateAction<BillingUser[]>>;
+  billingUsers: BillingUserFormType[];
+  setBillingUsers: Dispatch<SetStateAction<BillingUserFormType[]>>;
 }) {
   const loginUser = useUser().user;
   const [data, setData] = useState<User[]>([]);
@@ -39,10 +39,10 @@ export function BillingUserCheckboxForm({
 
   useEffect(() => {
     const fetchData = async () => {
-      const billingUserTemps: BillingUser[] = [];
+      const billingUserTemps: BillingUserFormType[] = [];
 
       data.forEach((user: User) => {
-        const billingUserTmp: BillingUser = {
+        const billingUserTmp: BillingUserFormType = {
           id: user.id,
           name: user.name,
           checked: loginUser.id === user.id,
@@ -58,7 +58,7 @@ export function BillingUserCheckboxForm({
   }, [totalAmountStr, data, loginUser.id, setBillingUsers]);
 
   //チェックボックス変更時
-  const handleCheckboxChange = (changedBillingUser: BillingUser) => {
+  const handleCheckboxChange = (changedBillingUser: BillingUserFormType) => {
     const updatedBillingUsers = billingUsers.map((user) => {
       if (user.id === changedBillingUser.id) {
         return {
@@ -78,7 +78,7 @@ export function BillingUserCheckboxForm({
   };
 
   const handleAmountChange = (
-    changedBillingUser: BillingUser,
+    changedBillingUser: BillingUserFormType,
     changeAmountStr: string
   ) => {
     let changeAmount = parseInt(changeAmountStr, 10);
@@ -109,7 +109,7 @@ export function BillingUserCheckboxForm({
 
   //分配関数
   const distributeAmounts = (
-    billingUsers: BillingUser[],
+    billingUsers: BillingUserFormType[],
     totalAmount: number
   ) => {
     //アンロックユーザー（分配対象を取得）
@@ -153,7 +153,7 @@ export function BillingUserCheckboxForm({
         <>
           <Menu>
             <MenuHandler>
-              <Button variant="outlined" color="red">
+              <Button variant="outlined" color="red" className="h-11">
                 支払選択
               </Button>
             </MenuHandler>

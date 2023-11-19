@@ -5,6 +5,14 @@ export interface IncomeAndExpense {
   amount: number;
   memo: string;
   registerUserId: string;
+  billingUsers: IncomeAndExpenseBillingUser[];
+}
+
+export interface IncomeAndExpenseBillingUser {
+  incomeAndExpenseID: number;
+  userID: string;
+  amount: number;
+  liquidationFg: boolean;
 }
 
 export interface IncomeAndExpenseMonthlyTotal {
