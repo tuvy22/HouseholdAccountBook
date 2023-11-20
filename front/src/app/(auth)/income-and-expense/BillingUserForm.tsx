@@ -153,8 +153,12 @@ export function BillingUserForm({
         <>
           <Menu>
             <MenuHandler>
-              <Button variant="outlined" color="red" className="h-11">
-                支払選択
+              <Button
+                variant="outlined"
+                color="red"
+                className="h-11 w-full md:w-28"
+              >
+                分担選択
               </Button>
             </MenuHandler>
             <MenuList>

@@ -13,7 +13,7 @@ import {
   IncomeExpenseSchema,
   incomeExpenseSchema,
 } from "./IncomeAndExpenseSchema";
-import SubmitButtonForm from "./SubmitButtonForm";
+import SubmitButtonForm from "../../components/SubmitButtonForm";
 import { toDateString } from "@/app/util/util";
 import { EXPENSE_CATEGORY } from "@/app/util/constants";
 import DateForm from "./DateForm";
@@ -79,7 +79,7 @@ export const ExpenseForm = ({
           <MemoForm errors={errors} register={register} />
         </div>
         <div className="flex justify-end">
-          <SubmitButtonForm />
+          <SubmitButtonForm buttonName={"登録"} />
         </div>
       </form>
     </>

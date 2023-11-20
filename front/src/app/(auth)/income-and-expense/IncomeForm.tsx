@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import SubmitButtonForm from "./SubmitButtonForm";
+import SubmitButtonForm from "../../components/SubmitButtonForm";
 import { toDateString } from "@/app/util/util";
 import {
   IncomeExpenseSchema,
@@ -62,7 +62,7 @@ export const IncomeForm = ({
           <MemoForm errors={errors} register={register} />
         </div>
         <div className="flex justify-end">
-          <SubmitButtonForm />
+          <SubmitButtonForm buttonName={"登録"} />
         </div>
       </form>
     </>

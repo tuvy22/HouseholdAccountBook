@@ -3,8 +3,9 @@
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { IncomeExpenseSchema } from "./IncomeAndExpenseSchema";
 import { Input } from "@/app/materialTailwindExports";
+import { LiquidationSchema } from "../liquidation/LiquidationSchema";
 
-export default function DateForm({
+function DateForm({
   errors,
   register,
 }: {
@@ -24,3 +25,4 @@ export default function DateForm({
     </div>
   );
 }
+export default DateForm;

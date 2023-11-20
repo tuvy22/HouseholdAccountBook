@@ -10,7 +10,7 @@ import BillingPopover from "./BillingPopover";
 
 const TABLE_INFO = [
   { header: "登録", addClassName: "" },
-  { header: "支払", addClassName: "" },
+  { header: "分担", addClassName: "" },
   { header: "区分", addClassName: "" },
   { header: "金額", addClassName: "" },
   { header: "メモ", addClassName: "w-[40%]" },
