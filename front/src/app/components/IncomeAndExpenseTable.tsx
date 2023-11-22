@@ -1,14 +1,15 @@
 import { MemoPopover } from "@/app/components/MemoPopover";
 import { IncomeAndExpense } from "@/app/util/types";
 import { isMinus, toDateString } from "@/app/util/util";
-import React from "react";
-import { Card, Typography } from "@/app/materialTailwindExports";
-import EditIcon from "../../components/EditIcon";
-import DeleteIcon from "../../components/DeleteIcon";
+import React, { useState } from "react";
+import { Card, Checkbox, Typography } from "@/app/materialTailwindExports";
+import EditIcon from "./EditIcon";
+import DeleteIcon from "./DeleteIcon";
 import { getIncomeAndExpense } from "@/app/util/apiServer";
 import BillingPopover from "./BillingPopover";
+import { CheckedItems } from "../(auth)/liquidation/Liquidation";
 
-const TABLE_INFO = [
+const TABLE_INFO_ALL = [
   { header: "登録", addClassName: "" },
   { header: "分担", addClassName: "" },
   { header: "区分", addClassName: "" },
@@ -16,10 +17,35 @@ const TABLE_INFO = [
   { header: "メモ", addClassName: "w-[40%]" },
   { header: "", addClassName: "w-28" },
 ];
+const TABLE_INFO_LIQUIDATION = [
+  { header: "", addClassName: "w-10" },
+  { header: "登録", addClassName: "" },
+  { header: "分担", addClassName: "" },
+  { header: "区分", addClassName: "" },
+  { header: "金額", addClassName: "" },
+  { header: "メモ", addClassName: "w-[40%]" },
+];
 
-export const IncomeAndExpenseTable = async () => {
-  const fetchData = await getIncomeAndExpense();
+export const IncomeAndExpenseTable = ({
+  fetchData,
+  isLiquidation = false,
+  BillingPopoverNotBgGrayUserId = "",
+  checkedItems = {},
+  handleCheckboxChange = () => {},
+}: {
+  fetchData: IncomeAndExpense[];
+  isLiquidation?: boolean;
+  BillingPopoverNotBgGrayUserId?: string;
+  checkedItems?: CheckedItems;
+  handleCheckboxChange?: (id: number) => void;
+}) => {
   let previousDate: Date;
+  let tableHeader: { header: string; addClassName: string }[];
+  if (isLiquidation) {
+    tableHeader = TABLE_INFO_LIQUIDATION;
+  } else {
+    tableHeader = TABLE_INFO_ALL;
+  }
 
   return (
     <>
@@ -28,7 +54,7 @@ export const IncomeAndExpenseTable = async () => {
           <table className="text-left">
             <thead>
               <tr>
-                {TABLE_INFO.map((info, index) => (
+                {tableHeader.map((info, index) => (
                   <th
                     key={index}
                     className={`border-b border-blue-gray-100 bg-blue-gray-50 p-4 ${info.addClassName}`}
@@ -52,7 +78,7 @@ export const IncomeAndExpenseTable = async () => {
                       <tr className="bg-green-50">
                         <td
                           className="p-4 whitespace-nowrap text-center border-b border-blue-gray-50"
-                          colSpan={TABLE_INFO.length}
+                          colSpan={tableHeader.length}
                         >
                           <Typography
                             variant="small"
@@ -73,6 +99,20 @@ export const IncomeAndExpenseTable = async () => {
 
                     return (
                       <tr key={index} className="break-all">
+                        {isLiquidation && (
+                          <td className="p-2 md:p-4 border-b border-blue-gray-50">
+                            <Checkbox
+                              // id={incomeAndExpense.id.toString()}
+                              checked={
+                                checkedItems[incomeAndExpense.id] || false
+                              }
+                              onChange={() =>
+                                handleCheckboxChange(incomeAndExpense.id)
+                              }
+                              crossOrigin={undefined}
+                            />
+                          </td>
+                        )}
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <Typography
                             variant="small"
@@ -83,7 +123,10 @@ export const IncomeAndExpenseTable = async () => {
                           </Typography>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <BillingPopover incomeAndExpense={incomeAndExpense} />
+                          <BillingPopover
+                            incomeAndExpense={incomeAndExpense}
+                            notBgGrayUserId={BillingPopoverNotBgGrayUserId}
+                          />
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <Typography
@@ -134,13 +177,14 @@ export const IncomeAndExpenseTable = async () => {
                             )}
                           </div>
                         </td>
-
-                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row">
-                            <EditIcon incomeAndExpense={incomeAndExpense} />
-                            <DeleteIcon incomeAndExpense={incomeAndExpense} />
-                          </div>
-                        </td>
+                        {!isLiquidation && (
+                          <td className="p-2 md:p-4 border-b border-blue-gray-50">
+                            <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row">
+                              <EditIcon incomeAndExpense={incomeAndExpense} />
+                              <DeleteIcon incomeAndExpense={incomeAndExpense} />
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     );
                   })()}

@@ -19,15 +19,18 @@ const TABLE_INFO_BULLING = [
 
 export default function BillingPopover({
   incomeAndExpense,
+  notBgGrayUserId: notBgGrayUserId = "",
 }: {
   incomeAndExpense: IncomeAndExpense;
+  notBgGrayUserId?: string;
 }) {
   return (
     <>
-      {incomeAndExpense.billingUsers.length > 1 ||
-      (incomeAndExpense.billingUsers.length == 1 &&
-        incomeAndExpense.billingUsers[0].userID !==
-          incomeAndExpense.registerUserId) ? (
+      {incomeAndExpense.billingUsers &&
+      (incomeAndExpense.billingUsers.length > 1 ||
+        (incomeAndExpense.billingUsers.length == 1 &&
+          incomeAndExpense.billingUsers[0].userID !==
+            incomeAndExpense.registerUserId)) ? (
         <Popover>
           <PopoverHandler>
             {incomeAndExpense.billingUsers.length == 1 ? (
@@ -37,7 +40,7 @@ export default function BillingPopover({
             )}
           </PopoverHandler>
           <PopoverContent>
-            <Card className="h-full w-full">
+            <Card>
               <table className="max-w-full table-auto text-left">
                 <thead>
                   <tr>
@@ -60,7 +63,14 @@ export default function BillingPopover({
                 <tbody>
                   {incomeAndExpense.billingUsers.map(
                     (billingUser, index: number) => (
-                      <tr key={index} className="break-all">
+                      <tr
+                        key={index}
+                        className={`break-all ${
+                          notBgGrayUserId != "" &&
+                          billingUser.userID != notBgGrayUserId &&
+                          "bg-gray-300"
+                        }`}
+                      >
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <Typography
                             variant="small"

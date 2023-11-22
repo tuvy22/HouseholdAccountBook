@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,9 @@ import (
 )
 
 type IncomeAndExpenseHandler interface {
-	GetAllIncomeAndExpenseWithBillingUser(c *gin.Context)
+	GetAllIncomeAndExpense(c *gin.Context)
+	GetIncomeAndExpenseLiquidations(c *gin.Context)
+
 	CreateIncomeAndExpense(c *gin.Context)
 	UpdateIncomeAndExpense(c *gin.Context)
 	DeleteIncomeAndExpense(c *gin.Context)
@@ -29,7 +32,7 @@ func NewIncomeAndExpenseHandler(u usecase.IncomeAndExpenseUsecase) IncomeAndExpe
 	return &incomeAndExpenseHandlerImpl{usecase: u}
 }
 
-func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpenseWithBillingUser(c *gin.Context) {
+func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
 	// セッションからデータを取得
 	session := sessions.Default(c)
 	user := session.Get("user")
@@ -39,7 +42,7 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpenseWithBillingUser(c *g
 		return
 	}
 
-	result, err := h.usecase.GetAllIncomeAndExpenseWithBillingUser(userSession.GroupID)
+	result, err := h.usecase.GetAllIncomeAndExpense(userSession.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -47,6 +50,54 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpenseWithBillingUser(c *g
 
 	c.JSON(http.StatusOK, result)
 }
+func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Context) {
+	// セッションからデータを取得
+	session := sessions.Default(c)
+	user := session.Get("user")
+	userSession, ok := user.(entity.UserSession)
+	if !ok {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	// クエリパラメータを取得する
+	fromDateStr := c.DefaultQuery("fromDate", "")
+	toDateStr := c.DefaultQuery("toDate", "")
+	targetUserId := c.Query("targetUserId")
+
+	// 日付のフォーマットを定義する
+	layout := "2006-01-02"
+
+	// fromDateのパース
+	var fromDate time.Time
+	var err error
+	if fromDateStr != "" {
+		fromDate, err = time.Parse(layout, fromDateStr)
+		if err != nil {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+	}
+
+	// toDateのパース
+	var toDate time.Time
+	if toDateStr != "" {
+		toDate, err = time.Parse(layout, toDateStr)
+		if err != nil {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+	}
+
+	result, err := h.usecase.GetIncomeAndExpenseLiquidations(fromDate, toDate, userSession.ID, targetUserId, userSession.GroupID)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
 	data, err := h.bindIncomeAndExpenseWithBillingUser(c)
 	if err != nil {

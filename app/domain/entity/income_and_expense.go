@@ -8,12 +8,22 @@ import (
 
 type IncomeAndExpense struct {
 	gorm.Model
-	Category       string                        `json:"category" gorm:"column:category"`
-	Amount         int                           `json:"amount" gorm:"column:amount"`
-	Memo           string                        `json:"memo" gorm:"column:memo"`
-	Date           time.Time                     `json:"date" gorm:"column:date;type:date"`
-	RegisterUserID string                        `json:"registerUserId" gorm:"column:register_user_id"`
-	BillingUsers   []IncomeAndExpenseBillingUser `json:"billingUsers" gorm:"foreignKey:IncomeAndExpenseID"`
+	Category       string    `gorm:"column:category"`
+	Amount         int       `gorm:"column:amount"`
+	Memo           string    `gorm:"column:memo"`
+	Date           time.Time `gorm:"column:date;type:date"`
+	RegisterUserID string    `gorm:"column:register_user_id"`
+	BillingUsers   []IncomeAndExpenseBillingUser
+}
+type IncomeAndExpenseResponse struct {
+	ID               uint                                  `json:"id" `
+	Category         string                                `json:"category" `
+	Amount           int                                   `json:"amount" `
+	Memo             string                                `json:"memo" `
+	Date             time.Time                             `json:"date" `
+	RegisterUserID   string                                `json:"registerUserId"`
+	RegisterUserName string                                `json:"registerUserName"`
+	BillingUsers     []IncomeAndExpenseBillingUserResponse `json:"billingUsers"`
 }
 
 type IncomeAndExpenseMonthlyTotal struct {
@@ -26,8 +36,3 @@ type IncomeAndExpenseMonthlyCategory struct {
 	Category       string `json:"category" gorm:"column:category"`
 	CategoryAmount int    `json:"categoryAmount" gorm:"column:category_amount"`
 }
-
-// type IncomeAndExpenseWithBillingUser struct {
-// 	IncomeAndExpense             `json:"incomeAndExpense"`
-// 	IncomeAndExpenseBillingUsers []IncomeAndExpenseBillingUser `json:"incomeAndExpenseBillingUsers" gorm:"foreignKey:IncomeAndExpenseID"`
-// }

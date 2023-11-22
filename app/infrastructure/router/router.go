@@ -42,7 +42,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	localhost.Use(middlewareHandler.LocalhostOnly())
 	localhost.GET("/user/all", userHandler.GetAllUser)
 	localhost.GET("/user/group-all", userHandler.GetGroupAllUser)
-	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpenseWithBillingUser)
+	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpense)
 	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)
 
 	authorized := r.Group("/api/private")
@@ -60,6 +60,6 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized.PUT("/income-and-expense/:id", incomeAndExpenseHandler.UpdateIncomeAndExpense)
 	authorized.DELETE("/income-and-expense/:id", incomeAndExpenseHandler.DeleteIncomeAndExpense)
 	authorized.GET("/income-and-expense/monthly-category", incomeAndExpenseHandler.GetMonthlyCategory)
-
+	authorized.GET("/income-and-expense/liquidations", incomeAndExpenseHandler.GetIncomeAndExpenseLiquidations)
 	return r
 }

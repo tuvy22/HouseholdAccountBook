@@ -9,15 +9,15 @@ export const liquidationSchema = z
   })
   .refine(
     (data) => {
-      const fromDate = new Date(data.fromDate);
-      const toDate = new Date(data.toDate);
-
-      // fromDateがtoDateより前、または同じ日付であるか確認します
-      return fromDate <= toDate;
+      if (data.fromDate && data.toDate) {
+        const fromDate = new Date(data.fromDate);
+        const toDate = new Date(data.toDate);
+        return fromDate <= toDate;
+      }
+      return true;
     },
     {
-      // エラーオブジェクトを返して、toDateフィールドにエラーメッセージを関連付けます
-      message: "終了日付は開始日付より前にしてください。",
+      message: "終了期間は開始期間より前にしてください。",
       path: ["toDate"], // エラーメッセージを表示するフィールドのパス
     }
   );

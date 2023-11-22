@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { IncomeAndExpenseForm } from "./IncomeAndExpenseForm";
-import { IncomeAndExpenseTable } from "./IncomeAndExpenseTable";
+import { IncomeAndExpenseTableAll } from "./IncomeAndExpenseTableAll";
 import { Suspense } from "react";
 import { Spinner } from "@/app/materialTailwindExports";
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ const Page = () => (
   <>
     <IncomeAndExpenseForm />
     <Suspense fallback={<Spinner className="m-auto" />}>
-      <IncomeAndExpenseTable />
+      <IncomeAndExpenseTableAll />
     </Suspense>
   </>
 );

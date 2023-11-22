@@ -38,6 +38,7 @@ import {
   MenuList,
   MenuItem,
   Checkbox,
+  Tooltip,
 } from "@material-tailwind/react";
 
 export {
@@ -78,4 +79,5 @@ export {
   MenuList,
   MenuItem,
   Checkbox,
+  Tooltip,
 };

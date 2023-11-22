@@ -48,6 +48,29 @@ export const getIncomeAndExpenseMonthlyCategory = async (
   }
 };
 
+export const getIncomeAndExpenseMonthlyLiquidations = async (
+  fromDate: string,
+  toDate: string,
+  targetUserId: string
+) => {
+  try {
+    const response = await axios.get(
+      "/api/private/income-and-expense/liquidations",
+      {
+        params: {
+          fromDate: fromDate,
+          toDate: toDate,
+          targetUserId: targetUserId,
+        },
+      }
+    );
+    const result: IncomeAndExpense[] = response.data;
+    return result;
+  } catch (error) {
+    throw new Error(GET_NG_MESSAGE);
+  }
+};
+
 export const getGroupAllUser = async () => {
   try {
     const response = await axios.get("/api/private/user/group-all");

@@ -144,6 +144,12 @@ export function Sidebar({
             </List>
           </AccordionBody>
         </Accordion>
+        <ListItem>
+          <ListItemPrefix>
+            <CurrencyYenIcon className="h-5 w-5" />
+          </ListItemPrefix>
+          カテゴリ変更
+        </ListItem>
         <ListItem onClick={() => handleOpenMenu(SETTING_OPEN.INIT_AMOUNT)}>
           <ListItemPrefix>
             <CurrencyYenIcon className="h-5 w-5" />

@@ -42,6 +42,7 @@ export const IncomeAndExpenseForm = () => {
             ? -parseInt(user.amount, 10) || 0
             : parseInt(user.amount, 10) || 0,
           liquidationFg: false,
+          userName: "",
         };
         postBillingUsers = [...postBillingUsers, newBillingUser];
       }
@@ -55,6 +56,7 @@ export const IncomeAndExpenseForm = () => {
       date: toDateObject(data.date),
       registerUserId: user.id == null ? "" : user.id,
       billingUsers: postBillingUsers,
+      registerUserName: "",
     };
 
     try {

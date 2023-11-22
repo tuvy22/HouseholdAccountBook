@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
@@ -14,7 +15,9 @@ const (
 )
 
 type IncomeAndExpenseUsecase interface {
-	GetAllIncomeAndExpenseWithBillingUser(groupID uint) ([]entity.IncomeAndExpense, error)
+	GetAllIncomeAndExpense(groupID uint) ([]entity.IncomeAndExpenseResponse, error)
+	GetIncomeAndExpenseLiquidations(fromDate time.Time, toDate time.Time, loginUserID string, billingUserID string, groupID uint) ([]entity.IncomeAndExpenseResponse, error)
+
 	CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string) error
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
 	DeleteIncomeAndExpense(id uint) error
@@ -32,20 +35,51 @@ func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository, user
 	return &incomeAndExpenseUsecaseImpl{repo: repo, userRepo: userRepo}
 }
 
-func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpenseWithBillingUser(groupID uint) ([]entity.IncomeAndExpense, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpense(groupID uint) ([]entity.IncomeAndExpenseResponse, error) {
 	result := []entity.IncomeAndExpense{}
 
 	userIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
-		return result, err
+		return u.convertToIncomeAndExpenseResponse(result, groupID), err
 	}
 
-	err = u.repo.GetAllIncomeAndExpenseWithBillingUser(&result, userIDs)
+	err = u.repo.GetAllIncomeAndExpense(&result, userIDs)
 	if err != nil {
-		return result, err
+		return u.convertToIncomeAndExpenseResponse(result, groupID), err
 	}
 
-	return result, nil
+	return u.convertToIncomeAndExpenseResponse(result, groupID), nil
+}
+func (u *incomeAndExpenseUsecaseImpl) GetIncomeAndExpenseLiquidations(fromDate time.Time, toDate time.Time, loginUserID string, billingUserID string, groupID uint) ([]entity.IncomeAndExpenseResponse, error) {
+	myResult := []entity.IncomeAndExpense{}
+	targetResult := []entity.IncomeAndExpense{}
+
+	err := u.repo.GetIncomeAndExpenseLiquidations(&myResult, fromDate, toDate, loginUserID, billingUserID)
+	if err != nil {
+		return u.convertToIncomeAndExpenseResponse(myResult, groupID), err
+	}
+
+	err = u.repo.GetIncomeAndExpenseLiquidations(&targetResult, fromDate, toDate, billingUserID, loginUserID)
+	if err != nil {
+		return u.convertToIncomeAndExpenseResponse(targetResult, groupID), err
+
+	}
+	result := append(myResult, targetResult...)
+
+	// 結果をソートする
+	sort.Slice(result, func(i, j int) bool {
+		return u.sortByDateDescIDDesc(&(result)[i], &(result)[j])
+	})
+
+	return u.convertToIncomeAndExpenseResponse(result, groupID), nil
+}
+
+// ソート用の比較関数
+func (u *incomeAndExpenseUsecaseImpl) sortByDateDescIDDesc(a, b *entity.IncomeAndExpense) bool {
+	if a.Date.Equal(b.Date) {
+		return a.ID > b.ID // 同じ日付の場合はIDで降順
+	}
+	return a.Date.After(b.Date) // 日付で降順
 }
 
 func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string) error {
@@ -208,4 +242,45 @@ func (u *incomeAndExpenseUsecaseImpl) getGroupUserIDs(groupID uint) ([]string, e
 		userIDs = append(userIDs, user.ID)
 	}
 	return userIDs, nil
+}
+func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAndExpenses []entity.IncomeAndExpense, groupID uint) []entity.IncomeAndExpenseResponse {
+
+	var users []entity.User
+	u.userRepo.GetAllUserByGroupId(groupID, &users)
+	userMap := make(map[string]string)
+	for _, user := range users {
+		userMap[user.ID] = user.Name
+	}
+
+	resultResponses := make([]entity.IncomeAndExpenseResponse, 0, len(incomeAndExpenses))
+
+	for _, incomeAndExpense := range incomeAndExpenses {
+		billingUsers := []entity.IncomeAndExpenseBillingUserResponse{}
+
+		for _, billingUser := range incomeAndExpense.BillingUsers {
+			response := entity.IncomeAndExpenseBillingUserResponse{
+				UserID:        billingUser.UserID,
+				UserName:      userMap[billingUser.UserID],
+				Amount:        billingUser.Amount,
+				LiquidationFg: billingUser.LiquidationFg,
+			}
+			billingUsers = append(billingUsers, response)
+
+		}
+
+		response := entity.IncomeAndExpenseResponse{
+			ID:               incomeAndExpense.ID,
+			Category:         incomeAndExpense.Category,
+			Amount:           incomeAndExpense.Amount,
+			Memo:             incomeAndExpense.Memo,
+			Date:             incomeAndExpense.Date,
+			RegisterUserID:   incomeAndExpense.RegisterUserID,
+			RegisterUserName: userMap[incomeAndExpense.RegisterUserID],
+			BillingUsers:     billingUsers,
+		}
+		resultResponses = append(resultResponses, response)
+	}
+
+	return resultResponses
+
 }
