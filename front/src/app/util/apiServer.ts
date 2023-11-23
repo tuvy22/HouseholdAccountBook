@@ -64,3 +64,32 @@ export const getGroupAllUser = async () => {
     throw new Error(GET_NG_MESSAGE);
   }
 };
+export const getIncomeAndExpenseMonthlyLiquidations = async (
+  fromDate: string,
+  toDate: string,
+  targetUserId: string
+) => {
+  try {
+    const cookieStore = cookies();
+    const cookie = cookieStore.get(SESSION_ID_COOKIE);
+
+    const response = await axios.get(
+      "http://localhost:8080/api/localhost/income-and-expense/liquidations",
+      {
+        headers: {
+          cache: "no-store",
+          Cookie: `${cookie?.name}=${cookie?.value};`,
+        },
+        params: {
+          fromDate: fromDate,
+          toDate: toDate,
+          targetUserId: targetUserId,
+        },
+      }
+    );
+    const result: IncomeAndExpense[] = response.data;
+    return result;
+  } catch (error) {
+    throw new Error(GET_NG_MESSAGE);
+  }
+};

@@ -17,14 +17,10 @@ import {
 } from "@/app/materialTailwindExports";
 import React, { useEffect, useState } from "react";
 import { IncomeAndExpense, User } from "@/app/util/types";
-import {
-  getGroupAllUser,
-  getIncomeAndExpenseMonthlyLiquidations,
-} from "@/app/util/apiClient";
+import { getGroupAllUser } from "@/app/util/apiClient";
 import { toDateObject, toDateString } from "@/app/util/util";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
-import { IncomeAndExpenseTable } from "@/app/components/IncomeAndExpenseTable";
 
 export interface CheckedItems {
   [key: number]: boolean;
@@ -34,7 +30,6 @@ const Liquidation = () => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<LiquidationSchema>({
     resolver: zodResolver(liquidationSchema),
@@ -45,16 +40,23 @@ const Liquidation = () => {
   });
   const [groupData, setGroupData] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>();
-  const [checkedItems, setCheckedItems] = useState<CheckedItems>({});
+  const [selectedUserError, setSelectedError] = useState("");
 
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const router = useRouter();
+  const loginUser = useUser().user;
 
-  const handleCheckboxChange = (id: number) => {
-    console.log(id);
-    setCheckedItems({
-      ...checkedItems,
-      [id]: !checkedItems[id],
-    });
+  // フォーム送信時の処理
+  const onSubmit = async (data: LiquidationSchema) => {
+    if (!selectedUser) {
+      setSelectedError("清算相手が選択されていません。");
+      return;
+    }
+    // 検索画面に遷移
+    router.push(
+      `/liquidation-list?from-date=${data.fromDate}&to-date=${
+        data.toDate
+      }&target-user=${selectedUser?.id || ""}`
+    );
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -62,31 +64,6 @@ const Liquidation = () => {
     };
     fetchData();
   }, []);
-
-  const router = useRouter();
-  const loginUser = useUser().user;
-
-  const [liquidationIncomeAndExpenses, setLiquidationIncomeAndExpenses] =
-    useState<IncomeAndExpense[] | null>(null);
-
-  const handleLiquidation = async () => {
-    setOpenDeleteDialog(false);
-    setLiquidationIncomeAndExpenses(null);
-    //清算API呼び出し
-    //await deleteIncomeAndExpense(deletedIncomeAndExpense.id);
-  };
-
-  // フォーム送信時の処理
-  const onSubmit = async (data: LiquidationSchema) => {
-    const liquidations = await getIncomeAndExpenseMonthlyLiquidations(
-      data.fromDate,
-      data.toDate,
-      selectedUser?.id || ""
-    );
-    console.log(liquidations);
-    setOpenDeleteDialog(true);
-    setLiquidationIncomeAndExpenses(liquidations);
-  };
   return (
     <>
       <form
@@ -95,7 +72,7 @@ const Liquidation = () => {
       >
         <div className="mx-auto max-w-2xl">
           <Typography variant="h2" className="text-xl text-center md:text-left">
-            清算対象
+            清算対象検索
           </Typography>
           <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row mt-6">
             <div className="flex flex-col flex-grow">
@@ -158,30 +135,17 @@ const Liquidation = () => {
                 {errors.toDate.message}
               </div>
             )}
+            {selectedUserError && (
+              <div className="text-red-500  text-left w-full">
+                {selectedUserError}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex justify-end mt-3">
           <SubmitButtonForm buttonName={"検索"} />
         </div>
       </form>
-      {liquidationIncomeAndExpenses && (
-        <IncomeAndExpenseTable
-          fetchData={liquidationIncomeAndExpenses}
-          isLiquidation={true}
-          BillingPopoverNotBgGrayUserId={selectedUser?.id}
-          checkedItems={checkedItems}
-          handleCheckboxChange={handleCheckboxChange}
-        />
-        // <LiquidationDialog
-        //   open={openDeleteDialog}
-        //   handleOpen={() => setOpenDeleteDialog(!openDeleteDialog)}
-        //   handleOk={handleLiquidation}
-        //   data={liquidationIncomeAndExpenses}
-        //   BillingPopoverNotBgGrayUserId={selectedUser?.id}
-        //   checkedItems={checkedItems}
-        //   handleCheckboxChange={handleCheckboxChange}
-        // />
-      )}
     </>
   );
 };

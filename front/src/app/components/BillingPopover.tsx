@@ -77,7 +77,7 @@ export default function BillingPopover({
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {billingUser.userID}
+                            {billingUser.userName}
                           </Typography>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">

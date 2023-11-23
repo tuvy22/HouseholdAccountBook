@@ -10,7 +10,7 @@ import BillingPopover from "./BillingPopover";
 import { CheckedItems } from "../(auth)/liquidation/Liquidation";
 
 const TABLE_INFO_ALL = [
-  { header: "登録", addClassName: "" },
+  { header: "登録・支払", addClassName: "" },
   { header: "分担", addClassName: "" },
   { header: "区分", addClassName: "" },
   { header: "金額", addClassName: "" },
@@ -19,7 +19,7 @@ const TABLE_INFO_ALL = [
 ];
 const TABLE_INFO_LIQUIDATION = [
   { header: "", addClassName: "w-10" },
-  { header: "登録", addClassName: "" },
+  { header: "登録・支払", addClassName: "" },
   { header: "分担", addClassName: "" },
   { header: "区分", addClassName: "" },
   { header: "金額", addClassName: "" },
@@ -102,7 +102,6 @@ export const IncomeAndExpenseTable = ({
                         {isLiquidation && (
                           <td className="p-2 md:p-4 border-b border-blue-gray-50">
                             <Checkbox
-                              // id={incomeAndExpense.id.toString()}
                               checked={
                                 checkedItems[incomeAndExpense.id] || false
                               }
@@ -119,7 +118,7 @@ export const IncomeAndExpenseTable = ({
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {incomeAndExpense.registerUserId}
+                            {incomeAndExpense.registerUserName}
                           </Typography>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">

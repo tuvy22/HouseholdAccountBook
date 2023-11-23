@@ -259,10 +259,11 @@ func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAn
 
 		for _, billingUser := range incomeAndExpense.BillingUsers {
 			response := entity.IncomeAndExpenseBillingUserResponse{
-				UserID:        billingUser.UserID,
-				UserName:      userMap[billingUser.UserID],
-				Amount:        billingUser.Amount,
-				LiquidationFg: billingUser.LiquidationFg,
+				IncomeAndExpenseID: billingUser.IncomeAndExpenseID,
+				UserID:             billingUser.UserID,
+				UserName:           userMap[billingUser.UserID],
+				Amount:             billingUser.Amount,
+				LiquidationFg:      billingUser.LiquidationFg,
 			}
 			billingUsers = append(billingUsers, response)
 
