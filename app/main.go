@@ -34,9 +34,13 @@ func main() {
 	userRepo := repository.NewUserRepository(db.GetDB())
 	groupRepo := repository.NewGroupRepository(db.GetDB())
 	incomeAndExpenseRepo := repository.NewIncomeAndExpenseRepository(db.GetDB())
+	liquidationRepo := repository.NewLiquidationRepository(db.GetDB())
 
 	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo, userRepo)
 	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
+
+	liquidationUsecase := usecase.NewLiquidationUsecase(liquidationRepo, incomeAndExpenseRepo, userRepo)
+	liquidationHandler := handler.NewLiquidationHandler(liquidationUsecase)
 
 	password := password.NewPassWord()
 	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, password, originalConfig)
@@ -45,7 +49,7 @@ func main() {
 
 	responsedOKHandler := handler.NewResponsedOKHandler()
 
-	r := router.NewRouter(originalConfig, userHandler, incomeAndExpenseHandler, responsedOKHandler, middlewareHandler)
+	r := router.NewRouter(originalConfig, userHandler, incomeAndExpenseHandler, liquidationHandler, responsedOKHandler, middlewareHandler)
 
 	r.Run(":8080")
 }

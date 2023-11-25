@@ -12,7 +12,7 @@ import (
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
 )
 
-func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, responsedOKHandler handler.ResponsedOKHandler, middlewareHandler handler.MiddlewareHandler) *gin.Engine {
+func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, liquidationHandler handler.LiquidationHandler, responsedOKHandler handler.ResponsedOKHandler, middlewareHandler handler.MiddlewareHandler) *gin.Engine {
 	r := gin.Default()
 
 	// クッキーストアの設定
@@ -61,6 +61,8 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized.PUT("/income-and-expense/:id", incomeAndExpenseHandler.UpdateIncomeAndExpense)
 	authorized.DELETE("/income-and-expense/:id", incomeAndExpenseHandler.DeleteIncomeAndExpense)
 	authorized.GET("/income-and-expense/monthly-category", incomeAndExpenseHandler.GetMonthlyCategory)
+
+	authorized.POST("/liquidation", liquidationHandler.CreateLiquidation)
 
 	return r
 }

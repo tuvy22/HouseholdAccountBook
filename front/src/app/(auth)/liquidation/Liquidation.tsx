@@ -22,10 +22,6 @@ import { toDateObject, toDateString } from "@/app/util/util";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
 
-export interface CheckedItems {
-  [key: number]: boolean;
-}
-
 const Liquidation = () => {
   const {
     register,
@@ -53,7 +49,7 @@ const Liquidation = () => {
     }
     // 検索画面に遷移
     router.push(
-      `/liquidation-list?from-date=${data.fromDate}&to-date=${
+      `/liquidation/list?from-date=${data.fromDate}&to-date=${
         data.toDate
       }&target-user=${selectedUser?.id || ""}`
     );

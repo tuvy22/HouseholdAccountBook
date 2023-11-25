@@ -9,7 +9,6 @@ import React from "react";
 import GroupIcon from "@mui/icons-material/Group";
 import Person from "@mui/icons-material/Person";
 import { IncomeAndExpense } from "@/app/util/types";
-import { isMinus } from "@/app/util/util";
 
 const TABLE_INFO_BULLING = [
   { header: "支払", addClassName: "" },
@@ -95,7 +94,12 @@ export default function BillingPopover({
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {billingUser.liquidationFg ? "済" : "未"}
+                            {billingUser.liquidationID > 0
+                              ? "済"
+                              : billingUser.userID !==
+                                incomeAndExpense.registerUserId
+                              ? "未"
+                              : "-"}
                           </Typography>
                         </td>
                       </tr>

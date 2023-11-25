@@ -8,13 +8,19 @@ export interface IncomeAndExpense {
   registerUserName: string;
   billingUsers: IncomeAndExpenseBillingUser[];
 }
+export interface LiquidationCreate {
+  date: Date;
+  registerUserId: string;
+  billingUsersIds: number[];
+}
 
 export interface IncomeAndExpenseBillingUser {
+  id: number;
   incomeAndExpenseID: number;
   userID: string;
   userName: string;
   amount: number;
-  liquidationFg: boolean;
+  liquidationID: number;
 }
 
 export interface IncomeAndExpenseMonthlyTotal {

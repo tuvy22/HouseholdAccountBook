@@ -4,6 +4,7 @@ import {
   InviteUrl,
   User,
   IncomeAndExpenseMonthlyCategory,
+  LiquidationCreate,
 } from "@/app/util/types";
 import axios, { AxiosError } from "axios";
 import {
@@ -156,5 +157,17 @@ export const deleteInviteToken = async () => {
     await axios.delete("/api/public/invite-cookie");
   } catch (error) {
     throw new Error(DELETE_NG_MESSAGE);
+  }
+};
+
+export const postLiquidation = async (data: LiquidationCreate) => {
+  try {
+    const response = await axios.post("/api/private/liquidation", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    throw new Error(POST_NG_MESSAGE);
   }
 };

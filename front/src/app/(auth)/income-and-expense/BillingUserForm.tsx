@@ -158,7 +158,7 @@ export function BillingUserForm({
                 color="red"
                 className="h-11 w-full md:w-28"
               >
-                分担選択
+                立替入力
               </Button>
             </MenuHandler>
             <MenuList>

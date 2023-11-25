@@ -1,27 +1,39 @@
 package repository
 
 import (
-	"time"
-
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"gorm.io/gorm"
 )
 
-type Liquidation interface {
-	GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string) error
+type LiquidationRepository interface {
+	CreateLiquidationAndUpdateBillingUser(liquidation *entity.Liquidation, updateBillingUserID []uint) error
 }
 
 type liquidationRepositoryImpl struct {
 	DB *gorm.DB
 }
 
-func NewLiquidationRepository(db *gorm.DB) IncomeAndExpenseRepository {
-	return &incomeAndExpenseRepositoryImpl{DB: db}
+func NewLiquidationRepository(db *gorm.DB) LiquidationRepository {
+	return &liquidationRepositoryImpl{DB: db}
 }
 
-func (r *incomeAndExpenseRepositoryImpl) GetLiquidations(fromDate time.Time, toDate time.Time, incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string, billingUserIDs []string) error {
-	if err := r.DB.Preload("BillingUsers").Where("register_user_id IN ?", registerUserIDs).Order("Date desc, id desc").Find(incomeAndExpenses).Error; err != nil {
+func (r *liquidationRepositoryImpl) CreateLiquidationAndUpdateBillingUser(liquidation *entity.Liquidation, updateBillingUserID []uint) error {
+	// トランザクションを開始
+	tx := r.DB.Begin()
+
+	if err := tx.Create(&liquidation).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
+	if err := tx.Model(&entity.IncomeAndExpenseBillingUser{}).Where("id IN ?", updateBillingUserID).Update("liquidation_id", liquidation.ID).Error; err != nil {
+		tx.Rollback() // エラーが発生した場合、ロールバック
+		return err
+	}
+
+	// トランザクションをコミット
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -22,7 +22,7 @@ export const IncomeAndExpenseForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
-  const user = useUser().user;
+  const loginUser = useUser().user;
   const [billingUsers, setBillingUsers] = useState<BillingUserFormType[]>([]);
   const [triggerReset, setTriggerReset] = useState(0);
   const alert = useAlert();
@@ -41,8 +41,9 @@ export const IncomeAndExpenseForm = () => {
           amount: isMinus
             ? -parseInt(user.amount, 10) || 0
             : parseInt(user.amount, 10) || 0,
-          liquidationFg: false,
           userName: "",
+          id: 0,
+          liquidationID: 0,
         };
         postBillingUsers = [...postBillingUsers, newBillingUser];
       }
@@ -54,7 +55,7 @@ export const IncomeAndExpenseForm = () => {
       amount: isMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: toDateObject(data.date),
-      registerUserId: user.id == null ? "" : user.id,
+      registerUserId: loginUser.id == null ? "" : loginUser.id,
       billingUsers: postBillingUsers,
       registerUserName: "",
     };

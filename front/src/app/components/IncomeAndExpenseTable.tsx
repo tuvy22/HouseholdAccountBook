@@ -1,26 +1,27 @@
 import { MemoPopover } from "@/app/components/MemoPopover";
 import { IncomeAndExpense } from "@/app/util/types";
 import { isMinus, toDateString } from "@/app/util/util";
-import React, { useState } from "react";
 import { Card, Checkbox, Typography } from "@/app/materialTailwindExports";
 import EditIcon from "./EditIcon";
 import DeleteIcon from "./DeleteIcon";
-import { getIncomeAndExpense } from "@/app/util/apiServer";
 import BillingPopover from "./BillingPopover";
-import { CheckedItems } from "../(auth)/liquidation/Liquidation";
+import { CheckedItems } from "../(auth)/liquidation/list/LiquidationList";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import React from "react";
 
 const TABLE_INFO_ALL = [
   { header: "登録・支払", addClassName: "" },
-  { header: "分担", addClassName: "" },
+  { header: "立替内容", addClassName: "" },
   { header: "区分", addClassName: "" },
   { header: "金額", addClassName: "" },
   { header: "メモ", addClassName: "w-[40%]" },
   { header: "", addClassName: "w-28" },
 ];
 const TABLE_INFO_LIQUIDATION = [
-  { header: "", addClassName: "w-10" },
+  { header: "[allCheck]", addClassName: "w-10 text-center" },
   { header: "登録・支払", addClassName: "" },
-  { header: "分担", addClassName: "" },
+  { header: "立替内容", addClassName: "" },
   { header: "区分", addClassName: "" },
   { header: "金額", addClassName: "" },
   { header: "メモ", addClassName: "w-[40%]" },
@@ -29,15 +30,21 @@ const TABLE_INFO_LIQUIDATION = [
 export const IncomeAndExpenseTable = ({
   fetchData,
   isLiquidation = false,
-  BillingPopoverNotBgGrayUserId = "",
+  loginUserId = "",
+  targetUserId = "",
   checkedItems = {},
   handleCheckboxChange = () => {},
+  allCheckBox = true,
+  handleAllCheckBoxChange = () => {},
 }: {
   fetchData: IncomeAndExpense[];
   isLiquidation?: boolean;
-  BillingPopoverNotBgGrayUserId?: string;
+  loginUserId?: string;
+  targetUserId?: string;
   checkedItems?: CheckedItems;
   handleCheckboxChange?: (id: number) => void;
+  allCheckBox?: boolean;
+  handleAllCheckBoxChange: (check: boolean) => void;
 }) => {
   let previousDate: Date;
   let tableHeader: { header: string; addClassName: string }[];
@@ -59,13 +66,27 @@ export const IncomeAndExpenseTable = ({
                     key={index}
                     className={`border-b border-blue-gray-100 bg-blue-gray-50 p-4 ${info.addClassName}`}
                   >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
-                    >
-                      {info.header}
-                    </Typography>
+                    {info.header === "[allCheck]" ? (
+                      allCheckBox ? (
+                        <CheckBoxIcon
+                          className="cursor-pointer hover:text-green-500"
+                          onClick={() => handleAllCheckBoxChange(!allCheckBox)}
+                        />
+                      ) : (
+                        <CheckBoxOutlineBlankIcon
+                          className="cursor-pointer hover:text-green-500"
+                          onClick={() => handleAllCheckBoxChange(!allCheckBox)}
+                        />
+                      )
+                    ) : (
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal leading-none opacity-70"
+                      >
+                        {info.header}
+                      </Typography>
+                    )}
                   </th>
                 ))}
               </tr>
@@ -124,7 +145,11 @@ export const IncomeAndExpenseTable = ({
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <BillingPopover
                             incomeAndExpense={incomeAndExpense}
-                            notBgGrayUserId={BillingPopoverNotBgGrayUserId}
+                            notBgGrayUserId={
+                              incomeAndExpense.registerUserId === loginUserId
+                                ? targetUserId
+                                : loginUserId
+                            }
                           />
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">

@@ -21,7 +21,6 @@ import { useAlert } from "@/app/context/AlertProvider";
 import { AlertValue } from "@/app/components/AlertCustoms";
 
 export function UserName() {
-  const [error, setError] = useState("");
   const user = useUser();
   const alert = useAlert();
 
@@ -37,13 +36,7 @@ export function UserName() {
   });
   const onSubmit = async (data: UserUpdateSchema) => {
     user.user.name = data.name;
-    try {
-      await updateUser(user.user);
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      }
-    }
+    await updateUser(user.user);
 
     //結果アラート
     const newAlertValue: AlertValue = {

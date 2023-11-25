@@ -63,11 +63,6 @@ export const ExpenseForm = ({
     <>
       <form onSubmit={(e) => handleSubmit((data) => onSubmit(data, true))(e)}>
         <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
-          <BillingUserForm
-            watch={watch}
-            billingUsers={billingUsers}
-            setBillingUsers={setBillingUsers}
-          />
           <DateForm errors={errors} register={register} />
           <CategoryForm
             errors={errors}
@@ -77,6 +72,11 @@ export const ExpenseForm = ({
           />
           <AmountForm errors={errors} register={register} />
           <MemoForm errors={errors} register={register} />
+          <BillingUserForm
+            watch={watch}
+            billingUsers={billingUsers}
+            setBillingUsers={setBillingUsers}
+          />
         </div>
         <div className="flex justify-end">
           <SubmitButtonForm buttonName={"登録"} />

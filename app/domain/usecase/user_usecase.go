@@ -306,10 +306,12 @@ func (u *userUsecaseImpl) moveToFirst(users []entity.User, targetID string) []en
 		}
 	}
 
-	if targetIndex == -1 {
-		return users // IDが見つからなかった場合、元の配列を返す
+	// IDが見つからない場合、またはすでに先頭にいる場合は、元の配列を返す
+	if targetIndex <= 0 {
+		return users
 	}
 
 	// 特定のIDを持つ要素を先頭に移動
+	// targetIndexが配列の途中にある場合のみ、処理を行う
 	return append([]entity.User{users[targetIndex]}, append(users[:targetIndex], users[targetIndex+1:]...)...)
 }

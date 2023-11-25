@@ -246,6 +246,8 @@ func (u *incomeAndExpenseUsecaseImpl) getGroupUserIDs(groupID uint) ([]string, e
 func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAndExpenses []entity.IncomeAndExpense, groupID uint) []entity.IncomeAndExpenseResponse {
 
 	var users []entity.User
+
+	//ユーザー情報取得(ユーザー名設定のため)
 	u.userRepo.GetAllUserByGroupId(groupID, &users)
 	userMap := make(map[string]string)
 	for _, user := range users {
@@ -259,11 +261,12 @@ func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAn
 
 		for _, billingUser := range incomeAndExpense.BillingUsers {
 			response := entity.IncomeAndExpenseBillingUserResponse{
+				ID:                 billingUser.ID,
 				IncomeAndExpenseID: billingUser.IncomeAndExpenseID,
 				UserID:             billingUser.UserID,
 				UserName:           userMap[billingUser.UserID],
 				Amount:             billingUser.Amount,
-				LiquidationFg:      billingUser.LiquidationFg,
+				LiquidationID:      billingUser.LiquidationID,
 			}
 			billingUsers = append(billingUsers, response)
 

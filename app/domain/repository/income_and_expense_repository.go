@@ -12,7 +12,6 @@ type IncomeAndExpenseRepository interface {
 	GetIncomeAndExpenseLiquidations(incomeAndExpenses *[]entity.IncomeAndExpense, fromDate time.Time, toDate time.Time, registerUserID string, billingUserID string) error
 	GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error
 	CreateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
-	// CreateIncomeAndExpenseWithBillingUser(data *entity.IncomeAndExpense) error
 	UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
 	DeleteIncomeAndExpense(id uint) error
 
@@ -35,53 +34,13 @@ func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpense
 	return nil
 }
 
-// func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeAndExpenses *[]entity.IncomeAndExpense, fromDate time.Time, toDate time.Time, registerUserID string, billingUserID string) error {
-// 	query := r.DB.Preload("BillingUsers", "user_id = ?", billingUserID).
-// 		Where("register_user_id = ?", registerUserID)
-
-// 	if !fromDate.IsZero() {
-// 		query = query.Where("date >= ?", fromDate)
-// 	}
-// 	if !toDate.IsZero() {
-// 		query = query.Where("date <= ?", toDate)
-// 	}
-
-// 	if err := query.Order("date desc, id desc").Find(incomeAndExpenses).Error; err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-// func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeAndExpenses *[]entity.IncomeAndExpense, fromDate time.Time, toDate time.Time, registerUserID string, billingUserID string) error {
-// 	// JOINを使用してBillingUsersと結合
-// 	query := r.DB.Model(&entity.IncomeAndExpense{}).
-// 		Joins("JOIN income_and_expense_billing_users ON income_and_expenses.id = income_and_expense_billing_users.income_and_expense_id").
-// 		Where("income_and_expenses.register_user_id = ?", registerUserID).
-// 		Where("income_and_expense_billing_users.user_id = ?", billingUserID)
-
-// 	// 日付範囲の条件を適用
-// 	if !fromDate.IsZero() {
-// 		query = query.Where("income_and_expenses.date >= ?", fromDate)
-// 	}
-// 	if !toDate.IsZero() {
-// 		query = query.Where("income_and_expenses.date <= ?", toDate)
-// 	}
-
-// 	// 結果を取得
-// 	if err := query.Order("income_and_expenses.date desc, income_and_expenses.id desc").Find(incomeAndExpenses).Error; err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
 func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeAndExpenses *[]entity.IncomeAndExpense, fromDate time.Time, toDate time.Time, registerUserID string, billingUserID string) error {
 
 	query := r.DB.Model(&entity.IncomeAndExpense{}).
 		Joins("JOIN income_and_expense_billing_users ON income_and_expenses.id = income_and_expense_billing_users.income_and_expense_id").
 		Where("income_and_expenses.register_user_id = ?", registerUserID).
-		Where("income_and_expense_billing_users.user_id = ?", billingUserID)
+		Where("income_and_expense_billing_users.user_id = ?", billingUserID).
+		Where("income_and_expense_billing_users.liquidation_id = ?", 0)
 
 	// 日付範囲の条件を適用
 	if !fromDate.IsZero() {
@@ -102,7 +61,6 @@ func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeA
 	for i, _ := range *incomeAndExpenses {
 		err := r.DB.Model(&entity.IncomeAndExpenseBillingUser{}).
 			Where("income_and_expense_id = ?", (*incomeAndExpenses)[i].ID).
-			// Where("user_id = ?", billingUserID).
 			Find(&(*incomeAndExpenses)[i].BillingUsers).Error
 
 		if err != nil {
@@ -128,31 +86,6 @@ func (r *incomeAndExpenseRepositoryImpl) CreateIncomeAndExpense(incomeAndExpense
 	}
 	return nil
 }
-
-// func (r *incomeAndExpenseRepositoryImpl) CreateIncomeAndExpenseWithBillingUser(data *entity.IncomeAndExpense) error {
-// 	// トランザクション開始
-// 	tx := r.DB.Begin()
-
-// 	// 親モデル（IncomeAndExpense）を先に保存
-// 	if err := tx.Create(&data).Error; err != nil {
-// 		tx.Rollback() // エラーが発生した場合はロールバック
-// 		return err
-// 	}
-
-// 	// IncomeAndExpenseID を子モデルにセット
-// 	for i := range data.BillingUsers {
-// 		data.BillingUsers[i].IncomeAndExpenseID = data.ID
-// 	}
-
-// 	// 子モデル（BillingUserのスライス）を保存
-// 	if err := tx.Create(&data.BillingUsers).Error; err != nil {
-// 		tx.Rollback() // エラーが発生した場合はロールバック
-// 		return err
-// 	}
-
-// 	// トランザクションをコミット
-// 	return tx.Commit().Error
-// }
 
 func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error {
 
