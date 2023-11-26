@@ -29,7 +29,7 @@ export default function BillingPopover({
       (incomeAndExpense.billingUsers.length > 1 ||
         (incomeAndExpense.billingUsers.length == 1 &&
           incomeAndExpense.billingUsers[0].userID !==
-            incomeAndExpense.registerUserId)) ? (
+            incomeAndExpense.registerUserID)) ? (
         <Popover>
           <PopoverHandler>
             {incomeAndExpense.billingUsers.length == 1 ? (
@@ -97,7 +97,7 @@ export default function BillingPopover({
                             {billingUser.liquidationID > 0
                               ? "済"
                               : billingUser.userID !==
-                                incomeAndExpense.registerUserId
+                                incomeAndExpense.registerUserID
                               ? "未"
                               : "-"}
                           </Typography>

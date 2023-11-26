@@ -55,7 +55,7 @@ export const IncomeAndExpenseForm = () => {
       amount: isMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: toDateObject(data.date),
-      registerUserId: loginUser.id == null ? "" : loginUser.id,
+      registerUserID: loginUser.id == null ? "" : loginUser.id,
       billingUsers: postBillingUsers,
       registerUserName: "",
     };

@@ -5,11 +5,11 @@ import React, { useState } from "react";
 import { deleteIncomeAndExpense } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
 import { useRouter } from "next/navigation";
-import { ConfirmDialog } from "@/app/components/ConfirmDialog";
+import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 import Delete from "@mui/icons-material/Delete";
 import { Spinner } from "@/app/materialTailwindExports";
 
-export default function DeleteIcon({
+export default function IncomeAndExpenseDeleteIcon({
   incomeAndExpense,
 }: {
   incomeAndExpense: IncomeAndExpense;
@@ -39,7 +39,7 @@ export default function DeleteIcon({
   return (
     <>
       {user.id !== null ? (
-        user.id === incomeAndExpense.registerUserId && (
+        user.id === incomeAndExpense.registerUserID && (
           <Delete
             className="cursor-pointer hover:text-red-500"
             onClick={() => handleOpenDeleteDialog(incomeAndExpense)}
@@ -50,7 +50,7 @@ export default function DeleteIcon({
       )}
 
       {deletedIncomeAndExpense && (
-        <ConfirmDialog
+        <IncomeAndExpenseConfirmDialog
           open={openDeleteDialog}
           handleOpen={() => setOpenDeleteDialog(!openDeleteDialog)}
           handleOk={handleDelete}

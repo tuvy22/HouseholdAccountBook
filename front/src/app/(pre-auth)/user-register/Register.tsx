@@ -20,7 +20,7 @@ import {
   UserCreateSchema,
   userCreateSchema,
 } from "../../components/UserSchema";
-import { ConfirmDialog } from "@/app/components/ConfirmDialog";
+import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 
 export const Register = ({ isInvite }: { isInvite: boolean }) => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -165,7 +165,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
           )}
         </CardBody>
       </Card>
-      <ConfirmDialog
+      <IncomeAndExpenseConfirmDialog
         open={openDialog}
         handleOpen={() => setOpenDialog(!openDialog)}
         handleCancel={handleCancel}

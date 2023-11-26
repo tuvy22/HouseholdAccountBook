@@ -1,10 +1,14 @@
 import { Metadata } from "next";
-import Liquidation from "./Liquidation";
+import { LiquidationResultList } from "./LiquidationResultList";
 
 export const metadata: Metadata = {
-  title: "清算",
+  title: "清算結果一覧",
 };
 
-const Page = () => <Liquidation />;
-
-export default Page;
+export default async function Page() {
+  return (
+    <>
+      <LiquidationResultList />
+    </>
+  );
+}

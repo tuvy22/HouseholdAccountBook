@@ -14,16 +14,17 @@ import { useUser } from "@/app/context/UserProvider";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { isMinus, toDateString } from "@/app/util/util";
-import { ConfirmDialog } from "@/app/components/ConfirmDialog";
+import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 import { postLiquidation } from "@/app/util/apiClient";
 import { AlertValue } from "@/app/components/AlertCustoms";
 import { useAlert } from "@/app/context/AlertProvider";
+import LiquidationFlow from "../LiquidationFlow";
 
 export interface CheckedItems {
   [key: number]: boolean;
 }
 
-export const LiquidationList = ({
+export const LiquidationSearchResult = ({
   liquidations,
   targetUserId,
 }: {
@@ -43,7 +44,7 @@ export const LiquidationList = ({
 
   //清算相手の名前の取得
   let targetUserName = "";
-  const ieFound = liquidations.find((ie) => ie.registerUserId === targetUserId);
+  const ieFound = liquidations.find((ie) => ie.registerUserID === targetUserId);
   if (ieFound) {
     targetUserName = ieFound.registerUserName;
   } else {
@@ -102,14 +103,15 @@ export const LiquidationList = ({
         l.billingUsers.forEach((bu) => {
           if (
             //清算対象のbillingUsers以外は対象外
-            loginUser.id === l.registerUserId
+            (loginUser.id === l.registerUserID
               ? targetUserId !== bu.userID
-              : loginUser.id !== bu.userID ||
-                //チェックしてないのは対象外
-                !checkKeys.includes(bu.incomeAndExpenseID.toString())
+              : loginUser.id !== bu.userID) ||
+            //チェックしてないのは対象外
+            !checkKeys.includes(bu.incomeAndExpenseID.toString())
           ) {
             return;
           }
+
           //計算
           const amount = bu.userID === loginUser.id ? bu.amount : -bu.amount;
 
@@ -122,7 +124,7 @@ export const LiquidationList = ({
         });
       }
     },
-    [liquidations, loginUser.id]
+    [liquidations, loginUser.id, targetUserId]
   );
 
   //チェックボックス変更時
@@ -160,10 +162,10 @@ export const LiquidationList = ({
   const handleLiquidation = async () => {
     const data: LiquidationCreate = {
       date: new Date(),
-      registerUserId: loginUser.id,
       billingUsersIds: postBillingUserId,
+      targetUserID: targetUserId,
+      registerUserID: loginUser.id,
     };
-    console.log(data);
 
     await postLiquidation(data);
 
@@ -182,7 +184,7 @@ export const LiquidationList = ({
     <>
       <div className="flex justify-between">
         <div>
-          <Typography variant="h4" color="gray">
+          <Typography className="text-xl text-center md:text-left">
             清算対象選択
           </Typography>
           <Typography color="gray" className="mt-1 font-normal">
@@ -216,70 +218,36 @@ export const LiquidationList = ({
       />
       {totalLiquidationAmount !== 0 && (
         <Card className="sticky bottom-0 left-0 right-0 z-30 bg-white bg-opacity-80 px-3 py-2 mt-8 ">
-          <div className="grid grid-cols-[2fr_1fr_2fr_1fr_auto_auto] grid-rows[auto_auto_auto] gap-3 justify-center items-center text-center">
+          <div className="grid grid-cols-[5fr_2fr_auto] grid-rows[auto_auto] gap-3 justify-center items-center text-center">
             <Typography
               color="gray"
-              className="text-left col-span-6 text-lg font-bold"
+              className="text-left col-span-4 text-lg font-bold"
             >
               <span>清算情報</span>
             </Typography>
-
-            <Typography
-              color="gray"
-              className={`border-b ${
-                !isMinus(totalLiquidationAmount)
-                  ? "border-blue-500"
-                  : "border-red-500"
-              }`}
-            >
-              {loginUser.name}
-            </Typography>
-            <div>
-              {!isMinus(totalLiquidationAmount) ? (
-                <ArrowBackIcon />
-              ) : (
-                <ArrowForwardIcon />
-              )}
+            <div className="">
+              <LiquidationFlow
+                registerUserName={loginUser.name}
+                targetUserName={targetUserName}
+                amount={totalLiquidationAmount}
+              />
             </div>
-            <Typography
-              color="gray"
-              className={`border-b ${
-                !isMinus(totalLiquidationAmount)
-                  ? "border-red-500"
-                  : "border-blue-500"
-              }`}
-            >
-              {targetUserName}
-            </Typography>
             <div className="row-span-2"></div>
-            <Button
-              variant="text"
-              color="red"
-              onClick={() => {
-                router.push("/liquidation");
-              }}
-              size="lg"
-              className=" w-full md:w-28 row-span-2"
-            >
-              {"戻る"}
-            </Button>
             <Button
               variant="gradient"
               color="green"
               size="lg"
-              className="w-full md:w-28 row-span-2"
+              className="w-full md:w-28"
               onClick={() => {
                 setOpenDialog(true);
               }}
             >
               {"清算"}
             </Button>
-
-            <div className="col-span-3">{`${totalLiquidationAmount}円`}</div>
           </div>
         </Card>
       )}
-      <ConfirmDialog
+      <IncomeAndExpenseConfirmDialog
         open={openDialog}
         handleOpen={() => setOpenDialog(!openDialog)}
         handleOk={handleLiquidation}

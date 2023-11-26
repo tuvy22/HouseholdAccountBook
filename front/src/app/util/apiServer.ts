@@ -2,7 +2,12 @@ import axios from "axios";
 import { GET_NG_MESSAGE } from "./apiHandleError";
 import { cookies } from "next/headers";
 import { SESSION_ID_COOKIE } from "./constants";
-import { IncomeAndExpense, IncomeAndExpenseMonthlyTotal, User } from "./types";
+import {
+  IncomeAndExpense,
+  IncomeAndExpenseMonthlyTotal,
+  Liquidation,
+  User,
+} from "./types";
 
 export const getIncomeAndExpense = async () => {
   try {
@@ -64,7 +69,7 @@ export const getGroupAllUser = async () => {
     throw new Error(GET_NG_MESSAGE);
   }
 };
-export const getIncomeAndExpenseMonthlyLiquidations = async (
+export const getIncomeAndExpenseLiquidations = async (
   fromDate: string,
   toDate: string,
   targetUserId: string
@@ -88,6 +93,27 @@ export const getIncomeAndExpenseMonthlyLiquidations = async (
       }
     );
     const result: IncomeAndExpense[] = response.data;
+    return result;
+  } catch (error) {
+    throw new Error(GET_NG_MESSAGE);
+  }
+};
+
+export const getLiquidations = async () => {
+  try {
+    const cookieStore = cookies();
+    const cookie = cookieStore.get(SESSION_ID_COOKIE);
+
+    const response = await axios.get(
+      "http://localhost:8080/api/localhost/liquidation/all",
+      {
+        headers: {
+          cache: "no-store",
+          Cookie: `${cookie?.name}=${cookie?.value};`,
+        },
+      }
+    );
+    const result: Liquidation[] = response.data;
     return result;
   } catch (error) {
     throw new Error(GET_NG_MESSAGE);

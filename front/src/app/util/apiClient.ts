@@ -171,3 +171,11 @@ export const postLiquidation = async (data: LiquidationCreate) => {
     throw new Error(POST_NG_MESSAGE);
   }
 };
+
+export const deleteLiquidation = async (id: number) => {
+  try {
+    await axios.delete(`/api/private/liquidation/${id}`);
+  } catch (error) {
+    throw new Error(DELETE_NG_MESSAGE);
+  }
+};

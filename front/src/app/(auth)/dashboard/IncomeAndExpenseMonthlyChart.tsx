@@ -116,7 +116,7 @@ export const IncomeAndExpenseMonthlyChart = ({
           href={`/setting?open=${SETTING_OPEN.INIT_AMOUNT}`}
           className="text-blue-600 underline hover:no-underline"
         >
-          初期残高はこちらから
+          初期残高設定はこちらから
         </Link>
       </div>
       <div className="flex items-center gap-5 mt-3">

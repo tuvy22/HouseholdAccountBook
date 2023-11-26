@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-const NoneLiquidation uint = 0
+const NoneLiquidationID uint = 0
 
 type IncomeAndExpenseBillingUser struct {
 	gorm.Model

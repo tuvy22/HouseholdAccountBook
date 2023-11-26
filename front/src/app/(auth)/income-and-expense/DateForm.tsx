@@ -3,7 +3,7 @@
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { IncomeExpenseSchema } from "./IncomeAndExpenseSchema";
 import { Input } from "@/app/materialTailwindExports";
-import { LiquidationSchema } from "../liquidation/LiquidationSchema";
+import { LiquidationSchema } from "../liquidation/search/LiquidationSchema";
 
 function DateForm({
   errors,

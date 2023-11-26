@@ -21,7 +21,7 @@ type IncomeAndExpenseResponse struct {
 	Amount           int                                   `json:"amount" `
 	Memo             string                                `json:"memo" `
 	Date             time.Time                             `json:"date" `
-	RegisterUserID   string                                `json:"registerUserId"`
+	RegisterUserID   string                                `json:"registerUserID"`
 	RegisterUserName string                                `json:"registerUserName"`
 	BillingUsers     []IncomeAndExpenseBillingUserResponse `json:"billingUsers"`
 }

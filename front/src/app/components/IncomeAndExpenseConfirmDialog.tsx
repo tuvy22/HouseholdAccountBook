@@ -22,7 +22,7 @@ type Props = {
   isOkBtnFocus?: boolean;
 };
 
-export const ConfirmDialog: React.FC<Props> = ({
+export const IncomeAndExpenseConfirmDialog: React.FC<Props> = ({
   title,
   message,
   cancelBtnName,

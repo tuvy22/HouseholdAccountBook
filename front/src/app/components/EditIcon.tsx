@@ -39,7 +39,7 @@ export default function EditIcon({
   return (
     <>
       {user.id !== null ? (
-        user.id === incomeAndExpense.registerUserId && (
+        user.id === incomeAndExpense.registerUserID && (
           <ModeEdit
             className="cursor-pointer hover:text-green-500"
             onClick={() => handleOpenUpdateDialog(incomeAndExpense)}

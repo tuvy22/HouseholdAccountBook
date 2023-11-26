@@ -75,7 +75,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
       amount: isDaialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: toDateObject(data.date),
-      registerUserId: updatedIncomeAndExpense.registerUserId,
+      registerUserID: updatedIncomeAndExpense.registerUserID,
       billingUsers: [],
       registerUserName: "",
     };

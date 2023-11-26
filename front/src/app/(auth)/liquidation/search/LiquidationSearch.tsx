@@ -1,7 +1,7 @@
 "use client";
 
-import SubmitButtonForm from "../../components/SubmitButtonForm";
-import DateForm from "../income-and-expense/DateForm";
+import SubmitButtonForm from "../../../components/SubmitButtonForm";
+import DateForm from "../../income-and-expense/DateForm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LiquidationSchema, liquidationSchema } from "./LiquidationSchema";
@@ -21,8 +21,9 @@ import { getGroupAllUser } from "@/app/util/apiClient";
 import { toDateObject, toDateString } from "@/app/util/util";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
+import Link from "next/link";
 
-const Liquidation = () => {
+const LiquidationSearch = () => {
   const {
     register,
     handleSubmit,
@@ -49,7 +50,7 @@ const Liquidation = () => {
     }
     // 検索画面に遷移
     router.push(
-      `/liquidation/list?from-date=${data.fromDate}&to-date=${
+      `/liquidation/search-result?from-date=${data.fromDate}&to-date=${
         data.toDate
       }&target-user=${selectedUser?.id || ""}`
     );
@@ -67,9 +68,14 @@ const Liquidation = () => {
         className="mt-5"
       >
         <div className="mx-auto max-w-2xl">
-          <Typography variant="h2" className="text-xl text-center md:text-left">
-            清算対象検索
-          </Typography>
+          <div className="flex justify-between">
+            <Typography
+              variant="h2"
+              className="text-xl text-center md:text-left"
+            >
+              清算対象検索
+            </Typography>
+          </div>
           <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row mt-6">
             <div className="flex flex-col flex-grow">
               <Input
@@ -90,7 +96,7 @@ const Liquidation = () => {
                 {...register("toDate")}
               />
             </div>
-            <div className="flex flex-col flex-grow">
+            <div className="flex flex-col justify-end">
               <Menu>
                 <MenuHandler>
                   <Button
@@ -146,4 +152,4 @@ const Liquidation = () => {
   );
 };
 
-export default Liquidation;
+export default LiquidationSearch;

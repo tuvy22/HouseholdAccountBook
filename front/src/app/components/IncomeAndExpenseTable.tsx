@@ -3,9 +3,9 @@ import { IncomeAndExpense } from "@/app/util/types";
 import { isMinus, toDateString } from "@/app/util/util";
 import { Card, Checkbox, Typography } from "@/app/materialTailwindExports";
 import EditIcon from "./EditIcon";
-import DeleteIcon from "./DeleteIcon";
+import IncomeAndExpenseDeleteIcon from "./IncomeAndExpenseDeleteIcon";
 import BillingPopover from "./BillingPopover";
-import { CheckedItems } from "../(auth)/liquidation/list/LiquidationList";
+import { CheckedItems } from "../(auth)/liquidation/search-result/LiquidationSearchResult";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import React from "react";
@@ -44,7 +44,7 @@ export const IncomeAndExpenseTable = ({
   checkedItems?: CheckedItems;
   handleCheckboxChange?: (id: number) => void;
   allCheckBox?: boolean;
-  handleAllCheckBoxChange: (check: boolean) => void;
+  handleAllCheckBoxChange?: (check: boolean) => void;
 }) => {
   let previousDate: Date;
   let tableHeader: { header: string; addClassName: string }[];
@@ -146,7 +146,7 @@ export const IncomeAndExpenseTable = ({
                           <BillingPopover
                             incomeAndExpense={incomeAndExpense}
                             notBgGrayUserId={
-                              incomeAndExpense.registerUserId === loginUserId
+                              incomeAndExpense.registerUserID === loginUserId
                                 ? targetUserId
                                 : loginUserId
                             }
@@ -205,7 +205,9 @@ export const IncomeAndExpenseTable = ({
                           <td className="p-2 md:p-4 border-b border-blue-gray-50">
                             <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row">
                               <EditIcon incomeAndExpense={incomeAndExpense} />
-                              <DeleteIcon incomeAndExpense={incomeAndExpense} />
+                              <IncomeAndExpenseDeleteIcon
+                                incomeAndExpense={incomeAndExpense}
+                              />
                             </div>
                           </td>
                         )}

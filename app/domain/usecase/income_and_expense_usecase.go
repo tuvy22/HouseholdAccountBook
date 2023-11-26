@@ -12,6 +12,7 @@ import (
 const (
 	ErrFailedCreate = "failed create"
 	ErrFailedUpdate = "failed update"
+	ErrFailedDelete = "failed delete"
 )
 
 type IncomeAndExpenseUsecase interface {

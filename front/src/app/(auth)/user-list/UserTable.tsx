@@ -4,7 +4,7 @@ import { Card, Spinner, Typography } from "@/app/materialTailwindExports";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ConfirmDialog } from "@/app/components/ConfirmDialog";
+import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useUser } from "@/app/context/UserProvider";

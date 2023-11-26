@@ -4,13 +4,24 @@ export interface IncomeAndExpense {
   category: string;
   amount: number;
   memo: string;
-  registerUserId: string;
+  registerUserID: string;
   registerUserName: string;
   billingUsers: IncomeAndExpenseBillingUser[];
 }
+export interface Liquidation {
+  id: number;
+  date: Date;
+  registerUserID: string;
+  registerUserName: string;
+  targetUserID: string;
+  targetUserName: string;
+  billingUsers: IncomeAndExpenseBillingUser[];
+}
+
 export interface LiquidationCreate {
   date: Date;
-  registerUserId: string;
+  registerUserID: string;
+  targetUserID: string;
   billingUsersIds: number[];
 }
 
