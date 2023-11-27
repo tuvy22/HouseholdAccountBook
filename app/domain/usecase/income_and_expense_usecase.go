@@ -21,7 +21,7 @@ type IncomeAndExpenseUsecase interface {
 
 	CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string) error
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
-	DeleteIncomeAndExpense(id uint) error
+	DeleteIncomeAndExpense(id uint, userId string) error
 
 	GetMonthlyTotal(groupID uint, InitialAmount int) ([]entity.IncomeAndExpenseMonthlyTotal, error)
 	GetMonthlyCategory(yearMonth string, groupID uint, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error)
@@ -89,7 +89,7 @@ func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpenseWithBillingUser(data
 	if err != nil {
 		return err
 	}
-	err = u.validateBillingUser(data, ErrFailedCreate)
+	err = u.validateBillingUserTotal(data, ErrFailedCreate)
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,21 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense en
 
 	return u.repo.UpdateIncomeAndExpense(&preIncomeAndExpense)
 }
-func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint) error {
+func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint, userId string) error {
+	preIncomeAndExpense := entity.IncomeAndExpense{}
+	err := u.repo.GetIncomeAndExpense(id, &preIncomeAndExpense)
+	if err != nil {
+		return err
+	}
+
+	err = u.validateUserID(preIncomeAndExpense, userId, ErrFailedDelete)
+	if err != nil {
+		return err
+	}
+	err = u.validateBillingUserDelete(preIncomeAndExpense, ErrFailedDelete)
+	if err != nil {
+		return err
+	}
 
 	return u.repo.DeleteIncomeAndExpense(id)
 }
@@ -158,6 +172,7 @@ func (u *incomeAndExpenseUsecaseImpl) GetMonthlyCategory(yearMonth string, group
 	if err != nil {
 		return monthlyCategorys, err
 	}
+
 	return monthlyCategorys, nil
 }
 
@@ -167,7 +182,7 @@ func (u *incomeAndExpenseUsecaseImpl) validateUserID(incomeAndExpense entity.Inc
 	}
 	return nil
 }
-func (u *incomeAndExpenseUsecaseImpl) validateBillingUser(data entity.IncomeAndExpense, errMessage string) error {
+func (u *incomeAndExpenseUsecaseImpl) validateBillingUserTotal(data entity.IncomeAndExpense, errMessage string) error {
 	if len(data.BillingUsers) == 0 {
 		return fmt.Errorf(errMessage)
 	}
@@ -184,6 +199,26 @@ func (u *incomeAndExpenseUsecaseImpl) validateBillingUser(data entity.IncomeAndE
 	}
 
 	return nil
+}
+func (u *incomeAndExpenseUsecaseImpl) validateBillingUserDelete(data entity.IncomeAndExpense, errMessage string) error {
+
+	countLiquidation := 0
+	countLiquidationComplete := 0
+	for _, billingUser := range data.BillingUsers {
+		if billingUser.UserID >= data.RegisterUserID {
+			//清算対象外
+			continue
+		}
+		countLiquidation += 1
+		if billingUser.LiquidationID > entity.NoneLiquidationID {
+			countLiquidationComplete += 1
+		}
+	}
+	if countLiquidationComplete == 0 || countLiquidation == countLiquidationComplete {
+		//全て未清算または、全て清算済みのみが削除できる
+		return nil
+	}
+	return fmt.Errorf(errMessage)
 }
 
 // すべての月のリストを生成

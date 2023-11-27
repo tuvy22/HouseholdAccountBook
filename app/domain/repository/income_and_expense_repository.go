@@ -73,7 +73,7 @@ func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeA
 
 func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error {
 
-	if err := r.DB.Where("id = ?", id).First(&incomeAndExpense).Error; err != nil {
+	if err := r.DB.Preload("BillingUsers").Where("id = ?", id).First(&incomeAndExpense).Error; err != nil {
 		return err
 	}
 	return nil

@@ -156,8 +156,14 @@ func (h *incomeAndExpenseHandlerImpl) DeleteIncomeAndExpense(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+	// ログインデータ取得
+	userResponse, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
 
-	err = h.usecase.DeleteIncomeAndExpense(id)
+	err = h.usecase.DeleteIncomeAndExpense(id, userResponse.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
