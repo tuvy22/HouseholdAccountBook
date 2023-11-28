@@ -88,12 +88,32 @@ func (r *incomeAndExpenseRepositoryImpl) CreateIncomeAndExpense(incomeAndExpense
 }
 
 func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error {
+	// トランザクションの開始
+	tx := r.DB.Begin()
 
-	if err := r.DB.Save(&incomeAndExpense).Error; err != nil {
+	// IncomeAndExpense の更新
+	if err := tx.Save(&incomeAndExpense).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
-	return nil
+	//一旦全削除
+	if err := tx.Where("income_and_expense_id = ?", incomeAndExpense.ID).Delete(&entity.IncomeAndExpenseBillingUser{}).Error; err != nil {
+		return err
+	}
+
+	// BillingUsers 再作成
+	for _, bu := range incomeAndExpense.BillingUsers {
+		bu.ID = 0
+		if err := tx.Create(&bu).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// トランザクションのコミット
+	return tx.Commit().Error
 }
+
 func (r *incomeAndExpenseRepositoryImpl) DeleteIncomeAndExpense(id uint) error {
 
 	if err := r.DB.Where("id = ?", id).Delete(&entity.IncomeAndExpense{}).Error; err != nil {

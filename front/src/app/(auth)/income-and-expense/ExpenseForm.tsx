@@ -76,6 +76,7 @@ export const ExpenseForm = ({
             watch={watch}
             billingUsers={billingUsers}
             setBillingUsers={setBillingUsers}
+            isUpdate={false}
           />
         </div>
         <div className="flex justify-end">

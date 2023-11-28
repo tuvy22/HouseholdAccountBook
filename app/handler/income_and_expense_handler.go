@@ -68,11 +68,19 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Con
 	// 日付のフォーマットを定義する
 	layout := "2006-01-02"
 
+	var err error
+
+	// 日本のタイムゾーンを取得
+	jst, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
 	// fromDateのパース
 	var fromDate time.Time
-	var err error
 	if fromDateStr != "" {
-		fromDate, err = time.Parse(layout, fromDateStr)
+		fromDate, err = time.ParseInLocation(layout, fromDateStr, jst)
 		if err != nil {
 			c.Status(http.StatusBadRequest)
 			return
@@ -82,7 +90,7 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Con
 	// toDateのパース
 	var toDate time.Time
 	if toDateStr != "" {
-		toDate, err = time.Parse(layout, toDateStr)
+		toDate, err = time.ParseInLocation(layout, toDateStr, jst)
 		if err != nil {
 			c.Status(http.StatusBadRequest)
 			return
@@ -112,7 +120,7 @@ func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.CreateIncomeAndExpenseWithBillingUser(data, userResponse.ID)
+	err = h.usecase.CreateIncomeAndExpenseWithBillingUser(data, userResponse.ID, userResponse.GroupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -141,7 +149,7 @@ func (h *incomeAndExpenseHandlerImpl) UpdateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.UpdateIncomeAndExpense(incomeAndExpense, userResponse.ID)
+	err = h.usecase.UpdateIncomeAndExpense(incomeAndExpense, userResponse.ID, userResponse.GroupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

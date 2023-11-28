@@ -19,8 +19,8 @@ type IncomeAndExpenseUsecase interface {
 	GetAllIncomeAndExpense(groupID uint) ([]entity.IncomeAndExpenseResponse, error)
 	GetIncomeAndExpenseLiquidations(fromDate time.Time, toDate time.Time, loginUserID string, billingUserID string, groupID uint) ([]entity.IncomeAndExpenseResponse, error)
 
-	CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string) error
-	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error
+	CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string, groupID uint) error
+	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string, groupID uint) error
 	DeleteIncomeAndExpense(id uint, userId string) error
 
 	GetMonthlyTotal(groupID uint, InitialAmount int) ([]entity.IncomeAndExpenseMonthlyTotal, error)
@@ -83,20 +83,30 @@ func (u *incomeAndExpenseUsecaseImpl) sortByDateDescIDDesc(a, b *entity.IncomeAn
 	return a.Date.After(b.Date) // 日付で降順
 }
 
-func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string) error {
+func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string, groupID uint) error {
 
 	err := u.validateUserID(data, userId, ErrFailedCreate)
 	if err != nil {
 		return err
 	}
-	err = u.validateBillingUserTotal(data, ErrFailedCreate)
+	u.validateBillingUserID(data, groupID, ErrFailedCreate)
+	if err != nil {
+		return err
+	}
+	err = u.validateBillingUserPlus(data, ErrFailedUpdate)
 	if err != nil {
 		return err
 	}
 
+	err = u.validateBillingUserTotal(data, ErrFailedCreate)
+	if err != nil {
+		return err
+	}
+	data.BillingUsers = u.covertBillingUserPlusDelete(data.BillingUsers)
+
 	return u.repo.CreateIncomeAndExpense(&data)
 }
-func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string) error {
+func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string, groupID uint) error {
 	preIncomeAndExpense := entity.IncomeAndExpense{}
 	err := u.repo.GetIncomeAndExpense(incomeAndExpense.ID, &preIncomeAndExpense)
 	if err != nil {
@@ -107,11 +117,54 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense en
 	if err != nil {
 		return err
 	}
+	u.validateBillingUserID(incomeAndExpense, groupID, ErrFailedCreate)
+	if err != nil {
+		return err
+	}
+
+	err = u.validateBillingUserPlus(incomeAndExpense, ErrFailedUpdate)
+	if err != nil {
+		return err
+	}
+
+	err = u.validateBillingUserTotal(incomeAndExpense, ErrFailedUpdate)
+	if err != nil {
+		return err
+	}
+	incomeAndExpense.BillingUsers = u.covertBillingUserPlusDelete(incomeAndExpense.BillingUsers)
+
 	//更新値の設定
 	preIncomeAndExpense.Amount = incomeAndExpense.Amount
 	preIncomeAndExpense.Category = incomeAndExpense.Category
 	preIncomeAndExpense.Date = incomeAndExpense.Date
 	preIncomeAndExpense.Memo = incomeAndExpense.Memo
+
+	preBuMap := make(map[uint]entity.IncomeAndExpenseBillingUser)
+	for _, preBu := range preIncomeAndExpense.BillingUsers {
+		preBuMap[preBu.ID] = preBu
+	}
+
+	updateBu := []entity.IncomeAndExpenseBillingUser{}
+	for _, bu := range incomeAndExpense.BillingUsers {
+
+		if preBu, exists := preBuMap[bu.ID]; exists {
+
+			//清算済みは金額変更を許容しない
+			err = u.validateLiquidationAmount(bu.Amount, preBu, ErrFailedUpdate)
+			if err != nil {
+				return err
+			}
+
+			//すでに存在するデータの更新
+			preBu.Amount = bu.Amount
+			updateBu = append(updateBu, preBu)
+
+		} else {
+			//存在しないデータの更新
+			updateBu = append(updateBu, bu)
+		}
+	}
+	preIncomeAndExpense.BillingUsers = updateBu
 
 	return u.repo.UpdateIncomeAndExpense(&preIncomeAndExpense)
 }
@@ -182,7 +235,33 @@ func (u *incomeAndExpenseUsecaseImpl) validateUserID(incomeAndExpense entity.Inc
 	}
 	return nil
 }
+func (u *incomeAndExpenseUsecaseImpl) covertBillingUserPlusDelete(data []entity.IncomeAndExpenseBillingUser) []entity.IncomeAndExpenseBillingUser {
+	result := []entity.IncomeAndExpenseBillingUser{}
+	for _, billingUser := range data {
+		if billingUser.Amount < 0 {
+			result = append(result, billingUser)
+		}
+	}
+
+	return result
+}
+func (u *incomeAndExpenseUsecaseImpl) validateBillingUserPlus(data entity.IncomeAndExpense, errMessage string) error {
+
+	for _, billingUser := range data.BillingUsers {
+		if billingUser.Amount > 0 {
+			return fmt.Errorf(errMessage)
+		}
+	}
+
+	return nil
+}
+
 func (u *incomeAndExpenseUsecaseImpl) validateBillingUserTotal(data entity.IncomeAndExpense, errMessage string) error {
+	if data.Amount >= 0 {
+		//収入はチェック対象外
+		return nil
+	}
+
 	if len(data.BillingUsers) == 0 {
 		return fmt.Errorf(errMessage)
 	}
@@ -190,8 +269,6 @@ func (u *incomeAndExpenseUsecaseImpl) validateBillingUserTotal(data entity.Incom
 	total := 0
 	for _, billingUser := range data.BillingUsers {
 		total += billingUser.Amount
-		if data.RegisterUserID != billingUser.UserID {
-		}
 	}
 	//ユーザーへの請求が合計金額と一致するか確認
 	if total != data.Amount {
@@ -200,6 +277,27 @@ func (u *incomeAndExpenseUsecaseImpl) validateBillingUserTotal(data entity.Incom
 
 	return nil
 }
+func (u *incomeAndExpenseUsecaseImpl) validateBillingUserID(data entity.IncomeAndExpense, groupID uint, errMessage string) error {
+	groupUserIDs, err := u.getGroupUserIDs(groupID)
+	if err != nil {
+		return err
+	}
+	for _, billingUser := range data.BillingUsers {
+		hit := false
+		for _, groupUserID := range groupUserIDs {
+			if billingUser.UserID == groupUserID {
+				hit = true
+				continue
+			}
+		}
+		if !hit {
+			return fmt.Errorf(errMessage)
+		}
+	}
+
+	return nil
+}
+
 func (u *incomeAndExpenseUsecaseImpl) validateBillingUserDelete(data entity.IncomeAndExpense, errMessage string) error {
 
 	countLiquidation := 0
@@ -219,6 +317,13 @@ func (u *incomeAndExpenseUsecaseImpl) validateBillingUserDelete(data entity.Inco
 		return nil
 	}
 	return fmt.Errorf(errMessage)
+}
+
+func (u *incomeAndExpenseUsecaseImpl) validateLiquidationAmount(amount int, preBu entity.IncomeAndExpenseBillingUser, errMessage string) error {
+	if preBu.LiquidationID != entity.NoneLiquidationID && amount != preBu.Amount {
+		return fmt.Errorf(errMessage)
+	}
+	return nil
 }
 
 // すべての月のリストを生成

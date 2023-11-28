@@ -38,7 +38,7 @@ export default function BillingPopover({
               <GroupIcon className="cursor-pointer hover:text-red-500" />
             )}
           </PopoverHandler>
-          <PopoverContent>
+          <PopoverContent className="z-[10000]">
             <Card>
               <table className="max-w-full table-auto text-left">
                 <thead>

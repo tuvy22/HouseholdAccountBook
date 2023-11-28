@@ -196,7 +196,7 @@ export const LiquidationSearchResult = ({
             variant="text"
             color="red"
             onClick={() => {
-              router.push("/liquidation");
+              router.push("/liquidation/search");
             }}
             size="lg"
             className=" w-full md:w-28 row-span-3"

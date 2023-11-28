@@ -22,6 +22,11 @@ import CategoryForm from "./CategoryForm";
 import { EXPENSE_CATEGORY, INCOME_CATEGORY } from "@/app/util/constants";
 import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
+import { BillingUserForm } from "./BillingUserForm";
+import {
+  BillingUserFormType,
+  convertToBillingUsers,
+} from "./BillingUserFormType";
 
 type Props = {
   open: boolean;
@@ -36,12 +41,14 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
   updatedIncomeAndExpense,
   handleUpdate,
 }) => {
-  const isDaialogMinus = isMinus(updatedIncomeAndExpense.amount);
+  const isDialogMinus = isMinus(updatedIncomeAndExpense.amount);
+  const [billingUsers, setBillingUsers] = useState<BillingUserFormType[]>([]);
 
   const {
     control,
     register,
     handleSubmit,
+    watch,
     reset,
     formState: { errors },
   } = useForm<IncomeExpenseSchema>({
@@ -52,7 +59,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
       reset({
         date: toDateString(new Date(updatedIncomeAndExpense.date)),
         category: updatedIncomeAndExpense.category,
-        amount: isDaialogMinus
+        amount: isDialogMinus
           ? (-updatedIncomeAndExpense.amount).toString()
           : updatedIncomeAndExpense.amount.toString(),
         memo: updatedIncomeAndExpense.memo,
@@ -65,18 +72,18 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     updatedIncomeAndExpense.date,
     updatedIncomeAndExpense.memo,
     reset,
-    isDaialogMinus,
+    isDialogMinus,
   ]);
 
   const onSubmit = (data: IncomeExpenseSchema) => {
     const newIncomeAndExpense: IncomeAndExpense = {
       id: updatedIncomeAndExpense.id,
       category: data.category,
-      amount: isDaialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
+      amount: isDialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: toDateObject(data.date),
       registerUserID: updatedIncomeAndExpense.registerUserID,
-      billingUsers: [],
+      billingUsers: convertToBillingUsers(billingUsers, isDialogMinus),
       registerUserName: "",
     };
     handleUpdate(newIncomeAndExpense);
@@ -90,8 +97,8 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
           <DialogHeader>編集</DialogHeader>
           <DialogBody>
             <IncomeAndExpenseTabs
-              isIncome={!isDaialogMinus}
-              isExpense={isDaialogMinus}
+              isIncome={!isDialogMinus}
+              isExpense={isDialogMinus}
             >
               <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
                 <DateForm errors={errors} register={register} />
@@ -99,10 +106,19 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
                   errors={errors}
                   register={register}
                   control={control}
-                  options={isDaialogMinus ? EXPENSE_CATEGORY : INCOME_CATEGORY}
+                  options={isDialogMinus ? EXPENSE_CATEGORY : INCOME_CATEGORY}
                 />
                 <AmountForm errors={errors} register={register} />
                 <MemoForm errors={errors} register={register} />
+                {isDialogMinus && (
+                  <BillingUserForm
+                    watch={watch}
+                    billingUsers={billingUsers}
+                    isUpdate={true}
+                    setBillingUsers={setBillingUsers}
+                    updatePreBillingUser={updatedIncomeAndExpense.billingUsers}
+                  />
+                )}
               </div>
             </IncomeAndExpenseTabs>
           </DialogBody>

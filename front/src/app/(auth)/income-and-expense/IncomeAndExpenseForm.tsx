@@ -16,7 +16,10 @@ import {
 import { useAlert } from "@/app/context/AlertProvider";
 import { Spinner } from "@/app/materialTailwindExports";
 import { toDateObject } from "@/app/util/util";
-import { BillingUserFormType } from "./BillingUserFormType";
+import {
+  BillingUserFormType,
+  convertToBillingUsers,
+} from "./BillingUserFormType";
 
 export const IncomeAndExpenseForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,24 +34,6 @@ export const IncomeAndExpenseForm = () => {
     setIsLoading(true);
     setTriggerReset((prev) => prev + 1);
 
-    let postBillingUsers: IncomeAndExpenseBillingUser[] = [];
-
-    billingUsers.map((user: BillingUserFormType) => {
-      if (user.checked) {
-        const newBillingUser: IncomeAndExpenseBillingUser = {
-          incomeAndExpenseID: 0,
-          userID: user.id,
-          amount: isMinus
-            ? -parseInt(user.amount, 10) || 0
-            : parseInt(user.amount, 10) || 0,
-          userName: "",
-          id: 0,
-          liquidationID: 0,
-        };
-        postBillingUsers = [...postBillingUsers, newBillingUser];
-      }
-    });
-
     const newIncomeAndExpense: IncomeAndExpense = {
       id: 0,
       category: data.category,
@@ -56,7 +41,7 @@ export const IncomeAndExpenseForm = () => {
       memo: data.memo,
       date: toDateObject(data.date),
       registerUserID: loginUser.id == null ? "" : loginUser.id,
-      billingUsers: postBillingUsers,
+      billingUsers: convertToBillingUsers(billingUsers, isMinus),
       registerUserName: "",
     };
 

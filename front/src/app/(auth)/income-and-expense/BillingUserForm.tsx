@@ -11,21 +11,29 @@ import {
   Input,
 } from "@/app/materialTailwindExports";
 import { getGroupAllUser } from "@/app/util/apiClient";
-import { User } from "@/app/util/types";
+import { IncomeAndExpenseBillingUser, User } from "@/app/util/types";
 import React, { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
 import { UseFormWatch } from "react-hook-form";
 import { IncomeExpenseSchema } from "./IncomeAndExpenseSchema";
-import { BillingUserFormType } from "./BillingUserFormType";
+import {
+  BillingUserFormType,
+  convertBillingUserToBillingUserForms,
+  convertUserToBillingUserForms,
+} from "./BillingUserFormType";
 
 export function BillingUserForm({
   watch,
   billingUsers,
   setBillingUsers,
+  isUpdate,
+  updatePreBillingUser = [],
 }: {
   watch: UseFormWatch<IncomeExpenseSchema>;
   billingUsers: BillingUserFormType[];
   setBillingUsers: Dispatch<SetStateAction<BillingUserFormType[]>>;
+  isUpdate: boolean;
+  updatePreBillingUser?: IncomeAndExpenseBillingUser[];
 }) {
   const loginUser = useUser().user;
   const [data, setData] = useState<User[]>([]);
@@ -38,29 +46,25 @@ export function BillingUserForm({
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const billingUserTemps: BillingUserFormType[] = [];
+    if (isUpdate) {
+      setBillingUsers(
+        convertBillingUserToBillingUserForms(data, updatePreBillingUser)
+      );
+    }
+  }, [data, isUpdate, setBillingUsers, updatePreBillingUser, totalAmountStr]);
 
-      data.forEach((user: User) => {
-        const billingUserTmp: BillingUserFormType = {
-          id: user.id,
-          name: user.name,
-          checked: loginUser.id === user.id,
-          amount: loginUser.id === user.id ? totalAmountStr : "",
-          amountLock: false,
-        };
-        billingUserTemps.push(billingUserTmp);
-      });
-      //billingUsersを作成
-      setBillingUsers(billingUserTemps);
-    };
-    fetchData();
-  }, [totalAmountStr, data, loginUser.id, setBillingUsers]);
+  useEffect(() => {
+    if (!isUpdate) {
+      setBillingUsers(
+        convertUserToBillingUserForms(data, loginUser.id, totalAmountStr)
+      );
+    }
+  }, [data, isUpdate, loginUser.id, setBillingUsers, totalAmountStr]);
 
   //チェックボックス変更時
   const handleCheckboxChange = (changedBillingUser: BillingUserFormType) => {
     const updatedBillingUsers = billingUsers.map((user) => {
-      if (user.id === changedBillingUser.id) {
+      if (user.userID === changedBillingUser.userID) {
         return {
           ...user,
           checked: !user.checked,
@@ -99,7 +103,7 @@ export function BillingUserForm({
 
     // 金額を変更したユーザーのamountLockをtrueに設定
     const updatedUsers = billingUsers.map((billingUser) =>
-      billingUser.id === changedBillingUser.id
+      billingUser.userID === changedBillingUser.userID
         ? { ...billingUser, amount: changeAmountStr, amountLock: true }
         : billingUser
     );
@@ -117,13 +121,17 @@ export function BillingUserForm({
       (user) => !user.amountLock && user.checked
     );
 
-    // 全てロックされている場合、全てのロックを解除
+    // 全てロックされている場合、非活性以外の全てのロックを解除
     if (unlockedUsers.length === 0) {
       billingUsers.forEach((user) => {
-        user.amountLock = false;
+        if (!user.disabled) {
+          user.amountLock = false;
+        }
       });
-      //チェックしているユーザー全てがアンロックユーザーになる
-      unlockedUsers = billingUsers.filter((user) => user.checked);
+      //金額分配対象取得
+      unlockedUsers = billingUsers.filter(
+        (user) => !user.amountLock && user.checked
+      );
     }
 
     // ロックユーザーの金額を合計
@@ -161,22 +169,23 @@ export function BillingUserForm({
                 立替入力
               </Button>
             </MenuHandler>
-            <MenuList>
+            <MenuList className="z-[10000] max-h-96">
               {billingUsers.map((billingUser, index: number) => (
                 <React.Fragment key={index}>
                   <MenuItem className="py-2 my-1">
                     <label
                       key={index}
-                      htmlFor={billingUser.id}
+                      htmlFor={billingUser.userID}
                       className="flex cursor-pointer items-center gap-2 p-2"
                     >
                       <Checkbox
                         ripple={false}
-                        id={billingUser.id}
-                        value={billingUser.id}
+                        id={billingUser.userID}
+                        value={billingUser.userID}
                         containerProps={{ className: "p-0" }}
                         className="hover:before:content-none"
                         crossOrigin={undefined}
+                        disabled={billingUser.disabled}
                         checked={billingUser.checked}
                         onChange={() => handleCheckboxChange(billingUser)}
                       />
@@ -188,11 +197,12 @@ export function BillingUserForm({
                       value={billingUser.amount}
                       size="lg"
                       crossOrigin={undefined}
-                      disabled={!billingUser.checked}
+                      disabled={!billingUser.checked || billingUser.disabled}
                       onChange={(e) =>
                         handleAmountChange(billingUser, e.target.value)
                       }
                     />
+
                     {(parseInt(billingUser.amount, 10) || 0) < 0 && (
                       <div className="text-red-500">
                         マイナスは修正が必要です。
