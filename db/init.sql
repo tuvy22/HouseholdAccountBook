@@ -18,4 +18,7 @@
 --     name VARCHAR(255)
 --     PRIMARY KEY (id)
 -- );
+
+INSERT TABLE
+
 default-time-zone = '+09:00'

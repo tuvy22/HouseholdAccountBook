@@ -62,3 +62,9 @@ export interface InviteUrl {
 export interface InviteToken {
   token: string;
 }
+
+export interface Category {
+  id: number;
+  name: string;
+  groupId: number;
+}

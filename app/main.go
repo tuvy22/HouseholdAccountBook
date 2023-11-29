@@ -35,6 +35,7 @@ func main() {
 	groupRepo := repository.NewGroupRepository(db.GetDB())
 	incomeAndExpenseRepo := repository.NewIncomeAndExpenseRepository(db.GetDB())
 	liquidationRepo := repository.NewLiquidationRepository(db.GetDB())
+	categoryRepo := repository.NewCategoryRepository(db.GetDB())
 
 	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo, userRepo)
 	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
@@ -42,14 +43,17 @@ func main() {
 	liquidationUsecase := usecase.NewLiquidationUsecase(liquidationRepo, incomeAndExpenseRepo, userRepo)
 	liquidationHandler := handler.NewLiquidationHandler(liquidationUsecase)
 
+	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo)
+	categoryHandler := handler.NewCategoryHandler(categoryUsecase)
+
 	password := password.NewPassWord()
-	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, password, originalConfig)
+	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, categoryRepo, password, originalConfig)
 	userHandler := handler.NewUserHandler(userUsecase)
 	middlewareHandler := handler.NewMiddlewareHandler(userUsecase)
 
 	responsedOKHandler := handler.NewResponsedOKHandler()
 
-	r := router.NewRouter(originalConfig, userHandler, incomeAndExpenseHandler, liquidationHandler, responsedOKHandler, middlewareHandler)
+	r := router.NewRouter(originalConfig, userHandler, incomeAndExpenseHandler, liquidationHandler, categoryHandler, responsedOKHandler, middlewareHandler)
 
 	r.Run(":8080")
 }

@@ -207,7 +207,7 @@ export const LiquidationSearchResult = ({
       </div>
 
       <IncomeAndExpenseTable
-        fetchData={liquidations}
+        tableData={liquidations}
         isLiquidation={true}
         loginUserId={loginUser.id}
         targetUserId={targetUserId}

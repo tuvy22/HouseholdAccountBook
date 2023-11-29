@@ -14,6 +14,7 @@ const TABLE_INFO = [
   { header: "清算日", addClassName: "" },
   { header: "登録", addClassName: "" },
   { header: "清算内容", addClassName: "" },
+  { header: "詳細", addClassName: "" },
   { header: "", addClassName: "w-28" },
 ];
 

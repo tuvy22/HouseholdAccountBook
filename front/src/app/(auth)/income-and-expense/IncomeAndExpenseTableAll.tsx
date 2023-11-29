@@ -7,5 +7,5 @@ import { IncomeAndExpenseTable } from "../../components/IncomeAndExpenseTable";
 export const IncomeAndExpenseTableAll = async () => {
   const fetchData = await getIncomeAndExpense();
 
-  return <IncomeAndExpenseTable fetchData={fetchData} />;
+  return <IncomeAndExpenseTable tableData={fetchData} />;
 };

@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -27,14 +28,15 @@ type UserUsecase interface {
 }
 
 type userUsecaseImpl struct {
-	repo      repository.UserRepository
-	groupRepo repository.GroupRepository
-	password  password.Password
-	config    config.Config
+	repo         repository.UserRepository
+	groupRepo    repository.GroupRepository
+	categoryRepo repository.CategoryRepository
+	password     password.Password
+	config       config.Config
 }
 
-func NewUserUsecase(repo repository.UserRepository, groupRepo repository.GroupRepository, password password.Password, config config.Config) UserUsecase {
-	return &userUsecaseImpl{repo: repo, groupRepo: groupRepo, password: password, config: config}
+func NewUserUsecase(repo repository.UserRepository, groupRepo repository.GroupRepository, categoryRepo repository.CategoryRepository, password password.Password, config config.Config) UserUsecase {
+	return &userUsecaseImpl{repo: repo, groupRepo: groupRepo, categoryRepo: categoryRepo, password: password, config: config}
 }
 
 func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserResponse, entity.UserSession, error) {
@@ -138,10 +140,24 @@ func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID
 	}
 	var groupId uint
 	if inviteGroupID == entity.GroupIDNone {
+
 		//グループ新規作成
 		group := entity.Group{}
 		u.groupRepo.CreateGroup(&group)
 		groupId = group.ID
+
+		//カテゴリーデータの初期投入
+		initCategorys, err := u.getInitCategory(groupId)
+		if err != nil {
+			return entity.UserResponse{}, entity.UserSession{}, err
+		}
+		for _, category := range initCategorys {
+			err := u.categoryRepo.CreateCategory(&category)
+			if err != nil {
+				return entity.UserResponse{}, entity.UserSession{}, err
+			}
+		}
+
 	} else {
 		//招待されたグループに入る
 		groupId = inviteGroupID
@@ -314,4 +330,33 @@ func (u *userUsecaseImpl) moveToFirst(users []entity.User, targetID string) []en
 	// 特定のIDを持つ要素を先頭に移動
 	// targetIndexが配列の途中にある場合のみ、処理を行う
 	return append([]entity.User{users[targetIndex]}, append(users[:targetIndex], users[targetIndex+1:]...)...)
+}
+
+func (u *userUsecaseImpl) getInitCategory(groupID uint) ([]entity.Category, error) {
+
+	var categories []entity.Category
+
+	dir, err := os.Getwd()
+	if err != nil {
+		return categories, err
+
+	}
+
+	// JSONファイルの読み込み
+	data, err := os.ReadFile(dir + "/infrastructure/data/iniCategory.json")
+	if err != nil {
+
+	}
+
+	// JSONをCategoryスライスにデシリアライズ
+	if err := json.Unmarshal(data, &categories); err != nil {
+		return categories, err
+	}
+
+	//設定
+	for i := range categories {
+		categories[i].GroupID = groupID
+	}
+
+	return categories, nil
 }

@@ -1,5 +1,5 @@
 import { MemoPopover } from "@/app/components/MemoPopover";
-import { IncomeAndExpense } from "@/app/util/types";
+import { Category, IncomeAndExpense } from "@/app/util/types";
 import { isMinus, toDateString } from "@/app/util/util";
 import { Card, Checkbox, Typography } from "@/app/materialTailwindExports";
 import EditIcon from "./EditIcon";
@@ -28,7 +28,7 @@ const TABLE_INFO_LIQUIDATION = [
 ];
 
 export const IncomeAndExpenseTable = ({
-  fetchData,
+  tableData,
   isLiquidation = false,
   loginUserId = "",
   targetUserId = "",
@@ -37,7 +37,7 @@ export const IncomeAndExpenseTable = ({
   allCheckBox = true,
   handleAllCheckBoxChange = () => {},
 }: {
-  fetchData: IncomeAndExpense[];
+  tableData: IncomeAndExpense[];
   isLiquidation?: boolean;
   loginUserId?: string;
   targetUserId?: string;
@@ -56,7 +56,7 @@ export const IncomeAndExpenseTable = ({
 
   return (
     <>
-      {fetchData.length > 0 ? (
+      {tableData.length > 0 ? (
         <Card className="mt-6">
           <table className="text-left">
             <thead>
@@ -92,7 +92,7 @@ export const IncomeAndExpenseTable = ({
               </tr>
             </thead>
             <tbody>
-              {fetchData.map((incomeAndExpense: IncomeAndExpense, index) => (
+              {tableData.map((incomeAndExpense: IncomeAndExpense, index) => (
                 <React.Fragment key={index}>
                   {incomeAndExpense.date !== previousDate && (
                     <>

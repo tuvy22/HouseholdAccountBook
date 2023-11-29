@@ -12,15 +12,15 @@ type GroupRepository interface {
 	DeleteGroup(id uint) error
 }
 
-type GroupRepositoryImpl struct {
+type groupRepositoryImpl struct {
 	DB *gorm.DB
 }
 
 func NewGroupRepository(db *gorm.DB) GroupRepository {
-	return &GroupRepositoryImpl{DB: db}
+	return &groupRepositoryImpl{DB: db}
 }
 
-func (r *GroupRepositoryImpl) GetGroup(id uint, Group *entity.Group) error {
+func (r *groupRepositoryImpl) GetGroup(id uint, Group *entity.Group) error {
 	if err := r.DB.Where("id = ?", id).First(&Group).Error; err != nil {
 		return err
 	}
@@ -28,21 +28,21 @@ func (r *GroupRepositoryImpl) GetGroup(id uint, Group *entity.Group) error {
 	return nil
 }
 
-func (r *GroupRepositoryImpl) CreateGroup(Group *entity.Group) error {
+func (r *groupRepositoryImpl) CreateGroup(Group *entity.Group) error {
 
 	if err := r.DB.Create(&Group).Error; err != nil {
 		return err
 	}
 	return nil
 }
-func (r *GroupRepositoryImpl) UpdateGroup(Group *entity.Group) error {
+func (r *groupRepositoryImpl) UpdateGroup(Group *entity.Group) error {
 
 	if err := r.DB.Save(&Group).Error; err != nil {
 		return err
 	}
 	return nil
 }
-func (r *GroupRepositoryImpl) DeleteGroup(id uint) error {
+func (r *groupRepositoryImpl) DeleteGroup(id uint) error {
 	// 論理削除
 	if err := r.DB.Where("id = ?", id).Delete(&entity.Group{}).Error; err != nil {
 		return err

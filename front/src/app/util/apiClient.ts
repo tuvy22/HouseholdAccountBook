@@ -5,6 +5,7 @@ import {
   User,
   IncomeAndExpenseMonthlyCategory,
   LiquidationCreate,
+  Category,
 } from "@/app/util/types";
 import axios, { AxiosError } from "axios";
 import {
@@ -175,6 +176,26 @@ export const postLiquidation = async (data: LiquidationCreate) => {
 export const deleteLiquidation = async (id: number) => {
   try {
     await axios.delete(`/api/private/liquidation/${id}`);
+  } catch (error) {
+    throw new Error(DELETE_NG_MESSAGE);
+  }
+};
+
+export const postCategory = async (data: Category) => {
+  try {
+    const response = await axios.post("/api/private/category", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    throw new Error(POST_NG_MESSAGE);
+  }
+};
+
+export const deleteCategory = async (id: number) => {
+  try {
+    await axios.delete(`/api/private/category/${id}`);
   } catch (error) {
     throw new Error(DELETE_NG_MESSAGE);
   }

@@ -12,7 +12,7 @@ import (
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
 )
 
-func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, liquidationHandler handler.LiquidationHandler, responsedOKHandler handler.ResponsedOKHandler, middlewareHandler handler.MiddlewareHandler) *gin.Engine {
+func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, liquidationHandler handler.LiquidationHandler, categoryHandler handler.CategoryHandler, responsedOKHandler handler.ResponsedOKHandler, middlewareHandler handler.MiddlewareHandler) *gin.Engine {
 	r := gin.Default()
 
 	// クッキーストアの設定
@@ -45,8 +45,9 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpense)
 	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)
 	localhost.GET("/income-and-expense/liquidations", incomeAndExpenseHandler.GetIncomeAndExpenseLiquidations)
-
 	localhost.GET("/liquidation/all", liquidationHandler.GetAllLiquidation)
+	localhost.GET("/category/all/income", categoryHandler.GetAllIncomeCategory)
+	localhost.GET("/category/all/expense", categoryHandler.GetAllExpenseCategory)
 
 	authorized := r.Group("/api/private")
 	authorized.Use(middlewareHandler.CheckSessionId())
@@ -66,6 +67,9 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 
 	authorized.POST("/liquidation", liquidationHandler.CreateLiquidation)
 	authorized.DELETE("/liquidation/:id", liquidationHandler.DeleteLiquidation)
+
+	authorized.POST("/category", categoryHandler.CreateCategory)
+	authorized.DELETE("/category/:id", categoryHandler.DeleteCategory)
 
 	return r
 }
