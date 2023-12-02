@@ -14,6 +14,7 @@ import (
 
 type IncomeAndExpenseHandler interface {
 	GetAllIncomeAndExpense(c *gin.Context)
+	GetAllIncomeAndExpenseMaxPage(c *gin.Context)
 	GetIncomeAndExpenseLiquidations(c *gin.Context)
 
 	CreateIncomeAndExpense(c *gin.Context)
@@ -41,8 +42,14 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
+	pageStr := c.DefaultQuery("page", "1")
+	page, err := strconv.ParseUint(pageStr, 10, 64)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
 
-	result, err := h.usecase.GetAllIncomeAndExpense(userSession.GroupID)
+	result, err := h.usecase.GetAllIncomeAndExpense(userSession.GroupID, int(page))
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -50,6 +57,26 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpenseMaxPage(c *gin.Context) {
+	// セッションからデータを取得
+	session := sessions.Default(c)
+	user := session.Get("user")
+	userSession, ok := user.(entity.UserSession)
+	if !ok {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	result, err := h.usecase.GetAllIncomeAndExpenseMaxPage(userSession.GroupID)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Context) {
 	// セッションからデータを取得
 	session := sessions.Default(c)

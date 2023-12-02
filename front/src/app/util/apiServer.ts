@@ -10,7 +10,7 @@ import {
   User,
 } from "./types";
 
-export const getIncomeAndExpense = async () => {
+export const getIncomeAndExpense = async (page: string) => {
   try {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
@@ -22,6 +22,9 @@ export const getIncomeAndExpense = async () => {
           cache: "no-store",
           Cookie: `${cookie?.name}=${cookie?.value};`,
         },
+        params: {
+          page: page,
+        },
       }
     );
     const result: IncomeAndExpense[] = response.data;
@@ -30,6 +33,27 @@ export const getIncomeAndExpense = async () => {
     throw new Error(GET_NG_MESSAGE);
   }
 };
+export const getIncomeAndExpenseMaxPage = async () => {
+  try {
+    const cookieStore = cookies();
+    const cookie = cookieStore.get(SESSION_ID_COOKIE);
+
+    const response = await axios.get(
+      "http://localhost:8080/api/localhost/income-and-expense/all/max-page",
+      {
+        headers: {
+          cache: "no-store",
+          Cookie: `${cookie?.name}=${cookie?.value};`,
+        },
+      }
+    );
+    const maxPage: number = response.data;
+    return maxPage;
+  } catch (error) {
+    throw new Error(GET_NG_MESSAGE);
+  }
+};
+
 export const getIncomeAndExpenseMonthlyTotal = async () => {
   try {
     const cookieStore = cookies();

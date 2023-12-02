@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  IncomeAndExpenseMonthlyCategory,
-  IncomeAndExpenseMonthlyTotal,
-} from "@/app/util/types";
+import { IncomeAndExpenseMonthlyTotal } from "@/app/util/types";
 import {
   LineChart,
   Line,

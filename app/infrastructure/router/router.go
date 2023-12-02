@@ -20,7 +20,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	store.Options(sessions.Options{
 		Path:     "/",
 		MaxAge:   1800, // 30分
-		HttpOnly: true, // セキュリティ強化のためHttpOnlyに設定
+		HttpOnly: true,
 	})
 	r.Use(sessions.Sessions(handler.SessionIDCookie, store))
 
@@ -43,6 +43,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	localhost.GET("/user/all", userHandler.GetAllUser)
 	localhost.GET("/user/group-all", userHandler.GetGroupAllUser)
 	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpense)
+	localhost.GET("/income-and-expense/all/max-page", incomeAndExpenseHandler.GetAllIncomeAndExpenseMaxPage)
 	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)
 	localhost.GET("/income-and-expense/liquidations", incomeAndExpenseHandler.GetIncomeAndExpenseLiquidations)
 	localhost.GET("/liquidation/all", liquidationHandler.GetAllLiquidation)

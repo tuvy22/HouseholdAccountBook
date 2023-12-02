@@ -6,13 +6,18 @@ import { Spinner } from "@/app/materialTailwindExports";
 export const metadata: Metadata = {
   title: "家計簿一覧",
 };
-const Page = () => (
-  <>
-    <IncomeAndExpenseForm />
-    <Suspense fallback={<Spinner className="m-auto" />}>
-      <IncomeAndExpenseTableAll />
-    </Suspense>
-  </>
-);
 
-export default Page;
+export default function page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string };
+}) {
+  return (
+    <>
+      <IncomeAndExpenseForm />
+      <Suspense fallback={<Spinner className="m-auto" />}>
+        <IncomeAndExpenseTableAll page={searchParams["page"]} />
+      </Suspense>
+    </>
+  );
+}

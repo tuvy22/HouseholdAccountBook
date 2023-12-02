@@ -8,7 +8,8 @@ import (
 )
 
 type IncomeAndExpenseRepository interface {
-	GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string) error
+	GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string, offset, limit int) error
+	GetAllIncomeAndExpenseCount(count *int64, registerUserIDs []string) error
 	GetIncomeAndExpenseLiquidations(incomeAndExpenses *[]entity.IncomeAndExpense, fromDate time.Time, toDate time.Time, registerUserID string, billingUserID string) error
 	GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error
 	CreateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
@@ -27,8 +28,28 @@ func NewIncomeAndExpenseRepository(db *gorm.DB) IncomeAndExpenseRepository {
 	return &incomeAndExpenseRepositoryImpl{DB: db}
 }
 
-func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string) error {
-	if err := r.DB.Preload("BillingUsers").Where("register_user_id IN ?", registerUserIDs).Order("Date desc, id desc").Find(&incomeAndExpenses).Error; err != nil {
+func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string, offset, limit int) error {
+	query := r.DB.Preload("BillingUsers").
+		Where("register_user_id IN ?", registerUserIDs).
+		Order("Date desc, id desc")
+
+	// OffsetとLimitを条件に基づいて適用
+	if offset > 0 {
+		query = query.Offset(offset)
+	}
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+
+	// クエリの実行
+	if err := query.Find(&incomeAndExpenses).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpenseCount(count *int64, registerUserIDs []string) error {
+	err := r.DB.Preload("BillingUsers").Model(&entity.IncomeAndExpense{}).Where("register_user_id IN ?", registerUserIDs).Count(count).Error
+	if err != nil {
 		return err
 	}
 	return nil

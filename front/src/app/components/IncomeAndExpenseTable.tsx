@@ -57,7 +57,7 @@ export const IncomeAndExpenseTable = ({
   return (
     <>
       {tableData.length > 0 ? (
-        <Card className="mt-6">
+        <Card className="my-3">
           <table className="text-left">
             <thead>
               <tr>

@@ -33,7 +33,7 @@ func init() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 	// ドロップ
-	// db.Migrator().DropTable(&entity.IncomeAndExpense{}, &entity.IncomeAndExpenseBillingUser{}, &entity.Liquidation{})
+	//db.Migrator().DropTable(&entity.IncomeAndExpense{}, &entity.IncomeAndExpenseBillingUser{}, &entity.Liquidation{})
 
 	// テーブルを自動マイグレーション
 	db.AutoMigrate(&entity.IncomeAndExpense{}, &entity.User{}, &entity.Group{}, &entity.IncomeAndExpenseBillingUser{}, &entity.Liquidation{}, &entity.Category{})

@@ -17,6 +17,10 @@ export default function IncomeAndExpenseDeleteIcon({
   const router = useRouter();
   const user = useUser().user;
 
+  const isLiquidationID = incomeAndExpense.billingUsers.some((data) => {
+    return data.liquidationID > 0;
+  });
+
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deletedIncomeAndExpense, setDeletedIncomeAndExpense] =
     useState<IncomeAndExpense | null>(null);
@@ -39,16 +43,17 @@ export default function IncomeAndExpenseDeleteIcon({
   return (
     <>
       {user.id !== null ? (
-        user.id === incomeAndExpense.registerUserID && (
-          <Delete
-            className="cursor-pointer hover:text-red-500"
-            onClick={() => handleOpenDeleteDialog(incomeAndExpense)}
-          />
-        )
+        <Delete
+          className={`cursor-pointer hover:text-red-500 ${
+            user.id === incomeAndExpense.registerUserID && !isLiquidationID
+              ? ""
+              : "invisible"
+          }`}
+          onClick={() => handleOpenDeleteDialog(incomeAndExpense)}
+        />
       ) : (
         <Spinner />
       )}
-
       {deletedIncomeAndExpense && (
         <IncomeAndExpenseConfirmDialog
           open={openDeleteDialog}

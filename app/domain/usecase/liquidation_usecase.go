@@ -119,7 +119,7 @@ func (u *liquidationUsecaseImpl) validateBillingUserID(liquidationBillingUserIds
 
 	// 収入と支出のデータを取得
 	ieDatas := []entity.IncomeAndExpense{}
-	err = u.ieRepo.GetAllIncomeAndExpense(&ieDatas, userIDs)
+	err = u.ieRepo.GetAllIncomeAndExpense(&ieDatas, userIDs, 0, 0)
 	if err != nil {
 		return fmt.Errorf(errMessage)
 	}

@@ -14,9 +14,11 @@ const (
 	ErrFailedUpdate = "failed update"
 	ErrFailedDelete = "failed delete"
 )
+const pageSize = 3
 
 type IncomeAndExpenseUsecase interface {
-	GetAllIncomeAndExpense(groupID uint) ([]entity.IncomeAndExpenseResponse, error)
+	GetAllIncomeAndExpense(groupID uint, page int) ([]entity.IncomeAndExpenseResponse, error)
+	GetAllIncomeAndExpenseMaxPage(groupID uint) (int, error)
 	GetIncomeAndExpenseLiquidations(fromDate time.Time, toDate time.Time, loginUserID string, billingUserID string, groupID uint) ([]entity.IncomeAndExpenseResponse, error)
 
 	CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string, groupID uint) error
@@ -36,7 +38,7 @@ func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository, user
 	return &incomeAndExpenseUsecaseImpl{repo: repo, userRepo: userRepo}
 }
 
-func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpense(groupID uint) ([]entity.IncomeAndExpenseResponse, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpense(groupID uint, page int) ([]entity.IncomeAndExpenseResponse, error) {
 	result := []entity.IncomeAndExpense{}
 
 	userIDs, err := u.getGroupUserIDs(groupID)
@@ -44,13 +46,38 @@ func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpense(groupID uint) ([]en
 		return u.convertToIncomeAndExpenseResponse(result, groupID), err
 	}
 
-	err = u.repo.GetAllIncomeAndExpense(&result, userIDs)
+	if page < 1 {
+		page = 1
+	}
+
+	offset := (page - 1) * pageSize
+
+	err = u.repo.GetAllIncomeAndExpense(&result, userIDs, offset, pageSize)
 	if err != nil {
 		return u.convertToIncomeAndExpenseResponse(result, groupID), err
 	}
 
 	return u.convertToIncomeAndExpenseResponse(result, groupID), nil
 }
+func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpenseMaxPage(groupID uint) (int, error) {
+	var count int64
+
+	userIDs, err := u.getGroupUserIDs(groupID)
+	if err != nil {
+		return 1, err
+	}
+
+	err = u.repo.GetAllIncomeAndExpenseCount(&count, userIDs)
+	if err != nil {
+		return 1, err
+	}
+	if count <= 1 {
+		return 1, nil
+	}
+
+	return (int(count-1) / pageSize) + 1, nil
+}
+
 func (u *incomeAndExpenseUsecaseImpl) GetIncomeAndExpenseLiquidations(fromDate time.Time, toDate time.Time, loginUserID string, billingUserID string, groupID uint) ([]entity.IncomeAndExpenseResponse, error) {
 	myResult := []entity.IncomeAndExpense{}
 	targetResult := []entity.IncomeAndExpense{}
