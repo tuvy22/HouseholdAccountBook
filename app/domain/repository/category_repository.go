@@ -9,7 +9,7 @@ type CategoryRepository interface {
 	GetAllCategory(categorys *[]entity.Category, groupID uint, isExpense bool) error
 	GetCategory(id uint, Category *entity.Category) error
 	CreateCategory(Category *entity.Category) error
-	DeleteCategory(id uint) error
+	DeleteAllCategory(isExpense bool, groupID uint) error
 }
 
 type categoryRepositoryImpl struct {
@@ -21,7 +21,7 @@ func NewCategoryRepository(db *gorm.DB) CategoryRepository {
 }
 
 func (r *categoryRepositoryImpl) GetAllCategory(categorys *[]entity.Category, groupID uint, isExpense bool) error {
-	if err := r.DB.Where("group_id = ?", groupID).Where("is_Expense = ?", false).Order("id desc").Find(&categorys).Error; err != nil {
+	if err := r.DB.Where("group_id = ?", groupID).Where("is_Expense = ?", isExpense).Order("id desc").Find(&categorys).Error; err != nil {
 		return err
 	}
 	return nil
@@ -42,9 +42,9 @@ func (r *categoryRepositoryImpl) CreateCategory(Category *entity.Category) error
 	return nil
 }
 
-func (r *categoryRepositoryImpl) DeleteCategory(id uint) error {
+func (r *categoryRepositoryImpl) DeleteAllCategory(isExpense bool, groupID uint) error {
 
-	if err := r.DB.Where("id = ?", id).Delete(&entity.Category{}).Error; err != nil {
+	if err := r.DB.Where("is_expense = ?", isExpense).Where("group_id = ?", groupID).Delete(&entity.Category{}).Error; err != nil {
 		return err
 	}
 	return nil

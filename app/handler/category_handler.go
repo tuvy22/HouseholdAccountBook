@@ -10,8 +10,8 @@ import (
 )
 
 type CategoryHandler interface {
-	CreateCategory(c *gin.Context)
-	DeleteCategory(c *gin.Context)
+	ReplaceAllCategoryIncome(c *gin.Context)
+	ReplaceAllCategoryExpense(c *gin.Context)
 	GetAllIncomeCategory(c *gin.Context)
 	GetAllExpenseCategory(c *gin.Context)
 }
@@ -23,8 +23,8 @@ type categoryHandlerImpl struct {
 func NewCategoryHandler(u usecase.CategoryUsecase) CategoryHandler {
 	return &categoryHandlerImpl{usecase: u}
 }
-func (h *categoryHandlerImpl) CreateCategory(c *gin.Context) {
-	data, err := h.bindCreateCategory(c)
+func (h *categoryHandlerImpl) ReplaceAllCategoryIncome(c *gin.Context) {
+	datas, err := h.bindCreateCategorys(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -37,7 +37,7 @@ func (h *categoryHandlerImpl) CreateCategory(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.CreateCategory(data, userResponse.GroupID)
+	err = h.usecase.ReplaceAllCategory(datas, false, userResponse.GroupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -45,11 +45,10 @@ func (h *categoryHandlerImpl) CreateCategory(c *gin.Context) {
 
 	c.Status(http.StatusOK)
 }
-func (h *categoryHandlerImpl) DeleteCategory(c *gin.Context) {
-
-	id, err := h.getID(c)
+func (h *categoryHandlerImpl) ReplaceAllCategoryExpense(c *gin.Context) {
+	datas, err := h.bindCreateCategorys(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -60,11 +59,12 @@ func (h *categoryHandlerImpl) DeleteCategory(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.DeleteCategory(id, userResponse.GroupID)
+	err = h.usecase.ReplaceAllCategory(datas, true, userResponse.GroupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+
 	c.Status(http.StatusOK)
 }
 
@@ -101,13 +101,13 @@ func (h *categoryHandlerImpl) GetAllExpenseCategory(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (h *categoryHandlerImpl) bindCreateCategory(c *gin.Context) (entity.Category, error) {
-	CategoryCreate := entity.Category{}
-	if err := c.BindJSON(&CategoryCreate); err != nil {
-		return CategoryCreate, err
+func (h *categoryHandlerImpl) bindCreateCategorys(c *gin.Context) ([]entity.Category, error) {
+	CategoryCreates := []entity.Category{}
+	if err := c.BindJSON(&CategoryCreates); err != nil {
+		return CategoryCreates, err
 	}
 
-	return CategoryCreate, nil
+	return CategoryCreates, nil
 }
 func (h *categoryHandlerImpl) getID(c *gin.Context) (uint, error) {
 	idstr := c.Param("id")

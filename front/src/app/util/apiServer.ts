@@ -120,16 +120,15 @@ export const getLiquidations = async () => {
     throw new Error(GET_NG_MESSAGE);
   }
 };
-export const getCategorys = async (expense: boolean) => {
+export const getCategoryAllServer = async (expense: boolean) => {
+  const expenseURL = "http://localhost:8080/api/localhost/category/all/expense";
+  const incomeURL = "http://localhost:8080/api/localhost/category/all/income";
+
+  const url = expense ? expenseURL : incomeURL;
+
   try {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
-
-    const expenseURL =
-      "http://localhost:8080/api/localhost/category/all/expense";
-    const incomeURL = "http://localhost:8080/api/localhost/category/all/income";
-
-    const url = expense ? expenseURL : incomeURL;
 
     const response = await axios.get(url, {
       headers: {

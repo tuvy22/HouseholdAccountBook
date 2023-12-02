@@ -14,6 +14,8 @@ import CategoryForm from "./CategoryForm";
 import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
 import { INCOME_CATEGORY } from "@/app/util/constants";
+import { Category } from "@/app/util/types";
+import { getCategoryAllClient } from "@/app/util/apiClient";
 
 export const IncomeForm = ({
   onSubmit,
@@ -22,6 +24,8 @@ export const IncomeForm = ({
   onSubmit: (data: IncomeExpenseSchema, isMinus: boolean) => Promise<void>;
   triggerReset: number;
 }) => {
+  const [categorys, setCategorys] = useState<Category[]>([]);
+
   const {
     control,
     register,
@@ -47,6 +51,14 @@ export const IncomeForm = ({
     resetForm();
   }, [resetForm, triggerReset]);
 
+  useEffect(() => {
+    const fetchCategory = async () => {
+      setCategorys(await getCategoryAllClient(false));
+    };
+
+    fetchCategory();
+  }, []);
+
   return (
     <>
       <form onSubmit={(e) => handleSubmit((data) => onSubmit(data, false))(e)}>
@@ -56,7 +68,7 @@ export const IncomeForm = ({
             errors={errors}
             register={register}
             control={control}
-            options={INCOME_CATEGORY}
+            options={categorys}
           />
           <AmountForm errors={errors} register={register} />
           <MemoForm errors={errors} register={register} />

@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 
 import { getUserInviteUrl } from "@/app/util/apiClient";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 export function UserInvite() {
   const [url, setUrl] = useState("");
@@ -41,18 +42,11 @@ export function UserInvite() {
           className="ml-4 cursor-pointer hover:text-green-500"
         />
       </Typography>
-      <div className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
-        <Button
-          type="submit"
-          variant="filled"
-          color="green"
-          size="lg"
-          className="mt-6"
-          fullWidth
+      <div className="text-center mt-10">
+        <RefreshIcon
+          className="cursor-pointer hover:text-green-500 text-5xl"
           onClick={handleCreateInvite}
-        >
-          再生成
-        </Button>
+        />
       </div>
     </div>
   );

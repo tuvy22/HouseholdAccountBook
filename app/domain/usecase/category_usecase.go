@@ -10,8 +10,7 @@ import (
 type CategoryUsecase interface {
 	GetAllIncomeCategory(groupID uint) ([]entity.CategoryResponse, error)
 	GetAllExpenseCategory(groupID uint) ([]entity.CategoryResponse, error)
-	CreateCategory(category entity.Category, groupID uint) error
-	DeleteCategory(id uint, groupID uint) error
+	ReplaceAllCategory(categorys []entity.Category, isExpense bool, groupID uint) error
 }
 
 type categoryUsecaseImpl struct {
@@ -41,34 +40,44 @@ func (u *categoryUsecaseImpl) getAllCategory(groupID uint, isExpense bool) ([]en
 	return u.convertToCategorys(categorys), nil
 }
 
-func (u *categoryUsecaseImpl) CreateCategory(category entity.Category, groupID uint) error {
+func (u *categoryUsecaseImpl) ReplaceAllCategory(categorys []entity.Category, isExpense bool, groupID uint) error {
 
-	err := u.validateGroupID(category, groupID, ErrFailedCreate)
+	err := u.validateGroupID(categorys, groupID, ErrFailedCreate)
 	if err != nil {
 		return err
 	}
-	err = u.repo.CreateCategory(&category)
+
+	err = u.validateIsExpense(categorys, isExpense, ErrFailedCreate)
 	if err != nil {
 		return err
+	}
+
+	err = u.repo.DeleteAllCategory(isExpense, groupID)
+	if err != nil {
+		return err
+	}
+	for _, category := range categorys {
+		err = u.repo.CreateCategory(&category)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func (u *categoryUsecaseImpl) DeleteCategory(id uint, groupID uint) error {
-	category := entity.Category{}
-	u.repo.GetCategory(id, &category)
-
-	err := u.validateGroupID(category, groupID, ErrFailedDelete)
-	if err != nil {
-		return err
+func (u *categoryUsecaseImpl) validateGroupID(categorys []entity.Category, groupID uint, errMessage string) error {
+	for _, category := range categorys {
+		if category.GroupID != groupID {
+			return fmt.Errorf(errMessage)
+		}
 	}
-
-	return u.repo.DeleteCategory(id)
+	return nil
 }
-
-func (u *categoryUsecaseImpl) validateGroupID(category entity.Category, groupID uint, errMessage string) error {
-	if category.GroupID != groupID {
-		return fmt.Errorf(errMessage)
+func (u *categoryUsecaseImpl) validateIsExpense(categorys []entity.Category, isExpense bool, errMessage string) error {
+	for _, category := range categorys {
+		if category.IsExpense != isExpense {
+			return fmt.Errorf(errMessage)
+		}
 	}
 	return nil
 }

@@ -147,11 +147,16 @@ func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID
 		groupId = group.ID
 
 		//カテゴリーデータの初期投入
-		initCategorys, err := u.getInitCategory(groupId)
+		initIncomeCategorys, err := u.getInitCategory(groupId, false)
 		if err != nil {
 			return entity.UserResponse{}, entity.UserSession{}, err
 		}
-		for _, category := range initCategorys {
+		initExpenseCategorys, err := u.getInitCategory(groupId, true)
+		if err != nil {
+			return entity.UserResponse{}, entity.UserSession{}, err
+		}
+
+		for _, category := range append(initIncomeCategorys, initExpenseCategorys...) {
 			err := u.categoryRepo.CreateCategory(&category)
 			if err != nil {
 				return entity.UserResponse{}, entity.UserSession{}, err
@@ -332,7 +337,7 @@ func (u *userUsecaseImpl) moveToFirst(users []entity.User, targetID string) []en
 	return append([]entity.User{users[targetIndex]}, append(users[:targetIndex], users[targetIndex+1:]...)...)
 }
 
-func (u *userUsecaseImpl) getInitCategory(groupID uint) ([]entity.Category, error) {
+func (u *userUsecaseImpl) getInitCategory(groupID uint, isExpense bool) ([]entity.Category, error) {
 
 	var categories []entity.Category
 
@@ -341,9 +346,16 @@ func (u *userUsecaseImpl) getInitCategory(groupID uint) ([]entity.Category, erro
 		return categories, err
 
 	}
+	var fileName string
+	if isExpense {
+		fileName = "iniExpenseCategory.json"
+	} else {
+		fileName = "iniIncomeCategory.json"
+
+	}
 
 	// JSONファイルの読み込み
-	data, err := os.ReadFile(dir + "/infrastructure/data/iniCategory.json")
+	data, err := os.ReadFile(dir + "/infrastructure/data/" + fileName)
 	if err != nil {
 
 	}
@@ -356,6 +368,7 @@ func (u *userUsecaseImpl) getInitCategory(groupID uint) ([]entity.Category, erro
 	//設定
 	for i := range categories {
 		categories[i].GroupID = groupID
+		categories[i].IsExpense = isExpense
 	}
 
 	return categories, nil

@@ -15,13 +15,14 @@ import {
 } from "./IncomeAndExpenseSchema";
 import SubmitButtonForm from "../../components/SubmitButtonForm";
 import { toDateString } from "@/app/util/util";
-import { EXPENSE_CATEGORY } from "@/app/util/constants";
 import DateForm from "./DateForm";
 import CategoryForm from "./CategoryForm";
 import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
 import { BillingUserFormType } from "./BillingUserFormType";
 import { BillingUserForm } from "./BillingUserForm";
+import { Category } from "@/app/util/types";
+import { getCategoryAllClient } from "@/app/util/apiClient";
 
 export const ExpenseForm = ({
   onSubmit,
@@ -46,6 +47,8 @@ export const ExpenseForm = ({
     resolver: zodResolver(incomeExpenseSchema),
   });
 
+  const [categorys, setCategorys] = useState<Category[]>([]);
+
   const resetForm = useCallback(() => {
     const categoryValue = getValues().category;
     reset({
@@ -59,6 +62,14 @@ export const ExpenseForm = ({
     resetForm();
   }, [resetForm, triggerReset]);
 
+  useEffect(() => {
+    const fetchCategory = async () => {
+      setCategorys(await getCategoryAllClient(true));
+    };
+
+    fetchCategory();
+  }, []);
+
   return (
     <>
       <form onSubmit={(e) => handleSubmit((data) => onSubmit(data, true))(e)}>
@@ -68,7 +79,7 @@ export const ExpenseForm = ({
             errors={errors}
             register={register}
             control={control}
-            options={EXPENSE_CATEGORY}
+            options={categorys}
           />
           <AmountForm errors={errors} register={register} />
           <MemoForm errors={errors} register={register} />

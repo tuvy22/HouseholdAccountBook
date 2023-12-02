@@ -180,23 +180,38 @@ export const deleteLiquidation = async (id: number) => {
     throw new Error(DELETE_NG_MESSAGE);
   }
 };
+export const getCategoryAllClient = async (isExpense: boolean) => {
+  const expenseURL = "/api/private/category/all/expense";
+  const incomeURL = "/api/private/category/all/income";
 
-export const postCategory = async (data: Category) => {
+  const url = isExpense ? expenseURL : incomeURL;
+
   try {
-    const response = await axios.post("/api/private/category", data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.get(url);
+
+    const result: Category[] = response.data;
+
+    return result;
   } catch (error) {
-    throw new Error(POST_NG_MESSAGE);
+    throw new Error(GET_NG_MESSAGE);
   }
 };
 
-export const deleteCategory = async (id: number) => {
+export const replaceAllCategorys = async (
+  datas: Category[],
+  isExpense: boolean
+) => {
   try {
-    await axios.delete(`/api/private/category/${id}`);
+    await axios.post(
+      `/api/private/replace-all-category/${isExpense ? "expense" : "income"}`,
+      datas,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   } catch (error) {
-    throw new Error(DELETE_NG_MESSAGE);
+    throw new Error(POST_NG_MESSAGE);
   }
 };

@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogBody,
 } from "@/app/materialTailwindExports";
-import { IncomeAndExpense } from "../../util/types";
+import { Category, IncomeAndExpense } from "../../util/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IncomeExpenseSchema,
@@ -27,6 +27,7 @@ import {
   BillingUserFormType,
   convertToBillingUsers,
 } from "./BillingUserFormType";
+import { getCategoryAllClient } from "@/app/util/apiClient";
 
 type Props = {
   open: boolean;
@@ -43,6 +44,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
 }) => {
   const isDialogMinus = isMinus(updatedIncomeAndExpense.amount);
   const [billingUsers, setBillingUsers] = useState<BillingUserFormType[]>([]);
+  const [categorys, setCategorys] = useState<Category[]>([]);
 
   const {
     control,
@@ -75,6 +77,14 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     isDialogMinus,
   ]);
 
+  useEffect(() => {
+    const fetchCategory = async () => {
+      setCategorys(await getCategoryAllClient(isDialogMinus));
+    };
+
+    fetchCategory();
+  }, []);
+
   const onSubmit = (data: IncomeExpenseSchema) => {
     const newIncomeAndExpense: IncomeAndExpense = {
       id: updatedIncomeAndExpense.id,
@@ -106,7 +116,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
                   errors={errors}
                   register={register}
                   control={control}
-                  options={isDialogMinus ? EXPENSE_CATEGORY : INCOME_CATEGORY}
+                  options={categorys}
                 />
                 <AmountForm errors={errors} register={register} />
                 <MemoForm errors={errors} register={register} />

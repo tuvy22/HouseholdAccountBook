@@ -7,12 +7,16 @@ import { UserInvite } from "./UserInvite";
 import RightPage from "./RightPage";
 import { InitialAmount } from "./InitialAmount";
 import { useSearchParams } from "next/navigation";
+import { Category } from "./Category";
 
 export const SETTING_OPEN = {
   USER_NAME: "userName",
-  GROUP_USER: "groupUser",
-  GROUP_USER_INVITATION: "groupUserInvitation",
   INIT_AMOUNT: "initAmount",
+  PASSWORD_CHANGE: "passwordChange",
+  OUT_GROUP: "outGroup",
+  OUT_SERVICE: "outService",
+  GROUP_USER_INVITATION: "groupUserInvitation",
+  CATEGORY: "category",
 };
 
 export function Setting() {
@@ -28,6 +32,18 @@ export function Setting() {
             <UserName />
           </RightPage>
         );
+      case SETTING_OPEN.INIT_AMOUNT:
+        return (
+          <RightPage title="初期残高設定">
+            <InitialAmount />
+          </RightPage>
+        );
+      case SETTING_OPEN.PASSWORD_CHANGE:
+        return <RightPage>comming soon</RightPage>;
+      case SETTING_OPEN.OUT_GROUP:
+        return <RightPage>comming soon</RightPage>;
+      case SETTING_OPEN.OUT_SERVICE:
+        return <RightPage>comming soon</RightPage>;
       case SETTING_OPEN.GROUP_USER_INVITATION:
         return (
           <RightPage
@@ -41,10 +57,13 @@ export function Setting() {
             <UserInvite />
           </RightPage>
         );
-      case SETTING_OPEN.INIT_AMOUNT:
+      case SETTING_OPEN.CATEGORY:
         return (
-          <RightPage title="初期残高設定">
-            <InitialAmount />
+          <RightPage
+            title="カテゴリー変更"
+            message={"収入・支出のカテゴリを設定できます。"}
+          >
+            <Category />
           </RightPage>
         );
       default:

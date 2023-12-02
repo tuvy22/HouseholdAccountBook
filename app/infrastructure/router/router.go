@@ -68,8 +68,10 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized.POST("/liquidation", liquidationHandler.CreateLiquidation)
 	authorized.DELETE("/liquidation/:id", liquidationHandler.DeleteLiquidation)
 
-	authorized.POST("/category", categoryHandler.CreateCategory)
-	authorized.DELETE("/category/:id", categoryHandler.DeleteCategory)
+	authorized.GET("/category/all/income", categoryHandler.GetAllIncomeCategory)
+	authorized.GET("/category/all/expense", categoryHandler.GetAllExpenseCategory)
+	authorized.POST("/replace-all-category/income", categoryHandler.ReplaceAllCategoryIncome)
+	authorized.POST("/replace-all-category/expense", categoryHandler.ReplaceAllCategoryExpense)
 
 	return r
 }

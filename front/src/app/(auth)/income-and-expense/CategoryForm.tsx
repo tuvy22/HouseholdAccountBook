@@ -4,6 +4,7 @@ import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import { IncomeExpenseSchema } from "./IncomeAndExpenseSchema";
 import { Controller } from "react-hook-form";
 import { Select, Option } from "@/app/materialTailwindExports";
+import { Category } from "@/app/util/types";
 
 export default function CategoryForm({
   errors,
@@ -14,7 +15,7 @@ export default function CategoryForm({
   errors: FieldErrors<IncomeExpenseSchema>;
   register: UseFormRegister<IncomeExpenseSchema>;
   control: Control<IncomeExpenseSchema>;
-  options: string[];
+  options: Category[];
 }) {
   return (
     <div className="flex flex-col flex-grow">
@@ -24,8 +25,8 @@ export default function CategoryForm({
         render={({ field }) => (
           <Select label="区分 (必須)" size="lg" {...field}>
             {options.map((option) => (
-              <Option key={option} value={option}>
-                {option}
+              <Option key={option.id} value={option.name}>
+                {option.name}
               </Option>
             ))}
           </Select>
