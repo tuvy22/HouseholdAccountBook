@@ -19,6 +19,7 @@ import { updateUser } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
 import { useAlert } from "@/app/context/AlertProvider";
 import { AlertValue } from "@/app/components/AlertCustoms";
+import SubmitButtonForm from "@/app/components/SubmitButtonForm";
 
 export function UserName() {
   const user = useUser();
@@ -53,16 +54,7 @@ export function UserName() {
       <div className="mb-1 flex flex-col gap-6">
         <NameForm errors={errors} updateRegister={register} />
       </div>
-      <Button
-        type="submit"
-        variant="filled"
-        color="green"
-        size="lg"
-        className="mt-6"
-        fullWidth
-      >
-        更新
-      </Button>
+      <SubmitButtonForm buttonName={"更新"} buttonColor={"green"} />
     </form>
   );
 }

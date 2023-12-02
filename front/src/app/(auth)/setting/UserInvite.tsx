@@ -44,7 +44,8 @@ export function UserInvite() {
       </Typography>
       <div className="text-center mt-10">
         <RefreshIcon
-          className="cursor-pointer hover:text-green-500 text-5xl"
+          className="cursor-pointer hover:text-green-500"
+          fontSize="large"
           onClick={handleCreateInvite}
         />
       </div>

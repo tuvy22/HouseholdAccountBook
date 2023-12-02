@@ -21,7 +21,7 @@ func NewCategoryRepository(db *gorm.DB) CategoryRepository {
 }
 
 func (r *categoryRepositoryImpl) GetAllCategory(categorys *[]entity.Category, groupID uint, isExpense bool) error {
-	if err := r.DB.Where("group_id = ?", groupID).Where("is_Expense = ?", isExpense).Order("id desc").Find(&categorys).Error; err != nil {
+	if err := r.DB.Where("group_id = ?", groupID).Where("is_Expense = ?", isExpense).Order("id").Find(&categorys).Error; err != nil {
 		return err
 	}
 	return nil

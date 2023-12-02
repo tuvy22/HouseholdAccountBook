@@ -86,7 +86,8 @@ const Header = () => {
         <HeaderUser />
         <LogoutIcon
           onClick={handleLogout}
-          className="cursor-pointer hover:text-green-500 text-3xl"
+          className="cursor-pointer hover:text-green-500"
+          fontSize="large"
         />
       </div>
 

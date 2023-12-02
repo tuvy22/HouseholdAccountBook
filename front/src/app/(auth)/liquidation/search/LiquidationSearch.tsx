@@ -144,9 +144,7 @@ const LiquidationSearch = () => {
             )}
           </div>
         </div>
-        <div className="flex justify-end mt-3">
-          <SubmitButtonForm buttonName={"検索"} />
-        </div>
+        <SubmitButtonForm buttonName={"検索"} buttonColor={"green"} />
       </form>
     </>
   );

@@ -13,7 +13,7 @@ import DateForm from "./DateForm";
 import CategoryForm from "./CategoryForm";
 import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
-import { INCOME_CATEGORY } from "@/app/util/constants";
+
 import { Category } from "@/app/util/types";
 import { getCategoryAllClient } from "@/app/util/apiClient";
 
@@ -73,9 +73,8 @@ export const IncomeForm = ({
           <AmountForm errors={errors} register={register} />
           <MemoForm errors={errors} register={register} />
         </div>
-        <div className="flex justify-end">
-          <SubmitButtonForm buttonName={"登録"} />
-        </div>
+
+        <SubmitButtonForm buttonName={"登録"} buttonColor={"blue"} />
       </form>
     </>
   );

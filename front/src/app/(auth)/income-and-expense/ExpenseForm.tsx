@@ -90,9 +90,8 @@ export const ExpenseForm = ({
             isUpdate={false}
           />
         </div>
-        <div className="flex justify-end">
-          <SubmitButtonForm buttonName={"登録"} />
-        </div>
+
+        <SubmitButtonForm buttonName={"登録"} buttonColor={"red"} />
       </form>
     </>
   );

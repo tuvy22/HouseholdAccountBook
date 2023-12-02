@@ -13,6 +13,7 @@ import {
   InitialAmountSchema,
   initialAmountSchema,
 } from "./InitialAmountSchema";
+import SubmitButtonForm from "@/app/components/SubmitButtonForm";
 
 export function InitialAmount() {
   const [error, setError] = useState("");
@@ -69,16 +70,7 @@ export function InitialAmount() {
           <div className="text-red-500">{errors.amount.message}</div>
         )}
       </div>
-      <Button
-        type="submit"
-        variant="filled"
-        color="green"
-        size="lg"
-        className="mt-6"
-        fullWidth
-      >
-        更新
-      </Button>
+      <SubmitButtonForm buttonName={"更新"} buttonColor={"green"} />
     </form>
   );
 }

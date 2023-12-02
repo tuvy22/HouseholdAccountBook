@@ -18,6 +18,7 @@ import { AlertValue } from "@/app/components/AlertCustoms";
 import { CategoryFormData, categorySchema } from "./CategorySchema";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import SubmitButtonForm from "@/app/components/SubmitButtonForm";
 
 export default function CategoryList({ isExpense }: { isExpense: boolean }) {
   const user = useUser();
@@ -113,23 +114,18 @@ export default function CategoryList({ isExpense }: { isExpense: boolean }) {
             </div>
           </div>
         ))}
-        <div className="text-right">
+        <div className="text-center">
           <AddCircleOutlineIcon
             className="cursor-pointer hover:text-green-500"
+            fontSize="large"
             onClick={() => append({ category: "" })}
           />
         </div>
       </div>
-      <Button
-        type="submit"
-        variant="filled"
-        color="green"
-        size="lg"
-        className="mt-10"
-        fullWidth
-      >
-        確定
-      </Button>
+      <SubmitButtonForm
+        buttonName={"確定"}
+        buttonColor={isExpense ? "red" : "blue"}
+      />
     </form>
   );
 }
