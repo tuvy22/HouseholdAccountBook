@@ -6,6 +6,8 @@ const (
 	ErrGroupUpdateFailed  ErrorCode = "already_in_group"
 	ErrInvalidCredentials ErrorCode = "invalid_credentials"
 	ErrInvalidLogin       ErrorCode = "invalid_login"
+	ErrNoSession          ErrorCode = "no_session"
+	ErrInvalidDateFormat  ErrorCode = "invalid_login_format"
 	ErrInternalServer     ErrorCode = "internal_server_error"
 )
 
@@ -13,6 +15,8 @@ var errorMessages = map[ErrorCode]string{
 	ErrGroupUpdateFailed:  "すでに所属するグループへの加入不可",
 	ErrInvalidCredentials: "認証失敗",
 	ErrInvalidLogin:       "ログイン失敗",
+	ErrNoSession:          "セッションなし",
+	ErrInvalidDateFormat:  "日付フォーマット不正",
 	ErrInternalServer:     "サーバーエラー",
 }
 

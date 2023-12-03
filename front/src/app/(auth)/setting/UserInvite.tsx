@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardBody,
+  Spinner,
   Typography,
 } from "@/app/materialTailwindExports";
 
@@ -15,6 +16,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 
 export function UserInvite() {
   const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const copyToClipboard = async () => {
     if ("clipboard" in navigator) {
@@ -23,7 +25,9 @@ export function UserInvite() {
   };
 
   const fetchUserInviteUrl = async () => {
+    setLoading(true);
     setUrl(await getUserInviteUrl());
+    setLoading(false);
   };
 
   const handleCreateInvite = () => {
@@ -43,11 +47,15 @@ export function UserInvite() {
         />
       </Typography>
       <div className="text-center mt-10">
-        <RefreshIcon
-          className="cursor-pointer hover:text-green-500"
-          fontSize="large"
-          onClick={handleCreateInvite}
-        />
+        {loading ? (
+          <Spinner className="m-auto" />
+        ) : (
+          <RefreshIcon
+            className="cursor-pointer hover:text-green-500"
+            fontSize="large"
+            onClick={handleCreateInvite}
+          />
+        )}
       </div>
     </div>
   );

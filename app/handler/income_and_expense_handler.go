@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/ten313/HouseholdAccountBook/app/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -34,14 +34,14 @@ func NewIncomeAndExpenseHandler(u usecase.IncomeAndExpenseUsecase) IncomeAndExpe
 }
 
 func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
-	// セッションからデータを取得
-	session := sessions.Default(c)
-	user := session.Get("user")
-	userSession, ok := user.(entity.UserSession)
-	if !ok {
-		c.Status(http.StatusInternalServerError)
+
+	//ログインデータ取得
+	loginUser, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
 		return
 	}
+
 	pageStr := c.DefaultQuery("page", "1")
 	page, err := strconv.ParseUint(pageStr, 10, 64)
 	if err != nil {
@@ -49,7 +49,7 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	result, err := h.usecase.GetAllIncomeAndExpense(userSession.GroupID, int(page))
+	result, err := h.usecase.GetAllIncomeAndExpense(loginUser.GroupID, int(page))
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -59,16 +59,14 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
 }
 
 func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpenseMaxPage(c *gin.Context) {
-	// セッションからデータを取得
-	session := sessions.Default(c)
-	user := session.Get("user")
-	userSession, ok := user.(entity.UserSession)
-	if !ok {
-		c.Status(http.StatusInternalServerError)
+	//ログインデータ取得
+	loginUser, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
 		return
 	}
 
-	result, err := h.usecase.GetAllIncomeAndExpenseMaxPage(userSession.GroupID)
+	result, err := h.usecase.GetAllIncomeAndExpenseMaxPage(loginUser.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -78,12 +76,10 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpenseMaxPage(c *gin.Conte
 }
 
 func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Context) {
-	// セッションからデータを取得
-	session := sessions.Default(c)
-	user := session.Get("user")
-	userSession, ok := user.(entity.UserSession)
-	if !ok {
-		c.Status(http.StatusInternalServerError)
+	//ログインデータ取得
+	loginUser, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
 		return
 	}
 
@@ -94,13 +90,10 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Con
 
 	// 日付のフォーマットを定義する
 	layout := "2006-01-02"
-
-	var err error
-
 	// 日本のタイムゾーンを取得
 	jst, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
-		c.Status(http.StatusBadRequest)
+		errorResponder(c, customerrors.NewCustomError(customerrors.ErrInvalidDateFormat))
 		return
 	}
 
@@ -109,7 +102,7 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Con
 	if fromDateStr != "" {
 		fromDate, err = time.ParseInLocation(layout, fromDateStr, jst)
 		if err != nil {
-			c.Status(http.StatusBadRequest)
+			errorResponder(c, customerrors.NewCustomError(customerrors.ErrInvalidDateFormat))
 			return
 		}
 	}
@@ -119,12 +112,12 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Con
 	if toDateStr != "" {
 		toDate, err = time.ParseInLocation(layout, toDateStr, jst)
 		if err != nil {
-			c.Status(http.StatusBadRequest)
+			errorResponder(c, customerrors.NewCustomError(customerrors.ErrInvalidDateFormat))
 			return
 		}
 	}
 
-	result, err := h.usecase.GetIncomeAndExpenseLiquidations(fromDate, toDate, userSession.ID, targetUserId, userSession.GroupID)
+	result, err := h.usecase.GetIncomeAndExpenseLiquidations(fromDate, toDate, loginUser.ID, targetUserId, loginUser.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -141,13 +134,13 @@ func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
 	}
 
 	//ログインデータ取得
-	userResponse, err := GetLoginUser(c)
+	loginUser, err := GetLoginUser(c)
 	if err != nil {
 		errorResponder(c, err)
 		return
 	}
 
-	err = h.usecase.CreateIncomeAndExpenseWithBillingUser(data, userResponse.ID, userResponse.GroupID)
+	err = h.usecase.CreateIncomeAndExpenseWithBillingUser(data, loginUser.ID, loginUser.GroupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -163,8 +156,8 @@ func (h *incomeAndExpenseHandlerImpl) UpdateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	// ログインデータ取得
-	userResponse, err := GetLoginUser(c)
+	//ログインデータ取得
+	loginUser, err := GetLoginUser(c)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -176,7 +169,7 @@ func (h *incomeAndExpenseHandlerImpl) UpdateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.UpdateIncomeAndExpense(incomeAndExpense, userResponse.ID, userResponse.GroupID)
+	err = h.usecase.UpdateIncomeAndExpense(incomeAndExpense, loginUser.ID, loginUser.GroupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -191,14 +184,14 @@ func (h *incomeAndExpenseHandlerImpl) DeleteIncomeAndExpense(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	// ログインデータ取得
-	userResponse, err := GetLoginUser(c)
+	//ログインデータ取得
+	loginUser, err := GetLoginUser(c)
 	if err != nil {
 		errorResponder(c, err)
 		return
 	}
 
-	err = h.usecase.DeleteIncomeAndExpense(id, userResponse.ID)
+	err = h.usecase.DeleteIncomeAndExpense(id, loginUser.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -208,16 +201,13 @@ func (h *incomeAndExpenseHandlerImpl) DeleteIncomeAndExpense(c *gin.Context) {
 
 func (h *incomeAndExpenseHandlerImpl) GetMonthlyTotal(c *gin.Context) {
 
-	// セッションからデータを取得
-	session := sessions.Default(c)
-	user := session.Get("user")
-	userSession, ok := user.(entity.UserSession)
-	if !ok {
-		c.Status(http.StatusInternalServerError)
+	//ログインデータ取得
+	loginUser, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
 		return
 	}
-
-	monthlyTotals, err := h.usecase.GetMonthlyTotal(userSession.GroupID, userSession.InitialAmount)
+	monthlyTotals, err := h.usecase.GetMonthlyTotal(loginUser.GroupID, loginUser.InitialAmount)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -233,16 +223,14 @@ func (h *incomeAndExpenseHandlerImpl) GetMonthlyCategory(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	// セッションからデータを取得
-	session := sessions.Default(c)
-	user := session.Get("user")
-	userSession, ok := user.(entity.UserSession)
-	if !ok {
-		c.Status(http.StatusInternalServerError)
+	//ログインデータ取得
+	loginUser, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
 		return
 	}
 
-	monthlyCategorys, err := h.usecase.GetMonthlyCategory(yearMonth, userSession.GroupID, isMinus)
+	monthlyCategorys, err := h.usecase.GetMonthlyCategory(yearMonth, loginUser.GroupID, isMinus)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

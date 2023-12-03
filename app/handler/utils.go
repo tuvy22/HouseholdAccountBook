@@ -15,7 +15,7 @@ func GetLoginUser(c *gin.Context) (entity.UserResponse, error) {
 	user := session.Get("user")
 	userSession, ok := user.(entity.UserSession)
 	if !ok {
-		return entity.UserResponse{}, customerrors.NewCustomError(customerrors.ErrInvalidCredentials)
+		return entity.UserResponse{}, customerrors.NewCustomError(customerrors.ErrNoSession)
 	}
 	userResponse := entity.UserResponse{
 		ID:            userSession.ID,

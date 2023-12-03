@@ -3,17 +3,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { IncomeAndExpenseTable } from "../../../components/IncomeAndExpenseTable";
-import {
-  IncomeAndExpense,
-  IncomeAndExpenseBillingUser,
-  LiquidationCreate,
-} from "@/app/util/types";
+import { IncomeAndExpense, LiquidationCreate } from "@/app/util/types";
 import { Button, Card, Typography } from "@/app/materialTailwindExports";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { isMinus, toDateString } from "@/app/util/util";
+
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 import { postLiquidation } from "@/app/util/apiClient";
 import { AlertValue } from "@/app/components/AlertCustoms";

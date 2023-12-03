@@ -21,6 +21,10 @@ func errorResponder(c *gin.Context, err error) {
 			statusCode = http.StatusUnauthorized
 		case customerrors.ErrInvalidLogin:
 			statusCode = http.StatusUnauthorized
+		case customerrors.ErrNoSession:
+			statusCode = http.StatusUnauthorized
+		case customerrors.ErrInvalidDateFormat:
+			statusCode = http.StatusBadRequest
 		default:
 			statusCode = http.StatusInternalServerError
 		}
