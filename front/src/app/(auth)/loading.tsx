@@ -1,9 +1,11 @@
 "use client";
 
-export default function Error() {
+import { Spinner } from "../materialTailwindExports";
+
+export default function Loading() {
   return (
     <div className="flex justify-center items-center h-screen font-bold">
-      想定外のエラーが発生しました。
+      <Spinner />
     </div>
   );
 }

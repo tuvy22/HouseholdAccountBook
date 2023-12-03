@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/ten313/HouseholdAccountBook/app/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/password"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
@@ -45,22 +45,7 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 
 	err := u.repo.GetUser(creds.UserID, &user)
 	if err != nil {
-		storedUserID := os.Getenv("ID")
-		storedPassword := os.Getenv("PASS")
-
-		if creds.UserID == storedUserID && creds.Password == storedPassword {
-			hashPassword, err := u.password.HashPassword(creds.Password)
-			if err != nil {
-				return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrInvalidCredentials)
-			}
-			user = entity.User{
-				ID:       creds.UserID,
-				Password: hashPassword,
-				Name:     creds.UserID,
-			}
-		} else {
-			return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrInvalidLogin)
-		}
+		return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrInvalidLogin)
 	}
 
 	err = u.password.CheckPassword(user.Password, creds.Password)
@@ -71,19 +56,19 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
 }
 
-func (u *userUsecaseImpl) createLoginToken(userId string) (string, error) {
+// func (u *userUsecaseImpl) createLoginToken(userId string) (string, error) {
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": userId,
-		"exp":     time.Now().Add(time.Minute * 30).Unix(),
-	})
+// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+// 		"user_id": userId,
+// 		"exp":     time.Now().Add(time.Minute * 30).Unix(),
+// 	})
 
-	tokenString, err := token.SignedString(u.config.LoginJWTKey)
-	if err != nil {
-		return "", err
-	}
-	return tokenString, nil
-}
+// 	tokenString, err := token.SignedString(u.config.LoginJWTKey)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return tokenString, nil
+// }
 
 func (u *userUsecaseImpl) CheckInviteToken(tokenString string) (uint, error) {
 
@@ -100,7 +85,7 @@ func (u *userUsecaseImpl) CheckInviteToken(tokenString string) (uint, error) {
 		groupId := uint(floatValue)
 		return groupId, nil
 	} else {
-		return entity.GroupIDNone, customerrors.NewCustomError(customerrors.ErrInternalServer)
+		return entity.GroupIDNone, customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
 }
 
@@ -357,7 +342,7 @@ func (u *userUsecaseImpl) getInitCategory(groupID uint, isExpense bool) ([]entit
 	// JSONファイルの読み込み
 	data, err := os.ReadFile(dir + "/infrastructure/data/" + fileName)
 	if err != nil {
-
+		return categories, err
 	}
 
 	// JSONをCategoryスライスにデシリアライズ

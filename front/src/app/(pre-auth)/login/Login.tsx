@@ -10,7 +10,7 @@ import {
   Typography,
   Button,
 } from "../../materialTailwindExports";
-import { useUser } from "@/app/context/UserProvider";
+
 import LockIcon from "@mui/icons-material/Lock";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -31,7 +31,7 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => setShowPassword(!showPassword);
   const router = useRouter();
-  const { setUser } = useUser();
+
   const {
     register,
     handleSubmit,
@@ -58,7 +58,7 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
   const submit = async (userId: string, password: string) => {
     setLoading(true);
     try {
-      setUser(await auth(userId, password));
+      await auth(userId, password);
       router.push("/income-and-expense");
     } catch (error) {
       if (error instanceof Error) {

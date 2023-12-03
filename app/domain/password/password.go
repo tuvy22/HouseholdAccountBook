@@ -25,5 +25,8 @@ func (p *passwordImpl) HashPassword(password string) (string, error) {
 
 func (p *passwordImpl) CheckPassword(hashedPassword, password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-	return err
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -24,10 +24,8 @@ export default function RootLayout({
       <body
         className={`${inter.className} flex flex-col justify-between min-h-screen bg-gray-50`}
       >
-        <UserProvider>
-          {children}
-          <Footer />
-        </UserProvider>
+        {children}
+        <Footer />
       </body>
     </html>
   );

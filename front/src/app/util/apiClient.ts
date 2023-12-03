@@ -50,6 +50,18 @@ export const getIncomeAndExpenseMonthlyCategory = async (
   }
 };
 
+export const getLoginUser = async () => {
+  try {
+    const response = await axios.get("/api/private/user");
+
+    const result: User = response.data;
+
+    return result;
+  } catch (error) {
+    throw new Error(GET_NG_MESSAGE);
+  }
+};
+
 export const getGroupAllUser = async () => {
   try {
     const response = await axios.get("/api/private/user/group-all");

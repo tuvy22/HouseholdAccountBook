@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -32,7 +33,7 @@ func (h *middlewareHandlerImpl) LocalhostOnly() gin.HandlerFunc {
 
 		// IPアドレスがlocalhost (127.0.0.1) または ::1 (IPv6のlocalhost) でない場合、アクセスを拒否
 		if !strings.HasPrefix(ip, "127.0.0.1") && !strings.HasPrefix(ip, "::1") {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "Access forbidden: only localhost can access."})
+			errorResponder(c, customerrors.NewCustomError(customerrors.ErrInvalidCredentials))
 			return
 		}
 
@@ -45,7 +46,7 @@ func (h *middlewareHandlerImpl) CheckSessionId() gin.HandlerFunc {
 		sessionID, err := c.Cookie(SessionIDCookie)
 
 		if err != nil || sessionID == "" {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			errorResponder(c, customerrors.NewCustomError(customerrors.ErrNoSession))
 			return
 		}
 
@@ -62,13 +63,13 @@ func (h *middlewareHandlerImpl) CheckInviteToken() gin.HandlerFunc {
 				c.Next()
 			} else {
 				// 他のエラーの場合は、エラーレスポンスを返す
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				errorResponder(c, customerrors.NewCustomError(customerrors.ErrInvalidCredentials))
 			}
 			return
 		}
 		groupId, err := h.usecase.CheckInviteToken(tokenString)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			errorResponder(c, customerrors.NewCustomError(customerrors.ErrInvalidCredentials))
 			return
 		}
 

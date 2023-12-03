@@ -1,11 +1,9 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/ten313/HouseholdAccountBook/app/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 )
 
@@ -36,7 +34,8 @@ func GetInviteGroupID(c *gin.Context) (uint, error) {
 
 	groupIdUint, ok := groupId.(uint)
 	if !ok {
-		return entity.GroupIDNone, fmt.Errorf("Group ID is not a uint")
+		return entity.GroupIDNone, customerrors.NewCustomError(customerrors.ErrBadRequest)
+
 	}
 
 	return groupIdUint, nil

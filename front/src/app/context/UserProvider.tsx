@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext, UserContextProps } from "./UserContext";
 import { User } from "../util/types";
+import { getLoginUser } from "../util/apiClient";
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const userInfo: User = {
@@ -22,13 +23,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const fetchDataFromServer = async () => {
-    try {
-      const response = await fetch("/api/private/user");
-      const result: User = await response.json();
-      return result;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    return getLoginUser();
   };
 
   return (

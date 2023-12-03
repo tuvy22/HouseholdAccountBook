@@ -7,19 +7,24 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
+	"github.com/ten313/HouseholdAccountBook/app/domain/logger"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
 
 type UserHandler interface {
 	Authenticate(c *gin.Context)
 	DeleteAuthenticate(c *gin.Context)
+
 	GetAllUser(c *gin.Context)
 	GetLoginUser(c *gin.Context)
 	GetGroupAllUser(c *gin.Context)
+
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
+
 	GetUserInviteUrl(c *gin.Context)
 	SetInviteCookie(c *gin.Context)
 	DeleteInviteCookie(c *gin.Context)
@@ -27,21 +32,28 @@ type UserHandler interface {
 
 type userHandlerImpl struct {
 	usecase usecase.UserUsecase
+	logger  logger.Logger
 }
 
-func NewUserHandler(u usecase.UserUsecase) UserHandler {
-	return &userHandlerImpl{usecase: u}
+func NewUserHandler(u usecase.UserUsecase, l logger.Logger) UserHandler {
+	return &userHandlerImpl{usecase: u, logger: l}
 }
 
 func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 	var creds entity.Credentials
 	if err := c.ShouldBindJSON(&creds); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
 	user, userSession, err := h.usecase.Authenticate(creds)
 	if err != nil {
+		if err.Error() == string(customerrors.ErrInvalidLogin) {
+			h.logger.Warn(err.Error())
+		} else {
+			h.logger.Error(err)
+		}
 		errorResponder(c, err)
 		return
 	}
@@ -51,13 +63,15 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 	session.Set("user", userSession)
 	err = session.Save()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
 	inviteGroupID, err := GetInviteGroupID(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
@@ -65,6 +79,7 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 	if inviteGroupID != entity.GroupIDNone {
 		err := h.usecase.ChangeGroup(user.ID, inviteGroupID)
 		if err != nil {
+			h.logger.Error(err)
 			errorResponder(c, err)
 			return
 		}
@@ -83,6 +98,7 @@ func (h *userHandlerImpl) DeleteAuthenticate(c *gin.Context) {
 	session.Clear()
 	err := session.Save()
 	if err != nil {
+		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -96,7 +112,8 @@ func (h *userHandlerImpl) GetAllUser(c *gin.Context) {
 
 	users, err := h.usecase.GetAllUser()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
@@ -104,13 +121,14 @@ func (h *userHandlerImpl) GetAllUser(c *gin.Context) {
 }
 func (h *userHandlerImpl) GetGroupAllUser(c *gin.Context) {
 	// ログインデータ取得
-	userResponse, err := GetLoginUser(c)
+	loginUser, err := GetLoginUser(c)
 	if err != nil {
+		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
 
-	users, err := h.usecase.GetGroupAllUser(userResponse.GroupID, userResponse.ID)
+	users, err := h.usecase.GetGroupAllUser(loginUser.GroupID, loginUser.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -121,30 +139,35 @@ func (h *userHandlerImpl) GetGroupAllUser(c *gin.Context) {
 
 func (h *userHandlerImpl) GetLoginUser(c *gin.Context) {
 	// ログインデータ取得
-	userResponse, err := GetLoginUser(c)
+	loginUser, err := GetLoginUser(c)
 	if err != nil {
+		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, userResponse)
+
+	c.JSON(http.StatusOK, loginUser)
 }
 
 func (h *userHandlerImpl) CreateUser(c *gin.Context) {
 	userCreate, err := h.bindUserCreate(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
 	inviteGroupID, err := GetInviteGroupID(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
 	user, userSession, err := h.usecase.CreateUser(userCreate, inviteGroupID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 	// セッションにデータを設定
@@ -152,7 +175,8 @@ func (h *userHandlerImpl) CreateUser(c *gin.Context) {
 	session.Set("user", userSession)
 	err = session.Save()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
@@ -166,7 +190,8 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 
 	user, err := h.bindUser(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
@@ -174,7 +199,8 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 
 	_, userSession, err := h.usecase.UpdateUser(user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
@@ -183,7 +209,8 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 	session.Set("user", userSession)
 	err = session.Save()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
@@ -194,7 +221,8 @@ func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
 
 	err := h.usecase.DeleteUser(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 	c.Status(http.StatusOK)
@@ -202,15 +230,17 @@ func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
 
 func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
 	// ログインデータ取得
-	userResponse, err := GetLoginUser(c)
+	loginUser, err := GetLoginUser(c)
 	if err != nil {
+		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
 
-	inviteUrl, err := h.usecase.GetUserInviteUrl(userResponse.GroupID)
+	inviteUrl, err := h.usecase.GetUserInviteUrl(loginUser.GroupID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
@@ -221,17 +251,24 @@ func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
 func (h *userHandlerImpl) SetInviteCookie(c *gin.Context) {
 	inviteToken, err := h.bindInviteToken(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 	_, err = h.usecase.CheckInviteToken(inviteToken.Token)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 	// クッキーにトークンを保存
 	c.SetSameSite(http.SameSiteNoneMode)
 	c.SetCookie(InviteCookieToken, inviteToken.Token, 1800, "/", os.Getenv("ALLOWED_ORIGINS"), true, true)
+}
+
+func (h *userHandlerImpl) DeleteInviteCookie(c *gin.Context) {
+	h.deleteInviteCookie(c)
+	c.Status(http.StatusOK)
 }
 
 func (h *userHandlerImpl) bindUser(c *gin.Context) (entity.User, error) {
@@ -255,10 +292,6 @@ func (h *userHandlerImpl) bindInviteToken(c *gin.Context) (entity.InviteToken, e
 		return inviteToken, err
 	}
 	return inviteToken, nil
-}
-func (h *userHandlerImpl) DeleteInviteCookie(c *gin.Context) {
-	h.deleteInviteCookie(c)
-	c.Status(http.StatusOK)
 }
 
 func (h *userHandlerImpl) deleteInviteCookie(c *gin.Context) {

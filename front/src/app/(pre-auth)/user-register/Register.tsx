@@ -14,7 +14,6 @@ import { UserCreate } from "../../util/types";
 import { useRouter } from "next/navigation";
 import { deleteInviteToken, postUser } from "../../util/apiClient";
 import { useState } from "react";
-import { useUser } from "../../context/UserProvider";
 import NameForm from "../../components/NameForm";
 import {
   UserCreateSchema,
@@ -26,7 +25,6 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const { setUser } = useUser();
 
   const {
     register,
@@ -62,7 +60,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
     };
 
     try {
-      setUser(await postUser(user));
+      await postUser(user);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

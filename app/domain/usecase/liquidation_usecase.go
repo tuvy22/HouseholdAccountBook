@@ -1,8 +1,7 @@
 package usecase
 
 import (
-	"fmt"
-
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 )
@@ -25,11 +24,11 @@ func NewLiquidationUsecase(repo repository.LiquidationRepository, ieRepo reposit
 
 func (u *liquidationUsecaseImpl) CreateLiquidation(data entity.LiquidationCreate, userId string, groupId uint) error {
 
-	err := u.validateUserID(data, userId, ErrFailedCreate)
+	err := u.validateUserID(data, userId)
 	if err != nil {
 		return err
 	}
-	err = u.validateBillingUserID(data.BillingUsersIds, groupId, ErrFailedCreate)
+	err = u.validateBillingUserID(data.BillingUsersIds, groupId)
 	if err != nil {
 		return err
 	}
@@ -48,10 +47,10 @@ func (u *liquidationUsecaseImpl) DeleteLiquidation(liquidationID uint, userId st
 
 	err := u.repo.GetLiquidation(liquidationID, &liquidation)
 	if err != nil {
-		return fmt.Errorf(ErrFailedDelete)
+		return err
 	}
 
-	err = u.validateLiquidationID(liquidation, userId, ErrFailedDelete)
+	err = u.validateLiquidationID(liquidation, userId)
 	if err != nil {
 		return err
 	}
@@ -103,25 +102,25 @@ func (u *liquidationUsecaseImpl) GetAllLiquidation(groupID uint) ([]entity.Liqui
 	return results, nil
 }
 
-func (u *liquidationUsecaseImpl) validateUserID(data entity.LiquidationCreate, userId string, errMessage string) error {
+func (u *liquidationUsecaseImpl) validateUserID(data entity.LiquidationCreate, userId string) error {
 	if data.RegisterUserID != userId {
-		return fmt.Errorf(errMessage)
+		return customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
 	return nil
 }
 
-func (u *liquidationUsecaseImpl) validateBillingUserID(liquidationBillingUserIds []uint, groupID uint, errMessage string) error {
+func (u *liquidationUsecaseImpl) validateBillingUserID(liquidationBillingUserIds []uint, groupID uint) error {
 	// グループに属するユーザーIDを取得
 	userIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
-		return fmt.Errorf(errMessage)
+		return err
 	}
 
 	// 収入と支出のデータを取得
 	ieDatas := []entity.IncomeAndExpense{}
 	err = u.ieRepo.GetAllIncomeAndExpense(&ieDatas, userIDs, 0, 0)
 	if err != nil {
-		return fmt.Errorf(errMessage)
+		return err
 	}
 
 	// BillingUsersのIDをマップとして格納
@@ -135,17 +134,17 @@ func (u *liquidationUsecaseImpl) validateBillingUserID(liquidationBillingUserIds
 	// liquidationBillingUserIds の各IDがbillingUserIDsに存在するか確認
 	for _, checkId := range liquidationBillingUserIds {
 		if !billingUserIDs[checkId] {
-			return fmt.Errorf(errMessage)
+			return customerrors.NewCustomError(customerrors.ErrBadRequest)
 		}
 	}
 	return nil
 }
 
-func (u *liquidationUsecaseImpl) validateLiquidationID(liquidation entity.Liquidation, userId string, errMessage string) error {
+func (u *liquidationUsecaseImpl) validateLiquidationID(liquidation entity.Liquidation, userId string) error {
 
 	//自分自身で登録したデータであるかを確認
 	if liquidation.RegisterUserID != userId {
-		return fmt.Errorf(errMessage)
+		return customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
 	return nil
 }

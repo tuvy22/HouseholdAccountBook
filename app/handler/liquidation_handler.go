@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
+	"github.com/ten313/HouseholdAccountBook/app/domain/logger"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
 
@@ -17,28 +18,32 @@ type LiquidationHandler interface {
 
 type liquidationHandlerImpl struct {
 	usecase usecase.LiquidationUsecase
+	logger  logger.Logger
 }
 
-func NewLiquidationHandler(u usecase.LiquidationUsecase) LiquidationHandler {
-	return &liquidationHandlerImpl{usecase: u}
+func NewLiquidationHandler(u usecase.LiquidationUsecase, l logger.Logger) LiquidationHandler {
+	return &liquidationHandlerImpl{usecase: u, logger: l}
 }
 func (h *liquidationHandlerImpl) CreateLiquidation(c *gin.Context) {
 	data, err := h.bindCreateLiquidation(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	//ログインデータ取得
-	userResponse, err := GetLoginUser(c)
-	if err != nil {
+		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
 
-	err = h.usecase.CreateLiquidation(data, userResponse.ID, userResponse.GroupID)
+	// ログインデータ取得
+	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Warn(err.Error())
+		errorResponder(c, err)
+		return
+	}
+
+	err = h.usecase.CreateLiquidation(data, loginUser.ID, loginUser.GroupID)
+	if err != nil {
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 
@@ -48,35 +53,40 @@ func (h *liquidationHandlerImpl) DeleteLiquidation(c *gin.Context) {
 
 	id, err := h.getID(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	//ログインデータ取得
-	userResponse, err := GetLoginUser(c)
-	if err != nil {
+		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
 
-	err = h.usecase.DeleteLiquidation(id, userResponse.ID)
+	// ログインデータ取得
+	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		h.logger.Warn(err.Error())
+		errorResponder(c, err)
+		return
+	}
+
+	err = h.usecase.DeleteLiquidation(id, loginUser.ID)
+	if err != nil {
+		h.logger.Error(err)
+		errorResponder(c, err)
 		return
 	}
 	c.Status(http.StatusOK)
 }
 
 func (h *liquidationHandlerImpl) GetAllLiquidation(c *gin.Context) {
-	//ログインデータ取得
-	userResponse, err := GetLoginUser(c)
+	// ログインデータ取得
+	loginUser, err := GetLoginUser(c)
 	if err != nil {
+		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
 
-	result, err := h.usecase.GetAllLiquidation(userResponse.GroupID)
+	result, err := h.usecase.GetAllLiquidation(loginUser.GroupID)
 	if err != nil {
+		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ten313/HouseholdAccountBook/app/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
 )
 
 func errorResponder(c *gin.Context, err error) {
@@ -23,7 +23,7 @@ func errorResponder(c *gin.Context, err error) {
 			statusCode = http.StatusUnauthorized
 		case customerrors.ErrNoSession:
 			statusCode = http.StatusUnauthorized
-		case customerrors.ErrInvalidDateFormat:
+		case customerrors.ErrBadRequest:
 			statusCode = http.StatusBadRequest
 		default:
 			statusCode = http.StatusInternalServerError

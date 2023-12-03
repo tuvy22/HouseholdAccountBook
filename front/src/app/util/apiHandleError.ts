@@ -18,6 +18,8 @@ export function apiHandleError(error: unknown): string {
           return "IDまたはパスワードが間違っています。";
         case "internal_server_error":
           return "サーバーでエラーが発生しました。";
+        case "bad_request":
+          return "リクエストに不正な内容があります。";
         default:
           return "予期せぬエラーが発生しました。";
       }

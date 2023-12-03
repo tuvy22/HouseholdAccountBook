@@ -1,8 +1,7 @@
 package usecase
 
 import (
-	"fmt"
-
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 )
@@ -42,12 +41,12 @@ func (u *categoryUsecaseImpl) getAllCategory(groupID uint, isExpense bool) ([]en
 
 func (u *categoryUsecaseImpl) ReplaceAllCategory(categorys []entity.Category, isExpense bool, groupID uint) error {
 
-	err := u.validateGroupID(categorys, groupID, ErrFailedCreate)
+	err := u.validateGroupID(categorys, groupID)
 	if err != nil {
 		return err
 	}
 
-	err = u.validateIsExpense(categorys, isExpense, ErrFailedCreate)
+	err = u.validateIsExpense(categorys, isExpense)
 	if err != nil {
 		return err
 	}
@@ -65,18 +64,18 @@ func (u *categoryUsecaseImpl) ReplaceAllCategory(categorys []entity.Category, is
 	return nil
 }
 
-func (u *categoryUsecaseImpl) validateGroupID(categorys []entity.Category, groupID uint, errMessage string) error {
+func (u *categoryUsecaseImpl) validateGroupID(categorys []entity.Category, groupID uint) error {
 	for _, category := range categorys {
 		if category.GroupID != groupID {
-			return fmt.Errorf(errMessage)
+			return customerrors.NewCustomError(customerrors.ErrBadRequest)
 		}
 	}
 	return nil
 }
-func (u *categoryUsecaseImpl) validateIsExpense(categorys []entity.Category, isExpense bool, errMessage string) error {
+func (u *categoryUsecaseImpl) validateIsExpense(categorys []entity.Category, isExpense bool) error {
 	for _, category := range categorys {
 		if category.IsExpense != isExpense {
-			return fmt.Errorf(errMessage)
+			return customerrors.NewCustomError(customerrors.ErrBadRequest)
 		}
 	}
 	return nil

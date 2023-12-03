@@ -9,7 +9,7 @@ export const userCreateSchema = z
   .object({
     id: z
       .string()
-      .min(1, { message: "ユーザーIDは必須項目です。" })
+      .min(5, { message: "ユーザーIDは5文字以上で入力してください。" })
       .max(10, { message: "ユーザーIDは10文字以下で入力してください。" })
       .refine((id) => /^[A-Za-z0-9]+$/.test(id), {
         message: "ユーザーIDは英数字のみで入力してください。",
