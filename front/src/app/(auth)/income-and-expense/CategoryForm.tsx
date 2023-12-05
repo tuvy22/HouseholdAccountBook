@@ -18,23 +18,27 @@ export default function CategoryForm({
   options: Category[];
 }) {
   return (
-    <div className="flex flex-col flex-grow">
-      <Controller
-        control={control}
-        name="category"
-        render={({ field }) => (
-          <Select label="区分 (必須)" size="lg" {...field}>
-            {options.map((option) => (
-              <Option key={option.id} value={option.name}>
-                {option.name}
-              </Option>
-            ))}
-          </Select>
-        )}
-      />
-      {errors.category && (
-        <div className="text-red-500">{errors.category.message}</div>
+    <>
+      {options.length > 0 && (
+        <div className="flex flex-col flex-grow">
+          <Controller
+            control={control}
+            name="category"
+            render={({ field }) => (
+              <Select label="区分 (必須)" size="lg" {...field}>
+                {options.map((option) => (
+                  <Option key={option.id} value={option.name}>
+                    {option.name}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          />
+          {errors.category && (
+            <div className="text-red-500">{errors.category.message}</div>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 }

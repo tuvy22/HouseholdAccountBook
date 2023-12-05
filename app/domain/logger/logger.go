@@ -7,10 +7,10 @@ import (
 )
 
 type Logger interface {
-	Info(msg string)
-	Warn(msg string)
-	Error(err error)
-	ErrorMsg(msg string)
+	Info(userId string, msg string)
+	Warn(userId string, msg string)
+	Error(userId string, err error)
+	ErrorMsg(userId string, msg string)
 }
 
 type logrusLoggerImpl struct {
@@ -26,22 +26,27 @@ func NewLogrusLogger() Logger {
 	return &logrusLoggerImpl{logger}
 }
 
-func (l *logrusLoggerImpl) Info(msg string) {
-	l.Logger.Info(msg)
-}
-
-func (l *logrusLoggerImpl) Warn(msg string) {
-	l.Logger.Warn(msg)
-}
-func (l *logrusLoggerImpl) Error(err error) {
-	l.error(err.Error())
-}
-func (l *logrusLoggerImpl) ErrorMsg(msg string) {
-	l.error(msg)
-}
-
-func (l *logrusLoggerImpl) error(msg string) {
+func (l *logrusLoggerImpl) Info(userId string, msg string) {
 	l.Logger.WithFields(logrus.Fields{
+		"user_id": userId,
+	}).Info(msg)
+}
+
+func (l *logrusLoggerImpl) Warn(userId string, msg string) {
+	l.Logger.WithFields(logrus.Fields{
+		"user_id": userId,
+	}).Warn(msg)
+}
+func (l *logrusLoggerImpl) Error(userId string, err error) {
+	l.error(userId, err.Error())
+}
+func (l *logrusLoggerImpl) ErrorMsg(userId string, msg string) {
+	l.error(userId, msg)
+}
+
+func (l *logrusLoggerImpl) error(userId string, msg string) {
+	l.Logger.WithFields(logrus.Fields{
+		"user_id":     userId,
 		"stack_trace": getStackTrace(),
 	}).Error(msg)
 }

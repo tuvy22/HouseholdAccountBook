@@ -4,7 +4,9 @@ type ErrorCode string
 
 const (
 	//すでに所属するグループへの加入不可
-	ErrGroupUpdateFailed ErrorCode = "already_in_group"
+	ErrAlreadyInGroup ErrorCode = "already_in_group"
+	//カテゴリーが０件は不可
+	ErrCategorysLenZero ErrorCode = "categorys_len_zero"
 	//認証失敗
 	ErrInvalidCredentials ErrorCode = "invalid_credentials"
 	//ログイン失敗

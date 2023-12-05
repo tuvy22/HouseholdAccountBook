@@ -262,7 +262,7 @@ func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) error {
 	}
 	if inviteGroupID == preUser.GroupID {
 		//変更後のグループにすでに属している場合はエラー
-		return customerrors.NewCustomError(customerrors.ErrGroupUpdateFailed)
+		return customerrors.NewCustomError(customerrors.ErrAlreadyInGroup)
 	}
 	//グループ変更
 	preUser.GroupID = inviteGroupID

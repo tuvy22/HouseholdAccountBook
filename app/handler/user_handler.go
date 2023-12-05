@@ -7,9 +7,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
-	"github.com/ten313/HouseholdAccountBook/app/domain/logger"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
 
@@ -32,28 +30,21 @@ type UserHandler interface {
 
 type userHandlerImpl struct {
 	usecase usecase.UserUsecase
-	logger  logger.Logger
 }
 
-func NewUserHandler(u usecase.UserUsecase, l logger.Logger) UserHandler {
-	return &userHandlerImpl{usecase: u, logger: l}
+func NewUserHandler(u usecase.UserUsecase) UserHandler {
+	return &userHandlerImpl{usecase: u}
 }
 
 func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 	var creds entity.Credentials
 	if err := c.ShouldBindJSON(&creds); err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
 
 	user, userSession, err := h.usecase.Authenticate(creds)
 	if err != nil {
-		if err.Error() == string(customerrors.ErrInvalidLogin) {
-			h.logger.Warn(err.Error())
-		} else {
-			h.logger.Error(err)
-		}
 		errorResponder(c, err)
 		return
 	}
@@ -63,14 +54,12 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 	session.Set("user", userSession)
 	err = session.Save()
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
 
 	inviteGroupID, err := GetInviteGroupID(c)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -79,7 +68,7 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 	if inviteGroupID != entity.GroupIDNone {
 		err := h.usecase.ChangeGroup(user.ID, inviteGroupID)
 		if err != nil {
-			h.logger.Error(err)
+
 			errorResponder(c, err)
 			return
 		}
@@ -98,7 +87,6 @@ func (h *userHandlerImpl) DeleteAuthenticate(c *gin.Context) {
 	session.Clear()
 	err := session.Save()
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -112,7 +100,6 @@ func (h *userHandlerImpl) GetAllUser(c *gin.Context) {
 
 	users, err := h.usecase.GetAllUser()
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -123,7 +110,6 @@ func (h *userHandlerImpl) GetGroupAllUser(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
@@ -141,7 +127,6 @@ func (h *userHandlerImpl) GetLoginUser(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
@@ -152,21 +137,18 @@ func (h *userHandlerImpl) GetLoginUser(c *gin.Context) {
 func (h *userHandlerImpl) CreateUser(c *gin.Context) {
 	userCreate, err := h.bindUserCreate(c)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
 
 	inviteGroupID, err := GetInviteGroupID(c)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
 
 	user, userSession, err := h.usecase.CreateUser(userCreate, inviteGroupID)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -175,7 +157,6 @@ func (h *userHandlerImpl) CreateUser(c *gin.Context) {
 	session.Set("user", userSession)
 	err = session.Save()
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -190,7 +171,6 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 
 	user, err := h.bindUser(c)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -199,7 +179,6 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 
 	_, userSession, err := h.usecase.UpdateUser(user)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -209,7 +188,6 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 	session.Set("user", userSession)
 	err = session.Save()
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -221,7 +199,6 @@ func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
 
 	err := h.usecase.DeleteUser(c.Param("id"))
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -232,14 +209,12 @@ func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
 
 	inviteUrl, err := h.usecase.GetUserInviteUrl(loginUser.GroupID)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -251,13 +226,11 @@ func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
 func (h *userHandlerImpl) SetInviteCookie(c *gin.Context) {
 	inviteToken, err := h.bindInviteToken(c)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
 	_, err = h.usecase.CheckInviteToken(inviteToken.Token)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}

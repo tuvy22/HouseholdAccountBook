@@ -7,6 +7,8 @@ export function apiHandleError(error: unknown): string {
       switch (code) {
         case "already_in_group":
           return "すでに所属するグループに加入することはできません。";
+        case "categorys_len_zero":
+          return "カテゴリーを全て削除することは出来ません。";
         case "invalid_credentials":
           return "認証に失敗しました。";
         case "invalid_login":

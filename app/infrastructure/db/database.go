@@ -24,19 +24,19 @@ func init() {
 
 	// .env ファイルから環境変数をロード
 	if err := godotenv.Load(); err != nil {
-		log.Warn("No .env file found")
+		log.Warn("", "No .env file found")
 	}
 
 	dsn := os.Getenv("DATABASE_DSN")
 	if dsn == "" {
-		log.ErrorMsg("DATABASE_DSN environment variable is not set")
+		log.ErrorMsg("", "DATABASE_DSN environment variable is not set")
 		os.Exit(1) // エラー発生時にプログラムを終了
 	}
 
 	var err error
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Error(err)
+		log.Error("", err)
 		os.Exit(1) // エラー発生時にプログラムを終了
 	}
 	// ドロップ

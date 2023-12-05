@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
-	"github.com/ten313/HouseholdAccountBook/app/domain/logger"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
 
@@ -19,16 +18,14 @@ type CategoryHandler interface {
 
 type categoryHandlerImpl struct {
 	usecase usecase.CategoryUsecase
-	logger  logger.Logger
 }
 
-func NewCategoryHandler(u usecase.CategoryUsecase, l logger.Logger) CategoryHandler {
-	return &categoryHandlerImpl{usecase: u, logger: l}
+func NewCategoryHandler(u usecase.CategoryUsecase) CategoryHandler {
+	return &categoryHandlerImpl{usecase: u}
 }
 func (h *categoryHandlerImpl) ReplaceAllCategoryIncome(c *gin.Context) {
 	datas, err := h.bindCreateCategorys(c)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -36,14 +33,12 @@ func (h *categoryHandlerImpl) ReplaceAllCategoryIncome(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
 
 	err = h.usecase.ReplaceAllCategory(datas, false, loginUser.GroupID)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -53,7 +48,6 @@ func (h *categoryHandlerImpl) ReplaceAllCategoryIncome(c *gin.Context) {
 func (h *categoryHandlerImpl) ReplaceAllCategoryExpense(c *gin.Context) {
 	datas, err := h.bindCreateCategorys(c)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -61,14 +55,12 @@ func (h *categoryHandlerImpl) ReplaceAllCategoryExpense(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
 
 	err = h.usecase.ReplaceAllCategory(datas, true, loginUser.GroupID)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -80,14 +72,12 @@ func (h *categoryHandlerImpl) GetAllIncomeCategory(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
 
 	result, err := h.usecase.GetAllIncomeCategory(loginUser.GroupID)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -98,14 +88,12 @@ func (h *categoryHandlerImpl) GetAllExpenseCategory(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
 
 	result, err := h.usecase.GetAllExpenseCategory(loginUser.GroupID)
 	if err != nil {
-		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}

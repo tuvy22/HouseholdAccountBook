@@ -41,7 +41,12 @@ func (u *categoryUsecaseImpl) getAllCategory(groupID uint, isExpense bool) ([]en
 
 func (u *categoryUsecaseImpl) ReplaceAllCategory(categorys []entity.Category, isExpense bool, groupID uint) error {
 
-	err := u.validateGroupID(categorys, groupID)
+	err := u.validateCategorysLen(categorys)
+	if err != nil {
+		return err
+	}
+
+	err = u.validateGroupID(categorys, groupID)
 	if err != nil {
 		return err
 	}
@@ -61,6 +66,14 @@ func (u *categoryUsecaseImpl) ReplaceAllCategory(categorys []entity.Category, is
 			return err
 		}
 	}
+	return nil
+}
+func (u *categoryUsecaseImpl) validateCategorysLen(categorys []entity.Category) error {
+
+	if len(categorys) == 0 {
+		return customerrors.NewCustomError(customerrors.ErrCategorysLenZero)
+	}
+
 	return nil
 }
 
