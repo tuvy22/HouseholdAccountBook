@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_NG_MESSAGE } from "./apiHandleError";
+
 import { cookies } from "next/headers";
 import { SESSION_ID_COOKIE } from "./constants";
 import {
@@ -9,6 +9,7 @@ import {
   Liquidation,
   User,
 } from "./types";
+import { apiHandleError } from "./apiHandleError";
 
 export const getIncomeAndExpense = async (page: string) => {
   try {
@@ -30,7 +31,7 @@ export const getIncomeAndExpense = async (page: string) => {
     const result: IncomeAndExpense[] = response.data;
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 export const getIncomeAndExpenseMaxPage = async () => {
@@ -50,7 +51,7 @@ export const getIncomeAndExpenseMaxPage = async () => {
     const maxPage: number = response.data;
     return maxPage;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -71,7 +72,7 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
     const result: IncomeAndExpenseMonthlyTotal[] = response.data;
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 export const getGroupAllUser = async () => {
@@ -91,7 +92,7 @@ export const getGroupAllUser = async () => {
     const result: User[] = response.data;
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 export const getIncomeAndExpenseLiquidations = async (
@@ -120,7 +121,7 @@ export const getIncomeAndExpenseLiquidations = async (
     const result: IncomeAndExpense[] = response.data;
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -141,7 +142,7 @@ export const getLiquidations = async () => {
     const result: Liquidation[] = response.data;
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 export const getCategoryAllServer = async (expense: boolean) => {
@@ -163,6 +164,6 @@ export const getCategoryAllServer = async (expense: boolean) => {
     const result: Category[] = response.data;
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };

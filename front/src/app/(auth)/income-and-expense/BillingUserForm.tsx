@@ -21,6 +21,7 @@ import {
   convertBillingUserToBillingUserForms,
   convertUserToBillingUserForms,
 } from "./BillingUserFormType";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 
 export function BillingUserForm({
   watch,
@@ -38,9 +39,17 @@ export function BillingUserForm({
   const loginUser = useUser().user;
   const [data, setData] = useState<User[]>([]);
   const totalAmountStr = watch("amount");
+  const alert = useAlert();
+
   useEffect(() => {
     const fetchData = async () => {
-      setData(await getGroupAllUser());
+      try {
+        setData(await getGroupAllUser());
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
     };
     fetchData();
   }, []);

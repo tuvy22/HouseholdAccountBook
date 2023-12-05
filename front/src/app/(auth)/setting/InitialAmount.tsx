@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { updateUser } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
-import { useAlert } from "@/app/context/AlertProvider";
+import { addSuccess, useAlert } from "@/app/context/AlertProvider";
 import { AlertValue } from "@/app/components/AlertCustoms";
 import {
   InitialAmountSchema,
@@ -34,18 +34,13 @@ export function InitialAmount() {
     user.user.initialAmount = parseInt(data.amount, 10);
     try {
       await updateUser(user.user);
+      //結果アラート
+      addSuccess("更新が成功しました。", alert);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       }
     }
-
-    //結果アラート
-    const newAlertValue: AlertValue = {
-      color: "green",
-      value: "更新が成功しました。",
-    };
-    alert.setAlertValues([...alert.alertValues, newAlertValue]);
   };
   return (
     <form

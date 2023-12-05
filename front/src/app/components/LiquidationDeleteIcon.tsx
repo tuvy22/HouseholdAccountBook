@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 import { Spinner } from "@/app/materialTailwindExports";
 import ClearIcon from "@mui/icons-material/Clear";
+import { addError, useAlert } from "../context/AlertProvider";
 
 export default function LiquidationDeleteIcon({
   liquidation,
@@ -16,6 +17,7 @@ export default function LiquidationDeleteIcon({
 }) {
   const router = useRouter();
   const user = useUser().user;
+  const alert = useAlert();
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deletedLiquidation, setDeletedLiquidation] =
@@ -28,7 +30,14 @@ export default function LiquidationDeleteIcon({
 
   const handleDelete = async () => {
     if (deletedLiquidation) {
-      await deleteLiquidation(deletedLiquidation.id);
+      try {
+        await deleteLiquidation(deletedLiquidation.id);
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
+
       setOpenDeleteDialog(false);
       setDeletedLiquidation(null);
 

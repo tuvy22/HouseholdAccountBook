@@ -8,20 +8,35 @@ import {
   Typography,
   Button,
 } from "../../materialTailwindExports";
-import Link from "next/link";
 import { putInviteToken } from "@/app/util/apiClient";
+import { addError, useAlert } from "@/app/context/AlertProvider";
+import { useState } from "react";
 
 const UserInvite = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const router = useRouter();
+  const [error, setError] = useState("");
 
   const onSubmitLogin = async () => {
-    putInviteToken(token ? token : "");
+    try {
+      await putInviteToken(token ? token : "");
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
+    }
+
     router.push("/login");
   };
   const onSubmitRegister = async () => {
-    putInviteToken(token ? token : "");
+    try {
+      await putInviteToken(token ? token : "");
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
+    }
     router.push("/user-register");
   };
 
@@ -58,6 +73,7 @@ const UserInvite = () => {
             こちら
           </Button>
         </CardBody>
+        {error && <div className="text-red-500 text-center mt-4">{error}</div>}
       </Card>
     </>
   );

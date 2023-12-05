@@ -23,6 +23,7 @@ import { BillingUserFormType } from "./BillingUserFormType";
 import { BillingUserForm } from "./BillingUserForm";
 import { Category } from "@/app/util/types";
 import { getCategoryAllClient } from "@/app/util/apiClient";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 
 export const ExpenseForm = ({
   onSubmit,
@@ -35,6 +36,8 @@ export const ExpenseForm = ({
   billingUsers: BillingUserFormType[];
   setBillingUsers: Dispatch<SetStateAction<BillingUserFormType[]>>;
 }) => {
+  const alert = useAlert();
+
   const {
     control,
     register,
@@ -64,7 +67,13 @@ export const ExpenseForm = ({
 
   useEffect(() => {
     const fetchCategory = async () => {
-      setCategorys(await getCategoryAllClient(true));
+      try {
+        setCategorys(await getCategoryAllClient(true));
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
     };
 
     fetchCategory();

@@ -18,6 +18,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { auth, deleteInviteToken } from "../../util/apiClient";
 import Link from "next/link";
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 
 interface IFormInput {
   id: string;
@@ -44,7 +45,13 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
   };
 
   const handleCancel = async () => {
-    await deleteInviteToken();
+    try {
+      await deleteInviteToken();
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
+    }
     submit(getValues().id, getValues().password);
   };
 

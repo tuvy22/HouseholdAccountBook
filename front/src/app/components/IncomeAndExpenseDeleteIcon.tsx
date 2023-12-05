@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 import Delete from "@mui/icons-material/Delete";
 import { Spinner } from "@/app/materialTailwindExports";
+import { addError, useAlert } from "../context/AlertProvider";
 
 export default function IncomeAndExpenseDeleteIcon({
   incomeAndExpense,
@@ -15,6 +16,7 @@ export default function IncomeAndExpenseDeleteIcon({
   incomeAndExpense: IncomeAndExpense;
 }) {
   const router = useRouter();
+  const alert = useAlert();
   const user = useUser().user;
 
   const isLiquidationID = incomeAndExpense.billingUsers.some((data) => {
@@ -32,7 +34,13 @@ export default function IncomeAndExpenseDeleteIcon({
 
   const handleDelete = async () => {
     if (deletedIncomeAndExpense) {
-      await deleteIncomeAndExpense(deletedIncomeAndExpense.id);
+      try {
+        await deleteIncomeAndExpense(deletedIncomeAndExpense.id);
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
       setOpenDeleteDialog(false);
       setDeletedIncomeAndExpense(null);
 

@@ -56,20 +56,6 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
 }
 
-// func (u *userUsecaseImpl) createLoginToken(userId string) (string, error) {
-
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-// 		"user_id": userId,
-// 		"exp":     time.Now().Add(time.Minute * 30).Unix(),
-// 	})
-
-// 	tokenString, err := token.SignedString(u.config.LoginJWTKey)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	return tokenString, nil
-// }
-
 func (u *userUsecaseImpl) CheckInviteToken(tokenString string) (uint, error) {
 
 	claims, err := u.checkToken(tokenString, u.config.InviteJWTKey)

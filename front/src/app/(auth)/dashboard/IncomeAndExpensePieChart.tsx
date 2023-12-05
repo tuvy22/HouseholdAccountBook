@@ -13,6 +13,8 @@ import { scaleOrdinal } from "d3-scale";
 import { useEffect, useState } from "react";
 import { getIncomeAndExpenseMonthlyCategory } from "@/app/util/apiClient";
 import { Typography } from "@/app/materialTailwindExports";
+import { AlertValue } from "@/app/components/AlertCustoms";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 
 export const IncomeAndExpensePieChart = ({
   yearMonth,
@@ -54,13 +56,19 @@ export const IncomeAndExpensePieChart = ({
     "#fe977e",
     "#d4fc79",
   ];
-
+  const alert = useAlert();
   const [data, setData] = useState<IncomeAndExpenseMonthlyCategory[]>([]);
   const [totalCategoryAmount, setTotalCategoryAmount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
-      setData(await getIncomeAndExpenseMonthlyCategory(yearMonth, isMinus));
+      try {
+        setData(await getIncomeAndExpenseMonthlyCategory(yearMonth, isMinus));
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
     };
 
     fetchData();

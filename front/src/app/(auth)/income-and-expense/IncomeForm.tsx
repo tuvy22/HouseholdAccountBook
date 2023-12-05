@@ -16,6 +16,7 @@ import MemoForm from "./MemoForm";
 
 import { Category } from "@/app/util/types";
 import { getCategoryAllClient } from "@/app/util/apiClient";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 
 export const IncomeForm = ({
   onSubmit,
@@ -25,13 +26,13 @@ export const IncomeForm = ({
   triggerReset: number;
 }) => {
   const [categorys, setCategorys] = useState<Category[]>([]);
+  const alert = useAlert();
 
   const {
     control,
     register,
     handleSubmit,
     reset,
-    watch,
     getValues,
     formState: { errors },
   } = useForm<IncomeExpenseSchema>({
@@ -53,7 +54,13 @@ export const IncomeForm = ({
 
   useEffect(() => {
     const fetchCategory = async () => {
-      setCategorys(await getCategoryAllClient(false));
+      try {
+        setCategorys(await getCategoryAllClient(false));
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
     };
 
     fetchCategory();

@@ -13,7 +13,7 @@ import {
   IncomeAndExpenseBillingUser,
   IncomeAndExpense,
 } from "@/app/util/types";
-import { useAlert } from "@/app/context/AlertProvider";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 import { Spinner } from "@/app/materialTailwindExports";
 import { toDateObject } from "@/app/util/util";
 import {
@@ -49,11 +49,7 @@ export const IncomeAndExpenseForm = () => {
       await postIncomeAndExpense(newIncomeAndExpense);
     } catch (error) {
       if (error instanceof Error) {
-        let message = error.message;
-        alert.setAlertValues((prev) => [
-          ...prev,
-          { color: "red", value: message },
-        ]);
+        addError(error.message, alert);
       }
     }
     //リフレッシュ

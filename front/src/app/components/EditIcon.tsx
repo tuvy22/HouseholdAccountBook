@@ -8,6 +8,8 @@ import { putIncomeAndExpense } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/app/materialTailwindExports";
+import { addError, useAlert } from "../context/AlertProvider";
+import { AlertValue } from "./AlertCustoms";
 
 export default function EditIcon({
   incomeAndExpense,
@@ -16,6 +18,7 @@ export default function EditIcon({
 }) {
   const router = useRouter();
   const user = useUser().user;
+  const alert = useAlert();
 
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [updatedIncomeAndExpense, setUpdatedIncomeAndExpense] =
@@ -28,7 +31,13 @@ export default function EditIcon({
 
   const handleUpdate = async (updatedIncomeAndExpense: IncomeAndExpense) => {
     if (updatedIncomeAndExpense) {
-      await putIncomeAndExpense(updatedIncomeAndExpense);
+      try {
+        await putIncomeAndExpense(updatedIncomeAndExpense);
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
       setOpenUpdateDialog(false);
       setUpdatedIncomeAndExpense(null);
 

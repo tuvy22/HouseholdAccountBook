@@ -8,13 +8,7 @@ import {
   Category,
 } from "@/app/util/types";
 import axios, { AxiosError } from "axios";
-import {
-  DELETE_NG_MESSAGE,
-  GET_NG_MESSAGE,
-  POST_NG_MESSAGE,
-  PUT_NG_MESSAGE,
-  apiHandleError,
-} from "./apiHandleError";
+import { apiHandleError } from "./apiHandleError";
 
 export const auth = async (userId: string, password: string) => {
   try {
@@ -46,7 +40,7 @@ export const getIncomeAndExpenseMonthlyCategory = async (
     const result: IncomeAndExpenseMonthlyCategory[] = response.data;
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -58,7 +52,7 @@ export const getLoginUser = async () => {
 
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -70,7 +64,7 @@ export const getGroupAllUser = async () => {
 
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -82,7 +76,7 @@ export const postIncomeAndExpense = async (data: IncomeAndExpense) => {
       },
     });
   } catch (error) {
-    throw new Error(POST_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -100,7 +94,7 @@ export const putIncomeAndExpense = async (
       }
     );
   } catch (error) {
-    throw new Error(PUT_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -108,7 +102,7 @@ export const deleteIncomeAndExpense = async (id: number) => {
   try {
     await axios.delete(`/api/private/income-and-expense/${id}`);
   } catch (error) {
-    throw new Error(DELETE_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -122,7 +116,7 @@ export const postUser = async (user: UserCreate) => {
     const result: User = response.data;
     return result;
   } catch (error) {
-    throw new Error(POST_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 export const updateUser = async (user: User) => {
@@ -135,7 +129,7 @@ export const updateUser = async (user: User) => {
     const result: User = response.data;
     return result;
   } catch (error) {
-    throw new Error(PUT_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -147,7 +141,7 @@ export const getUserInviteUrl = async () => {
 
     return inviteUrl.url;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 export const putInviteToken = async (token: string) => {
@@ -162,14 +156,14 @@ export const putInviteToken = async (token: string) => {
       }
     );
   } catch (error) {
-    throw new Error(POST_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 export const deleteInviteToken = async () => {
   try {
     await axios.delete("/api/public/invite-cookie");
   } catch (error) {
-    throw new Error(DELETE_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -181,7 +175,7 @@ export const postLiquidation = async (data: LiquidationCreate) => {
       },
     });
   } catch (error) {
-    throw new Error(POST_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -189,7 +183,7 @@ export const deleteLiquidation = async (id: number) => {
   try {
     await axios.delete(`/api/private/liquidation/${id}`);
   } catch (error) {
-    throw new Error(DELETE_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };
 export const getCategoryAllClient = async (isExpense: boolean) => {
@@ -205,7 +199,8 @@ export const getCategoryAllClient = async (isExpense: boolean) => {
 
     return result;
   } catch (error) {
-    throw new Error(GET_NG_MESSAGE);
+    console.log(error);
+    throw new Error(apiHandleError(error));
   }
 };
 
@@ -224,6 +219,6 @@ export const replaceAllCategorys = async (
       }
     );
   } catch (error) {
-    throw new Error(POST_NG_MESSAGE);
+    throw new Error(apiHandleError(error));
   }
 };

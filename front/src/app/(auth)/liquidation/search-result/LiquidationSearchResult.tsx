@@ -11,7 +11,7 @@ import { useUser } from "@/app/context/UserProvider";
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 import { postLiquidation } from "@/app/util/apiClient";
 import { AlertValue } from "@/app/components/AlertCustoms";
-import { useAlert } from "@/app/context/AlertProvider";
+import { addError, addSuccess, useAlert } from "@/app/context/AlertProvider";
 import LiquidationFlow from "../LiquidationFlow";
 
 export interface CheckedItems {
@@ -160,15 +160,16 @@ export const LiquidationSearchResult = ({
       targetUserID: targetUserId,
       registerUserID: loginUser.id,
     };
+    try {
+      await postLiquidation(data);
 
-    await postLiquidation(data);
-
-    //結果アラート
-    const newAlertValue: AlertValue = {
-      color: "green",
-      value: "清算が成功しました。",
-    };
-    alert.setAlertValues([...alert.alertValues, newAlertValue]);
+      //結果アラート
+      addSuccess("清算が完了しました。", alert);
+    } catch (error) {
+      if (error instanceof Error) {
+        addError(error.message, alert);
+      }
+    }
 
     router.refresh();
     router.push("/liquidation");

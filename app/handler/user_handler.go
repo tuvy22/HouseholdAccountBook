@@ -123,7 +123,7 @@ func (h *userHandlerImpl) GetGroupAllUser(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		h.logger.Error(err)
+		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
@@ -232,7 +232,7 @@ func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		h.logger.Error(err)
+		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}

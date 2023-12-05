@@ -10,8 +10,7 @@ import {
   Typography,
   Button,
 } from "@/app/materialTailwindExports";
-import { Alerts, AlertValue } from "@/app/components/AlertCustoms";
-import { useAlert } from "@/app/context/AlertProvider";
+import { addSuccess, useAlert } from "@/app/context/AlertProvider";
 
 interface IFormInput {
   id: string;
@@ -44,11 +43,7 @@ const Register = () => {
       });
 
       //結果追加
-      const newAlertValue: AlertValue = {
-        color: "green",
-        value: "登録が成功しました。",
-      };
-      alert.setAlertValues([...alert.alertValues, newAlertValue]);
+      addSuccess("登録が成功しました。", alert);
 
       setError("");
     } catch (error) {

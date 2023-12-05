@@ -20,6 +20,7 @@ import {
   userCreateSchema,
 } from "../../components/UserSchema";
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
+import { addError } from "@/app/context/AlertProvider";
 
 export const Register = ({ isInvite }: { isInvite: boolean }) => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -40,7 +41,13 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
   };
 
   const handleCancel = async () => {
-    await deleteInviteToken();
+    try {
+      await deleteInviteToken();
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
+    }
     submit(getValues().id, getValues().password, getValues().name);
   };
 

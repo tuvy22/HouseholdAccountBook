@@ -13,10 +13,12 @@ import { useEffect, useState } from "react";
 import { getUserInviteUrl } from "@/app/util/apiClient";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 
 export function UserInvite() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const alert = useAlert();
 
   const copyToClipboard = async () => {
     if ("clipboard" in navigator) {
@@ -26,7 +28,13 @@ export function UserInvite() {
 
   const fetchUserInviteUrl = async () => {
     setLoading(true);
-    setUrl(await getUserInviteUrl());
+    try {
+      setUrl(await getUserInviteUrl());
+    } catch (error) {
+      if (error instanceof Error) {
+        addError(error.message, alert);
+      }
+    }
     setLoading(false);
   };
 

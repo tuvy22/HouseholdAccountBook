@@ -22,6 +22,7 @@ import { toDateObject, toDateString } from "@/app/util/util";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
 import Link from "next/link";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 
 const LiquidationSearch = () => {
   const {
@@ -41,6 +42,7 @@ const LiquidationSearch = () => {
 
   const router = useRouter();
   const loginUser = useUser().user;
+  const alert = useAlert();
 
   // フォーム送信時の処理
   const onSubmit = async (data: LiquidationSchema) => {
@@ -57,7 +59,13 @@ const LiquidationSearch = () => {
   };
   useEffect(() => {
     const fetchData = async () => {
-      setGroupData(await getGroupAllUser());
+      try {
+        setGroupData(await getGroupAllUser());
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
     };
     fetchData();
   }, []);

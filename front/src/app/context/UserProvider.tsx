@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext, UserContextProps } from "./UserContext";
 import { User } from "../util/types";
 import { getLoginUser } from "../util/apiClient";
+import { useRouter } from "next/navigation";
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const userInfo: User = {
@@ -13,18 +14,18 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
     initialAmount: 0,
   };
   const [user, setUser] = useState<User>(userInfo);
+  const router = useRouter();
 
   useEffect(() => {
-    fetchDataFromServer().then((data) => {
-      if (data) {
-        setUser(data);
+    const fetchData = async () => {
+      try {
+        setUser(await getLoginUser());
+      } catch (error) {
+        router.push("/");
       }
-    });
-  }, []);
-
-  const fetchDataFromServer = async () => {
-    return getLoginUser();
-  };
+    };
+    fetchData();
+  }, [router]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

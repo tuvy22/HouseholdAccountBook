@@ -17,7 +17,7 @@ import {
 import NameForm from "@/app/components/NameForm";
 import { updateUser } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
-import { useAlert } from "@/app/context/AlertProvider";
+import { addError, addSuccess, useAlert } from "@/app/context/AlertProvider";
 import { AlertValue } from "@/app/components/AlertCustoms";
 import SubmitButtonForm from "@/app/components/SubmitButtonForm";
 
@@ -37,14 +37,15 @@ export function UserName() {
   });
   const onSubmit = async (data: UserUpdateSchema) => {
     user.user.name = data.name;
-    await updateUser(user.user);
-
-    //結果アラート
-    const newAlertValue: AlertValue = {
-      color: "green",
-      value: "更新が成功しました。",
-    };
-    alert.setAlertValues([...alert.alertValues, newAlertValue]);
+    try {
+      await updateUser(user.user);
+      //結果アラート
+      addSuccess("更新が成功しました。", alert);
+    } catch (error) {
+      if (error instanceof Error) {
+        addError(error.message, alert);
+      }
+    }
   };
   return (
     <form

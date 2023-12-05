@@ -35,7 +35,6 @@ func errorResponder(c *gin.Context, err error) {
 
 	// エラーレスポンスをクライアントに返す
 	c.JSON(statusCode, gin.H{
-		"error": customErr.Message,
-		"code":  string(customErr.Code),
+		"code": string(customErr.Code),
 	})
 }

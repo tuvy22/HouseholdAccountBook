@@ -1,10 +1,5 @@
 import axios from "axios";
 
-export const GET_NG_MESSAGE = "データの取得に失敗しました。";
-export const POST_NG_MESSAGE = "データの送信に失敗しました。";
-export const PUT_NG_MESSAGE = "データの更新に失敗しました。";
-export const DELETE_NG_MESSAGE = "データの削除に失敗しました。";
-
 export function apiHandleError(error: unknown): string {
   if (axios.isAxiosError(error)) {
     if (error.response) {
@@ -16,12 +11,14 @@ export function apiHandleError(error: unknown): string {
           return "認証に失敗しました。";
         case "invalid_login":
           return "IDまたはパスワードが間違っています。";
-        case "internal_server_error":
-          return "サーバーでエラーが発生しました。";
         case "bad_request":
           return "リクエストに不正な内容があります。";
+        case "no_session":
+          return "ログインのセッションが存在しません。ログインし直してください。";
+        case "internal_server_error":
+          return "サーバーでエラーが発生しました。";
         default:
-          return "予期せぬエラーが発生しました。";
+          return "想定外のエラーが発生しました。";
       }
     } else if (error.request) {
       return "サーバーに接続できませんでした。";

@@ -19,7 +19,7 @@ import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
 import { useForm } from "react-hook-form";
 import DateForm from "./DateForm";
 import CategoryForm from "./CategoryForm";
-import { EXPENSE_CATEGORY, INCOME_CATEGORY } from "@/app/util/constants";
+
 import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
 import { BillingUserForm } from "./BillingUserForm";
@@ -28,6 +28,7 @@ import {
   convertToBillingUsers,
 } from "./BillingUserFormType";
 import { getCategoryAllClient } from "@/app/util/apiClient";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 
 type Props = {
   open: boolean;
@@ -45,6 +46,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
   const isDialogMinus = isMinus(updatedIncomeAndExpense.amount);
   const [billingUsers, setBillingUsers] = useState<BillingUserFormType[]>([]);
   const [categorys, setCategorys] = useState<Category[]>([]);
+  const alert = useAlert();
 
   const {
     control,
@@ -79,7 +81,13 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
 
   useEffect(() => {
     const fetchCategory = async () => {
-      setCategorys(await getCategoryAllClient(isDialogMinus));
+      try {
+        setCategorys(await getCategoryAllClient(isDialogMinus));
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
     };
 
     fetchCategory();

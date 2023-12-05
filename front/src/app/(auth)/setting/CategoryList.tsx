@@ -12,7 +12,7 @@ import {
 
 import { useFieldArray, useForm } from "react-hook-form";
 import { useUser } from "@/app/context/UserProvider";
-import { useAlert } from "@/app/context/AlertProvider";
+import { addError, addSuccess, useAlert } from "@/app/context/AlertProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertValue } from "@/app/components/AlertCustoms";
 import { CategoryFormData, categorySchema } from "./CategorySchema";
@@ -44,15 +44,22 @@ export default function CategoryList({ isExpense }: { isExpense: boolean }) {
 
   useEffect(() => {
     const getAllCategory = async () => {
-      const eFetchCategorys = await getCategoryAllClient(isExpense);
-      let resetData: CategoryFormData = {
-        categories: [],
-      };
+      try {
+        const eFetchCategorys = await getCategoryAllClient(isExpense);
 
-      eFetchCategorys.forEach((category) => {
-        resetData.categories.push({ category: category.name });
-      });
-      reset(resetData);
+        let resetData: CategoryFormData = {
+          categories: [],
+        };
+
+        eFetchCategorys.forEach((category) => {
+          resetData.categories.push({ category: category.name });
+        });
+        reset(resetData);
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
     };
     getAllCategory();
   }, [reset]);
@@ -68,15 +75,16 @@ export default function CategoryList({ isExpense }: { isExpense: boolean }) {
       };
       datas.push(data);
     });
+    try {
+      await replaceAllCategorys(datas, isExpense);
 
-    await replaceAllCategorys(datas, isExpense);
-
-    //結果アラート
-    const newAlertValue: AlertValue = {
-      color: "green",
-      value: "更新が成功しました。",
-    };
-    alert.setAlertValues([...alert.alertValues, newAlertValue]);
+      //結果アラート
+      addSuccess("更新が成功しました。", alert);
+    } catch (error) {
+      if (error instanceof Error) {
+        addError(error.message, alert);
+      }
+    }
   };
   return (
     <form

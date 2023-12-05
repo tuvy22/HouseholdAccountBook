@@ -67,12 +67,14 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpenseMaxPage(c *gin.Conte
 	//ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
+		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
 
 	result, err := h.usecase.GetAllIncomeAndExpenseMaxPage(loginUser.GroupID)
 	if err != nil {
+		h.logger.Error(err)
 		errorResponder(c, err)
 		return
 	}
@@ -84,6 +86,7 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Con
 	//ログインデータ取得
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
+		h.logger.Warn(err.Error())
 		errorResponder(c, err)
 		return
 	}
