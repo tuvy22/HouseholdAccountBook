@@ -33,16 +33,16 @@ export default function EditIcon({
     if (updatedIncomeAndExpense) {
       try {
         await putIncomeAndExpense(updatedIncomeAndExpense);
+
+        setOpenUpdateDialog(false);
+        setUpdatedIncomeAndExpense(null);
+        //リフレッシュ
+        router.refresh();
       } catch (error) {
         if (error instanceof Error) {
           addError(error.message, alert);
         }
       }
-      setOpenUpdateDialog(false);
-      setUpdatedIncomeAndExpense(null);
-
-      //リフレッシュ
-      router.refresh();
     }
   };
   return (

@@ -16,6 +16,8 @@ func errorResponder(c *gin.Context, paramErr error) {
 	if errors.As(paramErr, &customErr) {
 		// カスタムエラーの場合、エラーコードに基づいてステータスコードを設定
 		switch customErr.Code {
+		case customerrors.ErrRegisteredUserID:
+			statusCode = http.StatusConflict
 		case customerrors.ErrAlreadyInGroup:
 			statusCode = http.StatusConflict
 		case customerrors.ErrCategorysLenZero:

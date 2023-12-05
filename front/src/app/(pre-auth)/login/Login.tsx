@@ -89,7 +89,7 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
         </Button>
       </Link>
 
-      <Card className="p-10 flex items-center justify-center">
+      <Card className="p-10 flex items-center justify-center max-w-lg">
         <Typography variant="h2" className="pt-5 text-xl">
           ログイン
         </Typography>

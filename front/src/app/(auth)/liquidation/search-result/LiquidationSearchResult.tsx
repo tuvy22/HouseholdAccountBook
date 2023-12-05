@@ -165,14 +165,13 @@ export const LiquidationSearchResult = ({
 
       //結果アラート
       addSuccess("清算が完了しました。", alert);
+      router.refresh();
+      router.push("/liquidation");
     } catch (error) {
       if (error instanceof Error) {
         addError(error.message, alert);
       }
     }
-
-    router.refresh();
-    router.push("/liquidation");
   };
 
   return (

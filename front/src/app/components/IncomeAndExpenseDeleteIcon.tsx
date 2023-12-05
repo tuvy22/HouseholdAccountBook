@@ -36,16 +36,16 @@ export default function IncomeAndExpenseDeleteIcon({
     if (deletedIncomeAndExpense) {
       try {
         await deleteIncomeAndExpense(deletedIncomeAndExpense.id);
+
+        setOpenDeleteDialog(false);
+        setDeletedIncomeAndExpense(null);
+        //リフレッシュ
+        router.refresh();
       } catch (error) {
         if (error instanceof Error) {
           addError(error.message, alert);
         }
       }
-      setOpenDeleteDialog(false);
-      setDeletedIncomeAndExpense(null);
-
-      //リフレッシュ
-      router.refresh();
     }
   };
   return (

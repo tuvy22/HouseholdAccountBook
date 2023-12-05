@@ -21,23 +21,22 @@ const UserInvite = () => {
   const onSubmitLogin = async () => {
     try {
       await putInviteToken(token ? token : "");
+      router.push("/login");
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       }
     }
-
-    router.push("/login");
   };
   const onSubmitRegister = async () => {
     try {
       await putInviteToken(token ? token : "");
+      router.push("/user-register");
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       }
     }
-    router.push("/user-register");
   };
 
   return (

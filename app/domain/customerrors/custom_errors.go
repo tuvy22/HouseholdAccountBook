@@ -3,6 +3,8 @@ package customerrors
 type ErrorCode string
 
 const (
+	//すでに同じユーザーIDで利用しているユーザーがいます。
+	ErrRegisteredUserID ErrorCode = "registered_user_id"
 	//すでに所属するグループへの加入不可
 	ErrAlreadyInGroup ErrorCode = "already_in_group"
 	//カテゴリーが０件は不可

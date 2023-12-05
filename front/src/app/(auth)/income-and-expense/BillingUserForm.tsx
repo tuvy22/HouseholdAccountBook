@@ -37,14 +37,14 @@ export function BillingUserForm({
   updatePreBillingUser?: IncomeAndExpenseBillingUser[];
 }) {
   const loginUser = useUser().user;
-  const [data, setData] = useState<User[]>([]);
+  const [groupUsers, setGroupUser] = useState<User[]>([]);
   const totalAmountStr = watch("amount");
   const alert = useAlert();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setData(await getGroupAllUser());
+        setGroupUser(await getGroupAllUser());
       } catch (error) {
         if (error instanceof Error) {
           addError(error.message, alert);
@@ -57,18 +57,24 @@ export function BillingUserForm({
   useEffect(() => {
     if (isUpdate) {
       setBillingUsers(
-        convertBillingUserToBillingUserForms(data, updatePreBillingUser)
+        convertBillingUserToBillingUserForms(groupUsers, updatePreBillingUser)
       );
     }
-  }, [data, isUpdate, setBillingUsers, updatePreBillingUser, totalAmountStr]);
+  }, [
+    groupUsers,
+    isUpdate,
+    setBillingUsers,
+    updatePreBillingUser,
+    totalAmountStr,
+  ]);
 
   useEffect(() => {
     if (!isUpdate) {
       setBillingUsers(
-        convertUserToBillingUserForms(data, loginUser.id, totalAmountStr)
+        convertUserToBillingUserForms(groupUsers, loginUser.id, totalAmountStr)
       );
     }
-  }, [data, isUpdate, loginUser.id, setBillingUsers, totalAmountStr]);
+  }, [groupUsers, isUpdate, loginUser.id, setBillingUsers, totalAmountStr]);
 
   //チェックボックス変更時
   const handleCheckboxChange = (changedBillingUser: BillingUserFormType) => {
@@ -166,7 +172,7 @@ export function BillingUserForm({
 
   return (
     <>
-      {billingUsers.length > 0 ? (
+      {groupUsers.length > 1 ? (
         <>
           <Menu>
             <MenuHandler>

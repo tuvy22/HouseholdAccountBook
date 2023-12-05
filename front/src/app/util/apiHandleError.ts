@@ -5,6 +5,8 @@ export function apiHandleError(error: unknown): string {
     if (error.response) {
       const code = error.response.data.code;
       switch (code) {
+        case "registered_user_id":
+          return "入力されたユーザーIDは既に利用されています。別のユーザーIDでの登録をお願いします。";
         case "already_in_group":
           return "すでに所属するグループに加入することはできません。";
         case "categorys_len_zero":

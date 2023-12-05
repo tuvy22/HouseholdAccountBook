@@ -109,6 +109,11 @@ func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID
 	if err != nil {
 		return entity.UserResponse{}, entity.UserSession{}, err
 	}
+	err = u.checkRegisteredUserID(userCreate.ID)
+	if err != nil {
+		return entity.UserResponse{}, entity.UserSession{}, err
+	}
+
 	var groupId uint
 	if inviteGroupID == entity.GroupIDNone {
 
@@ -252,6 +257,19 @@ func (u *userUsecaseImpl) checkToken(tokenString string, key []byte) (jwt.MapCla
 	}
 }
 
+func (u *userUsecaseImpl) checkRegisteredUserID(userID string) error {
+	var count int64
+	err := u.repo.CountUserByID(userID, &count)
+	if err != nil {
+		return err
+	}
+	if count >= 1 {
+		return customerrors.NewCustomError(customerrors.ErrRegisteredUserID)
+	}
+	return nil
+
+}
+
 func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) error {
 
 	//更新前のユーザー取得
@@ -264,6 +282,8 @@ func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) error {
 		//変更後のグループにすでに属している場合はエラー
 		return customerrors.NewCustomError(customerrors.ErrAlreadyInGroup)
 	}
+	//変更前のID保持
+	preGroupID := preUser.GroupID
 	//グループ変更
 	preUser.GroupID = inviteGroupID
 
@@ -275,13 +295,13 @@ func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) error {
 
 	//グループ変更後に元いたグループにまだユーザーがいるか確認
 	users := []entity.User{}
-	err = u.repo.GetAllUser(&users)
+	err = u.repo.GetAllUserByGroupId(preGroupID, &users)
 	if err != nil {
 		return err
 	}
 	if len(users) == 0 {
 		//いなければグループ削除
-		err = u.groupRepo.DeleteGroup(inviteGroupID)
+		err = u.groupRepo.DeleteGroup(preGroupID)
 		if err != nil {
 			return err
 		}

@@ -68,12 +68,12 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
 
     try {
       await postUser(user);
+      router.push("/income-and-expense");
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       }
     }
-    router.push("/income-and-expense");
   };
 
   return (
@@ -89,7 +89,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
           アカウントをお持ちの方はこちら
         </Button>
       </Link>
-      <Card className="p-10 flex items-center justify-center">
+      <Card className="p-10 flex items-center justify-center max-w-lg">
         <Typography variant="h2" className="pt-5 text-xl" color="blue-gray">
           アカウント作成
         </Typography>
@@ -149,7 +149,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
                 {...register("passwordConfirmation")}
               />
               {errors.passwordConfirmation && (
-                <div className="text-red-500">
+                <div className="text-red-500 max-w">
                   {errors.passwordConfirmation.message}
                 </div>
               )}

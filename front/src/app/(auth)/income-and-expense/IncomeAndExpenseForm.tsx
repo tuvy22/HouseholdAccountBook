@@ -47,13 +47,14 @@ export const IncomeAndExpenseForm = () => {
 
     try {
       await postIncomeAndExpense(newIncomeAndExpense);
+
+      //リフレッシュ
+      router.refresh();
     } catch (error) {
       if (error instanceof Error) {
         addError(error.message, alert);
       }
     }
-    //リフレッシュ
-    router.refresh();
 
     setIsLoading(false);
   };
