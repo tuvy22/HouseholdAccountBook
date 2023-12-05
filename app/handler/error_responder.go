@@ -20,6 +20,8 @@ func errorResponder(c *gin.Context, paramErr error) {
 			statusCode = http.StatusConflict
 		case customerrors.ErrCategorysLenZero:
 			statusCode = http.StatusBadRequest
+		case customerrors.ErrBillUserExpenseUnMatch:
+			statusCode = http.StatusBadRequest
 		case customerrors.ErrInvalidCredentials:
 			statusCode = http.StatusUnauthorized
 		case customerrors.ErrInvalidLogin:
@@ -37,18 +39,18 @@ func errorResponder(c *gin.Context, paramErr error) {
 	}
 
 	//ログインデータ取得
+	userID := ""
 	loginUser, err := GetLoginUser(c)
 	if err != nil {
-		errorResponder(c, paramErr)
-		return
+		userID = loginUser.ID
 	}
 
 	//ログ出力
 	logger := logger.NewLogrusLogger()
 	if statusCode >= http.StatusInternalServerError {
-		logger.Error(loginUser.ID, paramErr)
+		logger.Error(userID, paramErr)
 	} else {
-		logger.Warn(loginUser.ID, paramErr.Error())
+		logger.Warn(userID, paramErr.Error())
 	}
 
 	// エラーレスポンスをクライアントに返す

@@ -9,6 +9,8 @@ export function apiHandleError(error: unknown): string {
           return "すでに所属するグループに加入することはできません。";
         case "categorys_len_zero":
           return "カテゴリーを全て削除することは出来ません。";
+        case "bill_user_expense_un_match":
+          return "立替額の合計が支出の金額と一致しません。一致するように入力してください。";
         case "invalid_credentials":
           return "認証に失敗しました。";
         case "invalid_login":

@@ -7,6 +7,8 @@ const (
 	ErrAlreadyInGroup ErrorCode = "already_in_group"
 	//カテゴリーが０件は不可
 	ErrCategorysLenZero ErrorCode = "categorys_len_zero"
+	//ユーザー別の立替額が合計額と一致しない
+	ErrBillUserExpenseUnMatch ErrorCode = "bill_user_expense_un_match"
 	//認証失敗
 	ErrInvalidCredentials ErrorCode = "invalid_credentials"
 	//ログイン失敗

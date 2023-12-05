@@ -28,13 +28,13 @@ func NewLogrusLogger() Logger {
 
 func (l *logrusLoggerImpl) Info(userId string, msg string) {
 	l.Logger.WithFields(logrus.Fields{
-		"user_id": userId,
+		"login_id": userId,
 	}).Info(msg)
 }
 
 func (l *logrusLoggerImpl) Warn(userId string, msg string) {
 	l.Logger.WithFields(logrus.Fields{
-		"user_id": userId,
+		"login_id": userId,
 	}).Warn(msg)
 }
 func (l *logrusLoggerImpl) Error(userId string, err error) {
@@ -46,7 +46,7 @@ func (l *logrusLoggerImpl) ErrorMsg(userId string, msg string) {
 
 func (l *logrusLoggerImpl) error(userId string, msg string) {
 	l.Logger.WithFields(logrus.Fields{
-		"user_id":     userId,
+		"login_id":    userId,
 		"stack_trace": getStackTrace(),
 	}).Error(msg)
 }

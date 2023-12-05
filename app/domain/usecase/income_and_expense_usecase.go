@@ -295,7 +295,7 @@ func (u *incomeAndExpenseUsecaseImpl) validateBillingUserTotal(data entity.Incom
 	}
 	//ユーザーへの請求が合計金額と一致するか確認
 	if total != data.Amount {
-		return customerrors.NewCustomError(customerrors.ErrBadRequest)
+		return customerrors.NewCustomError(customerrors.ErrBillUserExpenseUnMatch)
 	}
 
 	return nil

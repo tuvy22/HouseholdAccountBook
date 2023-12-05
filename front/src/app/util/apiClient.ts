@@ -7,7 +7,7 @@ import {
   LiquidationCreate,
   Category,
 } from "@/app/util/types";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { apiHandleError } from "./apiHandleError";
 
 export const auth = async (userId: string, password: string) => {
