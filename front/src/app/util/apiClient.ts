@@ -22,6 +22,13 @@ export const auth = async (userId: string, password: string) => {
     throw new Error(apiHandleError(error));
   }
 };
+export const authDel = async () => {
+  try {
+    await axios.post(`/api/private/auth-del`);
+  } catch (error) {
+    throw new Error(apiHandleError(error));
+  }
+};
 
 export const getIncomeAndExpenseMonthlyCategory = async (
   yearMonth: string,

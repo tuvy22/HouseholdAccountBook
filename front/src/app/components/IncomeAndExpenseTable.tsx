@@ -9,23 +9,13 @@ import { CheckedItems } from "../(auth)/liquidation/search-result/LiquidationSea
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import React from "react";
-
-const TABLE_INFO_ALL = [
-  { header: "登録・支払", addClassName: "" },
-  { header: "立替内容", addClassName: "" },
-  { header: "区分", addClassName: "" },
-  { header: "金額", addClassName: "" },
-  { header: "メモ", addClassName: "w-[40%]" },
-  { header: "", addClassName: "w-28" },
-];
-const TABLE_INFO_LIQUIDATION = [
-  { header: "[allCheck]", addClassName: "w-10 text-center" },
-  { header: "登録・支払", addClassName: "" },
-  { header: "立替内容", addClassName: "" },
-  { header: "区分", addClassName: "" },
-  { header: "金額", addClassName: "" },
-  { header: "メモ", addClassName: "w-[40%]" },
-];
+import TableThTypography from "./TableThTypography";
+import TableThCheckBox from "./TableThCheckBox";
+import TableTypography from "./TableTypography";
+import TableTdDate from "./TableTdDate";
+import TableTdCheckbox from "./TableTdCheckbox";
+import TableTd from "./TableTd";
+import TableTdAmount from "./TableTdAmount";
 
 export const IncomeAndExpenseTable = ({
   tableData,
@@ -47,68 +37,114 @@ export const IncomeAndExpenseTable = ({
   handleAllCheckBoxChange?: (check: boolean) => void;
 }) => {
   let previousDate: Date;
-  let tableHeader: { header: string; addClassName: string }[];
-  if (isLiquidation) {
-    tableHeader = TABLE_INFO_LIQUIDATION;
-  } else {
-    tableHeader = TABLE_INFO_ALL;
-  }
-
   return (
     <>
       {tableData.length > 0 ? (
         <Card className="my-3">
           <table className="text-left">
-            <thead>
-              <tr>
-                {tableHeader.map((info, index) => (
-                  <th
-                    key={index}
-                    className={`border-b border-blue-gray-100 bg-blue-gray-50 p-4 ${info.addClassName}`}
-                  >
-                    {info.header === "[allCheck]" ? (
-                      allCheckBox ? (
-                        <CheckBoxIcon
-                          className="cursor-pointer hover:text-green-500"
-                          onClick={() => handleAllCheckBoxChange(!allCheckBox)}
-                        />
-                      ) : (
-                        <CheckBoxOutlineBlankIcon
-                          className="cursor-pointer hover:text-green-500"
-                          onClick={() => handleAllCheckBoxChange(!allCheckBox)}
-                        />
-                      )
-                    ) : (
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal leading-none opacity-70"
-                      >
-                        {info.header}
-                      </Typography>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            </thead>
+            {isLiquidation ? (
+              <>
+                {/* デスクトップ表示 */}
+                <thead className="hidden md:table-header-group">
+                  <tr>
+                    <TableThCheckBox
+                      allCheckBox={allCheckBox}
+                      handleAllCheckBoxChange={handleAllCheckBoxChange}
+                    />
+                    <TableThTypography>{"登録・支払"} </TableThTypography>
+                    <TableThTypography>{"立替"} </TableThTypography>
+                    <TableThTypography>{"区分"}</TableThTypography>
+                    <TableThTypography> {"金額"}</TableThTypography>
+                    <TableThTypography addClassName="w-[40%]">
+                      {"メモ"}
+                    </TableThTypography>
+                  </tr>
+                </thead>
+
+                {/* スマホ表示 */}
+                <thead className="table-header-group md:hidden">
+                  <tr>
+                    <TableThCheckBox
+                      rowSpan={2}
+                      allCheckBox={allCheckBox}
+                      handleAllCheckBoxChange={handleAllCheckBoxChange}
+                    />
+
+                    <TableThTypography boderBottom="">
+                      {"登録・支払"}
+                    </TableThTypography>
+                    <TableThTypography boderBottom="">
+                      {"立替"}
+                    </TableThTypography>
+                    <TableThTypography rowSpan={2} addClassName="w-12">
+                      {"メモ"}
+                    </TableThTypography>
+                  </tr>
+                  <tr>
+                    <TableThTypography>{"区分"}</TableThTypography>
+                    <TableThTypography> {"金額"}</TableThTypography>
+                  </tr>
+                </thead>
+              </>
+            ) : (
+              <>
+                {/* デスクトップ表示 */}
+                <thead className="hidden md:table-header-group">
+                  <tr>
+                    <TableThTypography>{"登録・支払"} </TableThTypography>
+                    <TableThTypography>{"立替"} </TableThTypography>
+                    <TableThTypography>{"区分"}</TableThTypography>
+                    <TableThTypography> {"金額"}</TableThTypography>
+                    <TableThTypography addClassName="w-[40%]">
+                      {"メモ"}
+                    </TableThTypography>
+                    <TableThTypography addClassName="w-24">
+                      {""}
+                    </TableThTypography>
+                  </tr>
+                </thead>
+
+                {/* スマホ表示 */}
+                <thead className="table-header-group md:hidden">
+                  <tr>
+                    <TableThTypography boderBottom="">
+                      {"登録・支払"}
+                    </TableThTypography>
+                    <TableThTypography boderBottom="">
+                      {"立替"}
+                    </TableThTypography>
+                    <TableThTypography rowSpan={2} addClassName="w-12">
+                      {"メモ"}
+                    </TableThTypography>
+                    <TableThTypography rowSpan={2} addClassName="w-12">
+                      {""}
+                    </TableThTypography>
+                  </tr>
+                  <tr>
+                    <TableThTypography>{"区分"}</TableThTypography>
+                    <TableThTypography> {"金額"}</TableThTypography>
+                  </tr>
+                </thead>
+              </>
+            )}
+
             <tbody>
               {tableData.map((incomeAndExpense: IncomeAndExpense, index) => (
                 <React.Fragment key={index}>
                   {incomeAndExpense.date !== previousDate && (
                     <>
-                      <tr className="bg-green-50">
-                        <td
-                          className="p-4 whitespace-nowrap text-center border-b border-blue-gray-50"
-                          colSpan={tableHeader.length}
-                        >
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal text-green-700"
-                          >
-                            {toDateString(new Date(incomeAndExpense.date))}
-                          </Typography>
-                        </td>
+                      {/* デスクトップ表示 */}
+                      <tr className="hidden md:table-row bg-green-50">
+                        <TableTdDate colSpan={6}>
+                          {toDateString(new Date(incomeAndExpense.date))}
+                        </TableTdDate>
+                      </tr>
+
+                      {/* スマホ表示 */}
+                      <tr className="table-row md:hidden bg-green-50">
+                        <TableTdDate colSpan={4}>
+                          {toDateString(new Date(incomeAndExpense.date))}
+                        </TableTdDate>
                       </tr>
                     </>
                   )}
@@ -119,99 +155,113 @@ export const IncomeAndExpenseTable = ({
                     }
 
                     return (
-                      <tr key={index} className="break-all">
-                        {isLiquidation && (
-                          <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                            <Checkbox
-                              checked={
-                                checkedItems[incomeAndExpense.id] || false
-                              }
-                              onChange={() =>
-                                handleCheckboxChange(incomeAndExpense.id)
-                              }
-                              crossOrigin={undefined}
+                      <>
+                        {/* デスクトップ表示 */}
+                        <tr className="hidden md:table-row break-all">
+                          {isLiquidation && (
+                            <TableTdCheckbox
+                              checkedItems={checkedItems}
+                              incomeAndExpense={incomeAndExpense}
+                              handleCheckboxChange={handleCheckboxChange}
                             />
-                          </td>
-                        )}
-                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {incomeAndExpense.registerUserName}
-                          </Typography>
-                        </td>
-                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <BillingPopover
-                            incomeAndExpense={incomeAndExpense}
-                            notBgGrayUserId={
-                              incomeAndExpense.registerUserID === loginUserId
-                                ? targetUserId
-                                : loginUserId
-                            }
-                          />
-                        </td>
-                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {incomeAndExpense.category}
-                          </Typography>
-                        </td>
-                        <td
-                          className={`p-2 md:p-4 border-b border-blue-gray-50 ${
-                            isMinus(incomeAndExpense.amount)
-                              ? "text-red-500"
-                              : "text-blue-500"
-                          }`}
-                        >
-                          <Typography variant="small" className="font-normal">
-                            {`${incomeAndExpense.amount}円`}
-                          </Typography>
-                        </td>
-                        <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <div className="hidden md:block">
-                            {/* デスクトップサイズでの  表示 */}
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
+                          )}
+                          <TableTd>
+                            <TableTypography>
+                              {incomeAndExpense.registerUserName}
+                            </TableTypography>
+                          </TableTd>
+                          <TableTd>
+                            <BillingPopover
+                              incomeAndExpense={incomeAndExpense}
+                              notBgGrayUserId={
+                                incomeAndExpense.registerUserID === loginUserId
+                                  ? targetUserId
+                                  : loginUserId
+                              }
+                            />
+                          </TableTd>
+                          <TableTd>
+                            <TableTypography>
+                              {incomeAndExpense.category}
+                            </TableTypography>
+                          </TableTd>
+                          <TableTdAmount amount={incomeAndExpense.amount} />
+                          <TableTd>
+                            <TableTypography>
                               {incomeAndExpense.memo}
-                            </Typography>
-                          </div>
-                          <div className="md:hidden">
-                            {/* スマホサイズでの表示 */}
+                            </TableTypography>
+                          </TableTd>
+                          {!isLiquidation && (
+                            <TableTd>
+                              <div className="flex flex-wrap justify-end gap-3">
+                                <EditIcon incomeAndExpense={incomeAndExpense} />
+                                <IncomeAndExpenseDeleteIcon
+                                  incomeAndExpense={incomeAndExpense}
+                                />
+                              </div>
+                            </TableTd>
+                          )}
+                        </tr>
+
+                        {/* スマホ表示 */}
+                        <tr className="md:hidden break-all">
+                          {isLiquidation && (
+                            <TableTdCheckbox
+                              checkedItems={checkedItems}
+                              incomeAndExpense={incomeAndExpense}
+                              handleCheckboxChange={handleCheckboxChange}
+                              rowSpan={2}
+                            />
+                          )}
+                          <TableTd boderBottom="">
+                            <TableTypography>
+                              {incomeAndExpense.registerUserName}
+                            </TableTypography>
+                          </TableTd>
+                          <TableTd boderBottom="">
+                            <BillingPopover
+                              incomeAndExpense={incomeAndExpense}
+                              notBgGrayUserId={
+                                incomeAndExpense.registerUserID === loginUserId
+                                  ? targetUserId
+                                  : loginUserId
+                              }
+                            />
+                          </TableTd>
+
+                          <TableTd rowSpan={2}>
                             {incomeAndExpense.memo.length >= 10 ? (
                               <MemoPopover
                                 content={incomeAndExpense.memo}
                                 buttonText="表示"
                               />
                             ) : (
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
-                              >
+                              <TableTypography>
                                 {incomeAndExpense.memo}
-                              </Typography>
+                              </TableTypography>
                             )}
-                          </div>
-                        </td>
-                        {!isLiquidation && (
-                          <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                            <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row">
-                              <EditIcon incomeAndExpense={incomeAndExpense} />
-                              <IncomeAndExpenseDeleteIcon
-                                incomeAndExpense={incomeAndExpense}
-                              />
-                            </div>
-                          </td>
-                        )}
-                      </tr>
+                          </TableTd>
+
+                          {!isLiquidation && (
+                            <TableTd rowSpan={2}>
+                              <div className="flex flex-col flex-wrap gap-3 items-end">
+                                <EditIcon incomeAndExpense={incomeAndExpense} />
+                                <IncomeAndExpenseDeleteIcon
+                                  incomeAndExpense={incomeAndExpense}
+                                />
+                              </div>
+                            </TableTd>
+                          )}
+                        </tr>
+                        <tr className="table-row md:hidden break-all">
+                          <TableTd>
+                            <TableTypography>
+                              {incomeAndExpense.category}
+                            </TableTypography>
+                          </TableTd>
+                          <TableTdAmount amount={incomeAndExpense.amount} />
+                        </tr>
+                      </>
                     );
                   })()}
                 </React.Fragment>

@@ -72,7 +72,7 @@ export function Pagination({
         <NavigateBeforeIcon />
         前へ
       </Button>
-      <div className="flex items-center gap-2">{iconButtons}</div>
+      <div className="hidden md:flex items-center gap-2">{iconButtons}</div>
       <Button
         variant="text"
         color="gray"

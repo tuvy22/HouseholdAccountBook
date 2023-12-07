@@ -114,11 +114,11 @@ export const IncomeAndExpensePieChart = ({
               nameKey="category"
               startAngle={90}
               endAngle={-270}
-              outerRadius={130}
+              outerRadius={100}
               labelLine={false}
               label={({ name, percent }) => {
-                // 3%未満の場合はラベルを出力しない
-                if (percent < 0.03) return null;
+                // 10%未満の場合はラベルを出力しない
+                if (percent < 0.1) return null;
 
                 return `${name} ${(percent * 100).toFixed(0)}%`;
               }}

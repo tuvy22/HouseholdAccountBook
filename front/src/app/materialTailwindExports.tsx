@@ -39,6 +39,10 @@ import {
   MenuItem,
   Checkbox,
   Tooltip,
+  SpeedDial,
+  SpeedDialHandler,
+  SpeedDialContent,
+  SpeedDialAction,
 } from "@material-tailwind/react";
 
 export {
@@ -80,4 +84,8 @@ export {
   MenuItem,
   Checkbox,
   Tooltip,
+  SpeedDial,
+  SpeedDialHandler,
+  SpeedDialContent,
+  SpeedDialAction,
 };

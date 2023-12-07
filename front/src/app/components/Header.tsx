@@ -11,6 +11,9 @@ import HeaderUser from "./HeaderUser";
 import BuildIcon from "@mui/icons-material/Build";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import LineAxisIcon from "@mui/icons-material/LineAxis";
+import { MdHeaderMenu } from "./MdHeaderMenu";
+import { authDel } from "../util/apiClient";
+import { addError, useAlert } from "../context/AlertProvider";
 
 const Header = () => {
   const [error, setError] = useState<string | null>(null);
@@ -18,20 +21,18 @@ const Header = () => {
 
   const handleLogout = async (e: React.FormEvent) => {
     try {
-      const response = await axios.post(`/api/private/auth-del`);
-      if (response.status === 200) {
-        router.push("/login");
-      } else {
-        setError("ログアウトに失敗しました。");
-      }
+      const response = await authDel();
+      router.push("/login");
     } catch (error) {
-      setError("ログアウト時にエラーが発生しました。");
+      if (error instanceof Error) {
+        setError(error.message);
+      }
     }
   };
 
   return (
     <header className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white">
-      <div className="flex-1 flex">
+      <div className="flex-1 flex justify-between w-full">
         <Link
           href="/income-and-expense"
           className="p-1 flex flex-col items-left"
@@ -42,7 +43,7 @@ const Header = () => {
           </Typography>
         </Link>
       </div>
-      <div className="flex-[2] flex items-center justify-between">
+      <nav className="hidden md:flex flex-[2] items-center justify-between">
         <Link
           href="/income-and-expense"
           className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
@@ -80,9 +81,8 @@ const Header = () => {
             設定
           </Typography>
         </Link>
-      </div>
-
-      <div className="flex-1 flex items-center justify-end gap-3">
+      </nav>
+      <div className="hidden md:flex flex-1 items-center  gap-3 justify-end w-full">
         <HeaderUser />
         <LogoutIcon
           onClick={handleLogout}
@@ -90,7 +90,9 @@ const Header = () => {
           fontSize="large"
         />
       </div>
-
+      <div className="flex md:hidden  justify-center items-center">
+        <MdHeaderMenu handleLogout={handleLogout} />
+      </div>
       {error && <div className="text-red-500 mt-2">{error}</div>}
     </header>
   );

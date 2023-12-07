@@ -89,7 +89,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
           アカウントをお持ちの方はこちら
         </Button>
       </Link>
-      <Card className="p-10 flex items-center justify-center max-w-lg">
+      <Card className="p-5 flex items-center justify-center max-w-lg">
         <Typography variant="h2" className="pt-5 text-xl" color="blue-gray">
           アカウント作成
         </Typography>
@@ -99,7 +99,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
         <CardBody>
           <form
             onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
-            className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
+            className="mt-8 mb-2 md:w-96"
           >
             <div className="mb-1 flex flex-col gap-6">
               <NameForm errors={errors} createRegister={register} />

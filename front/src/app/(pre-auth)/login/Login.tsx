@@ -89,15 +89,12 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
         </Button>
       </Link>
 
-      <Card className="p-10 flex items-center justify-center max-w-lg">
+      <Card className="p-5 flex items-center justify-center max-w-lg">
         <Typography variant="h2" className="pt-5 text-xl">
           ログイン
         </Typography>
         <CardBody>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 mb-2 md:w-96">
             <div className="grid grid-cols-[auto_1fr_auto] grid-rows[auto_auto_10px_auto_auto] items-center gap-4">
               <AccountBoxIcon />
               <Input
