@@ -15,7 +15,7 @@ export default function RightPage({
       <Typography variant="h4" color="blue-gray">
         {title}
       </Typography>
-      <Typography color="gray" className="px-2 mt-1 font-normal">
+      <Typography color="gray" className="px-2 mt-1 font-normal text-center">
         {message}
       </Typography>
       <CardBody className="px-2 w-full text-center md:flex md:justify-center">

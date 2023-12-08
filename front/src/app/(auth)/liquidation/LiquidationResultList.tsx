@@ -9,27 +9,33 @@ import Link from "next/link";
 import LiquidationFlow from "./LiquidationFlow";
 import ClearIcon from "@mui/icons-material/Clear";
 import LiquidationDeleteIcon from "@/app/components/LiquidationDeleteIcon";
+import TableThTypography from "@/app/components/TableThTypography";
+import TableTd from "@/app/components/TableTd";
+import TableTypography from "@/app/components/TableTypography";
 
-const TABLE_INFO = [
-  { header: "清算日", addClassName: "" },
-  { header: "登録", addClassName: "" },
-  { header: "清算内容", addClassName: "" },
-  { header: "詳細", addClassName: "" },
-  { header: "", addClassName: "w-28" },
-];
+// const TABLE_INFO = [
+//   { header: "清算日", addClassName: "" },
+//   { header: "登録", addClassName: "" },
+//   { header: "清算内容", addClassName: "" },
+//   { header: "", addClassName: "w-28" },
+// ];
 
 export const LiquidationResultList = async () => {
   const fetchData = await getLiquidations();
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex md:justify-between justify-center flex-col md:flex-row">
         <div>
-          <Typography className="text-xl text-center md:text-left">
+          <Typography
+            variant="h4"
+            color="blue-gray"
+            className="text-xl text-center md:text-left"
+          >
             清算結果一覧
           </Typography>
         </div>
-        <div className="flex items-end">
+        <div className="mt-3 md:mt-0">
           <Link href="/liquidation/search">
             <Button
               variant="gradient"
@@ -44,24 +50,27 @@ export const LiquidationResultList = async () => {
       </div>
 
       {fetchData.length > 0 ? (
-        <Card className="mt-6">
+        <Card className="mt-3">
           <table className="text-left">
-            <thead>
+            {/* デスクトップ表示 */}
+            <thead className="hidden md:table-header-group">
               <tr>
-                {TABLE_INFO.map((info, index) => (
-                  <th
-                    key={index}
-                    className={`border-b border-blue-gray-100 bg-blue-gray-50 p-4 ${info.addClassName}`}
-                  >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
-                    >
-                      {info.header}
-                    </Typography>
-                  </th>
-                ))}
+                <TableThTypography>{"清算日"} </TableThTypography>
+                <TableThTypography>{"登録"} </TableThTypography>
+                <TableThTypography>{"清算内容"} </TableThTypography>
+                <TableThTypography>{""} </TableThTypography>
+              </tr>
+            </thead>
+
+            {/* スマホ表示 */}
+            <thead className="table-header-group md:hidden">
+              <tr>
+                <TableThTypography boderBottom="">{"清算日"}</TableThTypography>
+                <TableThTypography boderBottom="">{"登録"} </TableThTypography>
+                <TableThTypography rowSpan={2}>{""} </TableThTypography>
+              </tr>
+              <tr>
+                <TableThTypography colSpan={2}>{"清算内容"} </TableThTypography>
               </tr>
             </thead>
             <tbody>
@@ -77,42 +86,63 @@ export const LiquidationResultList = async () => {
                 );
 
                 return (
-                  <tr key={index} className="break-all">
-                    <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {toDateString(new Date(liquidation.date))}
-                      </Typography>
-                    </td>
-                    <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {liquidation.registerUserName}
-                      </Typography>
-                    </td>
-                    <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                      <LiquidationFlow
-                        registerUserName={liquidation.registerUserName}
-                        targetUserName={liquidation.targetUserName}
-                        amount={totalAmount}
-                      />
-                    </td>
-                    <td className="p-2 md:p-4 border-b border-blue-gray-50 text-center">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        <LiquidationDeleteIcon liquidation={liquidation} />
-                      </Typography>
-                    </td>
-                  </tr>
+                  <>
+                    {/* デスクトップ表示 */}
+                    <tr key={index} className="hidden md:table-row break-all">
+                      <TableTd>
+                        <TableTypography>
+                          {toDateString(new Date(liquidation.date))}
+                        </TableTypography>
+                      </TableTd>
+                      <TableTd>
+                        <TableTypography>
+                          {liquidation.registerUserName}
+                        </TableTypography>
+                      </TableTd>
+                      <TableTd>
+                        <LiquidationFlow
+                          registerUserName={liquidation.registerUserName}
+                          targetUserName={liquidation.targetUserName}
+                          amount={totalAmount}
+                        />
+                      </TableTd>
+                      <TableTd>
+                        <TableTypography>
+                          <LiquidationDeleteIcon liquidation={liquidation} />
+                        </TableTypography>
+                      </TableTd>
+                    </tr>
+
+                    {/* スマホ表示 */}
+                    <tr key={index} className="table-row md:hidden break-all">
+                      <TableTd>
+                        <TableTypography>
+                          {toDateString(new Date(liquidation.date))}
+                        </TableTypography>
+                      </TableTd>
+                      <TableTd>
+                        <TableTypography>
+                          {liquidation.registerUserName}
+                        </TableTypography>
+                      </TableTd>
+                      <TableTd rowSpan={2}>
+                        <div className="flex justify-end">
+                          <TableTypography>
+                            <LiquidationDeleteIcon liquidation={liquidation} />
+                          </TableTypography>
+                        </div>
+                      </TableTd>
+                    </tr>
+                    <tr key={index} className="table-row md:hidden break-all">
+                      <TableTd colSpan={2}>
+                        <LiquidationFlow
+                          registerUserName={liquidation.registerUserName}
+                          targetUserName={liquidation.targetUserName}
+                          amount={totalAmount}
+                        />
+                      </TableTd>
+                    </tr>
+                  </>
                 );
               })}
             </tbody>

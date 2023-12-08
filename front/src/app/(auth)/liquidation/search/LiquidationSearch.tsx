@@ -94,7 +94,9 @@ const LiquidationSearch = () => {
                 {...register("fromDate")}
               />
             </div>
-            <div className="flex justify-center items-center">〜</div>
+            <div className="flex justify-center items-center origin-center rotate-90 md:rotate-0">
+              〜
+            </div>
             <div className="flex flex-col flex-grow">
               <Input
                 label="終了期間 (必須)"

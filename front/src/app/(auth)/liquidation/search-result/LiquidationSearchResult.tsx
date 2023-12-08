@@ -176,16 +176,23 @@ export const LiquidationSearchResult = ({
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex flex-col md:flex-row items-end md:justify-between">
         <div>
-          <Typography className="text-xl text-center md:text-left">
+          <Typography
+            variant="h4"
+            color="blue-gray"
+            className="text-center md:text-left"
+          >
             清算対象選択
           </Typography>
-          <Typography color="gray" className="mt-1 font-normal">
-            以下から清算対象を選択した後、清算ボタンを押してください
+          <Typography
+            color="gray"
+            className="px-2 md:px-0 mt-1 font-normal text-left"
+          >
+            以下から清算対象を選択した後、 清算ボタンを押してください
           </Typography>
         </div>
-        <div className="flex items-end">
+        <div>
           <Button
             variant="text"
             color="red"
@@ -212,21 +219,21 @@ export const LiquidationSearchResult = ({
       />
       {totalLiquidationAmount !== 0 && (
         <Card className="sticky bottom-0 left-0 right-0 z-30 bg-white bg-opacity-80 px-3 py-2 mt-8 ">
-          <div className="grid grid-cols-[5fr_2fr_auto] grid-rows[auto_auto] gap-3 justify-center items-center text-center">
+          <div className="grid grid-cols-[1fr] grid-rows[auto_auto_auto] md:grid-cols-[5fr_2fr_auto] md:grid-rows[auto_auto] gap-3 justify-center items-center text-center">
             <Typography
               color="gray"
-              className="text-left col-span-4 text-lg font-bold"
+              className="text-left md:col-span-4 text-lg font-bold"
             >
               <span>清算情報</span>
             </Typography>
-            <div className="">
-              <LiquidationFlow
-                registerUserName={loginUser.name}
-                targetUserName={targetUserName}
-                amount={totalLiquidationAmount}
-              />
-            </div>
-            <div className="row-span-2"></div>
+
+            <LiquidationFlow
+              registerUserName={loginUser.name}
+              targetUserName={targetUserName}
+              amount={totalLiquidationAmount}
+            />
+
+            <div className="hidden md:block row-span-2"></div>
             <Button
               variant="gradient"
               color="green"

@@ -44,21 +44,16 @@ export function InitialAmount() {
   };
   return (
     <form
-      className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
+      className="mx-auto items-center mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
       onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
     >
       <div className="mb-1 flex flex-col gap-6">
-        <Typography variant="h6" color="blue-gray" className="-mb-3">
-          初期残高
-        </Typography>
         <Input
+          label={"初期残高"}
           type="number"
+          variant="outlined"
           size="lg"
           crossOrigin={undefined}
-          className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-          labelProps={{
-            className: "before:content-none after:content-none",
-          }}
           {...register("amount")}
         />
         {errors.amount && (
