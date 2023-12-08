@@ -11,14 +11,16 @@ export default function RightPage({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="p-10 flex items-center justify-center">
+    <Card className="p-3 md:p-10 flex items-center justify-center">
       <Typography variant="h4" color="blue-gray">
         {title}
       </Typography>
-      <Typography color="gray" className="mt-1 font-normal">
+      <Typography color="gray" className="px-2 mt-1 font-normal">
         {message}
       </Typography>
-      <CardBody> {children}</CardBody>
+      <CardBody className="px-2 w-full text-center md:flex md:justify-center">
+        {children}
+      </CardBody>
     </Card>
   );
 }

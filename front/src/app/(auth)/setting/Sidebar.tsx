@@ -45,7 +45,10 @@ export function Sidebar({
     setOpenSetting(menu);
   };
   return (
-    <Card className="w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+    <Card
+      className="w-full max-w-[20rem] p-4 md:shadow-xl md:shadow-blue-gray-900/5"
+      shadow={false}
+    >
       <div className="mb-2 p-4">
         <Typography variant="h5" color="blue-gray">
           設定メニュー

@@ -9,7 +9,7 @@ import {
   Button,
 } from "../../materialTailwindExports";
 import { putInviteToken } from "@/app/util/apiClient";
-import { addError, useAlert } from "@/app/context/AlertProvider";
+
 import { useState } from "react";
 
 const UserInvite = () => {
@@ -48,7 +48,7 @@ const UserInvite = () => {
         <Typography color="gray" className="mt-1 font-normal">
           以下からログインまたは、ユーザー作成をお願いします。
         </Typography>
-        <CardBody className="flex  gap-3">
+        <CardBody className="flex flex-col md:flex-row gap-3">
           <Button
             onClick={() => onSubmitLogin()}
             type="submit"

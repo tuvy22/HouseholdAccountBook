@@ -1,11 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import UserProvider from "./context/UserProvider";
 import Footer from "./components/Footer";
-import { cookies } from "next/headers";
-import AlertProvider from "./context/AlertProvider";
-import { SESSION_ID_COOKIE } from "./util/constants";
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -89,7 +89,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
           アカウントをお持ちの方はこちら
         </Button>
       </Link>
-      <Card className="p-5 flex items-center justify-center max-w-lg">
+      <Card className="mx-5 p-5 flex items-center justify-center max-w-lg">
         <Typography variant="h2" className="pt-5 text-xl" color="blue-gray">
           アカウント作成
         </Typography>
@@ -99,53 +99,39 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
         <CardBody>
           <form
             onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
-            className="mt-8 mb-2 md:w-96"
+            className="mt-8 mb-2 w-80 md:w-96"
           >
             <div className="mb-1 flex flex-col gap-6">
               <NameForm errors={errors} createRegister={register} />
-              <Typography variant="h6" color="blue-gray" className="-mb-3">
-                ユーザーID
-              </Typography>
               <Input
+                label="ユーザID"
                 type="text"
+                variant="outlined"
                 size="lg"
                 crossOrigin={undefined}
-                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
                 {...register("id")}
               />
               {errors.id && (
                 <div className="text-red-500">{errors.id.message}</div>
               )}
-              <Typography variant="h6" color="blue-gray" className="-mb-3">
-                パスワード
-              </Typography>
               <Input
+                label="パスワード"
                 type="password"
+                variant="outlined"
                 size="lg"
                 crossOrigin={undefined}
-                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
                 {...register("password")}
               />
               {errors.password && (
                 <div className="text-red-500">{errors.password.message}</div>
               )}
-              <Typography variant="h6" color="blue-gray" className="-mb-3">
-                パスワード（確認）
-              </Typography>
+
               <Input
+                label="パスワード（確認）"
                 type="password"
+                variant="outlined"
                 size="lg"
                 crossOrigin={undefined}
-                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
                 {...register("passwordConfirmation")}
               />
               {errors.passwordConfirmation && (

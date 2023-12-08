@@ -8,6 +8,7 @@ import RightPage from "./RightPage";
 import { InitialAmount } from "./InitialAmount";
 import { useSearchParams } from "next/navigation";
 import { Category } from "./Category";
+import { SideDrawer } from "@/app/components/SideDrawer";
 
 export const SETTING_OPEN = {
   USER_NAME: "userName",
@@ -67,14 +68,33 @@ export function Setting() {
           </RightPage>
         );
       default:
-        return <RightPage>左のメニューから選択してください。</RightPage>;
+        return (
+          <>
+            <div className="hidden md:block">
+              <RightPage>左のメニューから選択してください。</RightPage>
+            </div>
+            <div className="md:hidden">
+              <RightPage>上のメニューを開いて選択してください。</RightPage>
+            </div>
+          </>
+        );
     }
   };
 
   return (
-    <div className="flex-1 flex items-stretch gap-4">
-      <Sidebar setOpenSetting={setOpenSetting} />
-      <div className="flex-1">{renderSetting()}</div>
-    </div>
+    <>
+      <div className="md:hidden flex justify-start mb-3">
+        <SideDrawer>
+          <Sidebar setOpenSetting={setOpenSetting} />
+        </SideDrawer>
+      </div>
+
+      <div className="flex-1 flex items-stretch gap-4">
+        <div className="hidden md:flex ">
+          <Sidebar setOpenSetting={setOpenSetting} />
+        </div>
+        <div className="flex-1">{renderSetting()}</div>
+      </div>
+    </>
   );
 }

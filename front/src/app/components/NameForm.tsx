@@ -15,17 +15,12 @@ export default function NameForm({
 }) {
   return (
     <>
-      <Typography variant="h6" color="blue-gray" className="-mb-3">
-        ニックネーム
-      </Typography>
       <Input
+        label="ニックネーム"
         type="text"
+        variant="outlined"
         size="lg"
         crossOrigin={undefined}
-        className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-        labelProps={{
-          className: "before:content-none after:content-none",
-        }}
         {...(createRegister && { ...createRegister("name") })}
         {...(updateRegister && { ...updateRegister("name") })}
       />

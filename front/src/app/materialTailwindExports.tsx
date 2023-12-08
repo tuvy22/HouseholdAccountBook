@@ -43,6 +43,7 @@ import {
   SpeedDialHandler,
   SpeedDialContent,
   SpeedDialAction,
+  Drawer,
 } from "@material-tailwind/react";
 
 export {
@@ -88,4 +89,5 @@ export {
   SpeedDialHandler,
   SpeedDialContent,
   SpeedDialAction,
+  Drawer,
 };

@@ -88,7 +88,7 @@ export default function CategoryList({ isExpense }: { isExpense: boolean }) {
   };
   return (
     <form
-      className="w-80 max-w-screen-lg sm:w-96"
+      className="max-w-screen-lg md:w-96"
       onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
     >
       <div className="flex flex-col gap-6">
@@ -97,12 +97,10 @@ export default function CategoryList({ isExpense }: { isExpense: boolean }) {
             <div className="flex gap-3 items-center">
               <Input
                 type="text"
+                label={`カテゴリー${index + 1}`}
+                variant="outlined"
                 size="lg"
                 crossOrigin={undefined}
-                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
                 key={field.id}
                 {...register(`categories.${index}.category` as const)}
               />
