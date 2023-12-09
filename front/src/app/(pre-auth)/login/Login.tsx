@@ -9,7 +9,6 @@ import {
   CardBody,
   Typography,
   Button,
-  CardHeader,
 } from "../../materialTailwindExports";
 
 import LockIcon from "@mui/icons-material/Lock";
@@ -19,14 +18,13 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { auth, deleteInviteToken } from "../../util/apiClient";
 import Link from "next/link";
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
-import Logo from "@/app/components/Logo";
 
 interface IFormInput {
   id: string;
   password: string;
 }
 
-const Login = ({ isInvite }: { isInvite: boolean }) => {
+export function Login({ isInvite }: { isInvite: boolean }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,18 +32,13 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
   const toggleShowPassword = () => setShowPassword(!showPassword);
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    formState: { errors },
-  } = useForm<IFormInput>();
+  const { register, handleSubmit, getValues } = useForm<IFormInput>();
 
   const handleOk = () => {
     submit(getValues().id, getValues().password);
   };
 
-  const handleCancel = async () => {
+  const handleInviteCancel = async () => {
     try {
       await deleteInviteToken();
     } catch (error) {
@@ -80,7 +73,7 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
     <>
       <Link
         href="/user-register"
-        className="fixed top-20 md:top-2 right-1 md:right-4"
+        className="fixed top-20 md:top-2 right-1 md:right-4 z-50"
       >
         <Button
           type="submit"
@@ -93,7 +86,7 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
         </Button>
       </Link>
 
-      <Card className="m-2 max-w-sm w-full">
+      <Card className="max-w-sm w-full">
         <CardBody>
           <Typography variant="h2" className="pt-5 text-xl text-center">
             ログイン
@@ -131,29 +124,26 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
                   )}
                 </div>
               </div>
-
-              <Button
-                type="submit"
-                variant="filled"
-                color="green"
-                size="lg"
-                className="w-full mt-3"
-              >
-                {loading ? <Spinner className="m-auto" /> : <>ログイン</>}
-              </Button>
             </div>
+            <Button
+              type="submit"
+              variant="filled"
+              color="green"
+              size="lg"
+              className="w-full mt-8"
+            >
+              {loading ? <Spinner className="m-auto" /> : <>ログイン</>}
+            </Button>
           </form>
           {error && (
             <div className="text-red-500 text-center mt-4">{error}</div>
           )}
         </CardBody>
       </Card>
-      {/* </div> */}
-
       <IncomeAndExpenseConfirmDialog
         open={openDialog}
         handleOpen={() => setOpenDialog(!openDialog)}
-        handleCancel={handleCancel}
+        handleCancel={handleInviteCancel}
         handleOk={handleOk}
         title="グループへの加入"
         message="招待されたグループに加入してよろしいですか？"
@@ -163,6 +153,4 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
       />
     </>
   );
-};
-
-export default Login;
+}

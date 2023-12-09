@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import Login from "./Login";
+import { Login } from "./Login";
 import { cookies } from "next/headers";
 import { INVITE_COOKIE_TOKEN } from "@/app/util/constants";
 

@@ -7,12 +7,10 @@ import {
   CardBody,
   Typography,
   Button,
-  CardHeader,
 } from "../../materialTailwindExports";
 import { putInviteToken } from "@/app/util/apiClient";
 
 import { useState } from "react";
-import Logo from "@/app/components/Logo";
 
 const UserInvite = () => {
   const searchParams = useSearchParams();
@@ -45,13 +43,16 @@ const UserInvite = () => {
     <>
       <Card className="max-w-3xl w-full">
         <CardBody>
-          <Typography variant="h2" className="text-xl" color="blue-gray">
+          <Typography
+            variant="h2"
+            className="pt-5 text-xl text-center md:text-left"
+          >
             グループへの加入
           </Typography>
-          <Typography color="gray" className="mt-1 font-normal">
+          <Typography className="mt-1">
             以下からログインまたは、ユーザー作成をお願いします。
           </Typography>
-          <div className="pt-3 flex flex-col md:flex-row gap-3">
+          <div className="mt-8 mb-2 flex flex-col md:flex-row gap-3">
             <Button
               onClick={() => onSubmitLogin()}
               type="submit"

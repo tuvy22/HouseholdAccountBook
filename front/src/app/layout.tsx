@@ -6,8 +6,9 @@ import Footer from "./components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "家計簿WEB",
-  description: "家計簿WEBです。",
+  title: "えふSaku",
+  description:
+    "家計簿WEBサイトのえふSakuです。ユーザー間での精算（割り勘）機能があり、お金のやり取りを簡単に管理できます。",
 };
 
 export default function RootLayout({
