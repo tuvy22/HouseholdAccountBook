@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardHeader,
   Input,
   Typography,
 } from "@/app/materialTailwindExports";
@@ -21,6 +22,7 @@ import {
 } from "../../components/UserSchema";
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 import { addError } from "@/app/context/AlertProvider";
+import Logo from "@/app/components/Logo";
 
 export const Register = ({ isInvite }: { isInvite: boolean }) => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -78,7 +80,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
 
   return (
     <>
-      <Link href="/login" className="fixed top-4 right-4">
+      <Link href="/login" className="fixed top-20 md:top-2 right-1 md:right-4">
         <Button
           type="submit"
           variant="outlined"
@@ -89,17 +91,17 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
           アカウントをお持ちの方はこちら
         </Button>
       </Link>
-      <Card className="mx-5 p-5 flex items-center justify-center max-w-lg">
-        <Typography variant="h2" className="pt-5 text-xl" color="blue-gray">
-          アカウント作成
-        </Typography>
-        <Typography color="gray" className="mt-1 font-normal">
-          利用を開始するためには以下の情報を入力してください
-        </Typography>
+      <Card className="max-w-sm w-full">
         <CardBody>
+          <Typography variant="h2" className="pt-5 text-xl" color="blue-gray">
+            アカウント作成
+          </Typography>
+          <Typography color="gray" className="mt-1 font-normal">
+            利用を開始するためには以下の情報を入力してください
+          </Typography>
           <form
             onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
-            className="mt-8 mb-2 w-80 md:w-96"
+            className="mt-8 mb-2"
           >
             <div className="mb-1 flex flex-col gap-6">
               <NameForm errors={errors} createRegister={register} />
@@ -145,7 +147,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
               variant="filled"
               color="green"
               size="lg"
-              className="mt-6"
+              className="mt-3"
               fullWidth
             >
               作成

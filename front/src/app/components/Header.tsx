@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typography } from "../materialTailwindExports";
@@ -13,7 +12,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import LineAxisIcon from "@mui/icons-material/LineAxis";
 import { MdHeaderMenu } from "./MdHeaderMenu";
 import { authDel } from "../util/apiClient";
-import { addError, useAlert } from "../context/AlertProvider";
+import Logo from "./Logo";
 
 const Header = () => {
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +20,7 @@ const Header = () => {
 
   const handleLogout = async (e: React.FormEvent) => {
     try {
-      const response = await authDel();
+      await authDel();
       router.push("/login");
     } catch (error) {
       if (error instanceof Error) {
@@ -37,10 +36,7 @@ const Header = () => {
           href="/income-and-expense"
           className="p-1 flex flex-col items-left"
         >
-          <span className="text-xs">家計簿サービス</span>
-          <Typography variant="h2" className="font-bold text-3xl mx-5">
-            えふSaku
-          </Typography>
+          <Logo />
         </Link>
       </div>
       <nav className="hidden md:flex flex-[2] items-center justify-between">

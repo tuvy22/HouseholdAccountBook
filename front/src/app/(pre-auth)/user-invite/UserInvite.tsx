@@ -7,10 +7,12 @@ import {
   CardBody,
   Typography,
   Button,
+  CardHeader,
 } from "../../materialTailwindExports";
 import { putInviteToken } from "@/app/util/apiClient";
 
 import { useState } from "react";
+import Logo from "@/app/components/Logo";
 
 const UserInvite = () => {
   const searchParams = useSearchParams();
@@ -41,36 +43,36 @@ const UserInvite = () => {
 
   return (
     <>
-      <Card className="p-10 flex items-center justify-center">
-        <Typography variant="h2" className="pt-5 text-xl" color="blue-gray">
-          グループへの加入
-        </Typography>
-        <Typography color="gray" className="mt-1 font-normal">
-          以下からログインまたは、ユーザー作成をお願いします。
-        </Typography>
-        <CardBody className="flex flex-col md:flex-row gap-3">
-          <Button
-            onClick={() => onSubmitLogin()}
-            type="submit"
-            variant="outlined"
-            color="green"
-            size="lg"
-            className="rounded-full flex-1"
-          >
-            アカウントをお持ちの方はこちら
-          </Button>
-          <Button
-            onClick={() => onSubmitRegister()}
-            type="submit"
-            variant="outlined"
-            color="green"
-            size="lg"
-            className="rounded-full flex-1"
-          >
-            アカウントをお持ちではない方は
-            <br />
-            こちら
-          </Button>
+      <Card className="max-w-3xl w-full">
+        <CardBody>
+          <Typography variant="h2" className="text-xl" color="blue-gray">
+            グループへの加入
+          </Typography>
+          <Typography color="gray" className="mt-1 font-normal">
+            以下からログインまたは、ユーザー作成をお願いします。
+          </Typography>
+          <div className="pt-3 flex flex-col md:flex-row gap-3">
+            <Button
+              onClick={() => onSubmitLogin()}
+              type="submit"
+              variant="outlined"
+              color="green"
+              size="lg"
+              className="rounded-full flex-1"
+            >
+              アカウントをお持ちの方はこちら
+            </Button>
+            <Button
+              onClick={() => onSubmitRegister()}
+              type="submit"
+              variant="outlined"
+              color="green"
+              size="lg"
+              className="rounded-full flex-1"
+            >
+              アカウントをお持ちではない方はこちら
+            </Button>
+          </div>
         </CardBody>
         {error && <div className="text-red-500 text-center mt-4">{error}</div>}
       </Card>

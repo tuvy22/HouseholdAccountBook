@@ -89,7 +89,7 @@ export const IncomeAndExpenseMonthlyChart = ({
   }, [startYearMonth, endYearMonth, incomeAndExpenseMonthlyTotal]);
   return (
     <>
-      <div className="flex justify-center gap-4">
+      <div className="flex justify-center md:justify-start gap-4">
         <div className="md:hidden block">
           <PreOrNextIcon
             isPreIcon={true}

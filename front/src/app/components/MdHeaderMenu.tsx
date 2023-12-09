@@ -64,12 +64,12 @@ export function MdHeaderMenu({
           </Link>
         </MenuItem>
         <MenuItem>
-          <Link href="/setting" className="flex justify-start gap-3">
-            <LogoutIcon onClick={handleLogout} />
+          <div className="flex justify-start gap-3" onClick={handleLogout}>
+            <LogoutIcon />
             <Typography variant="h3" className="text-xl">
               ログアウト
             </Typography>
-          </Link>
+          </div>
         </MenuItem>
       </MenuList>
     </Menu>

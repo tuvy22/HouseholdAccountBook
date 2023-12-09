@@ -9,6 +9,7 @@ import {
   CardBody,
   Typography,
   Button,
+  CardHeader,
 } from "../../materialTailwindExports";
 
 import LockIcon from "@mui/icons-material/Lock";
@@ -18,6 +19,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { auth, deleteInviteToken } from "../../util/apiClient";
 import Link from "next/link";
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
+import Logo from "@/app/components/Logo";
 
 interface IFormInput {
   id: string;
@@ -76,7 +78,10 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
 
   return (
     <>
-      <Link href="/user-register" className="fixed top-4 right-4">
+      <Link
+        href="/user-register"
+        className="fixed top-20 md:top-2 right-1 md:right-4"
+      >
         <Button
           type="submit"
           variant="outlined"
@@ -88,46 +93,51 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
         </Button>
       </Link>
 
-      <Card className="p-5 flex items-center justify-center max-w-lg">
-        <Typography variant="h2" className="pt-5 text-xl">
-          ログイン
-        </Typography>
+      <Card className="m-2 max-w-sm w-full">
         <CardBody>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 mb-2 md:w-96">
-            <div className="grid grid-cols-[auto_1fr_auto] grid-rows[auto_auto_10px_auto_auto] items-center gap-4">
-              <AccountBoxIcon />
-              <Input
-                label="ユーザID"
-                type="text"
-                variant="standard"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("id")}
-              />
-              <div></div>
-              <LockIcon />
-              <Input
-                label="パスワード"
-                type={showPassword ? "text" : "password"}
-                variant="standard"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("password")}
-              />
-              <div className="text-xs text-gray-500 cursor-pointer hover:text-green-500">
-                {showPassword ? (
-                  <VisibilityIcon onClick={toggleShowPassword} />
-                ) : (
-                  <VisibilityOffIcon onClick={toggleShowPassword} />
-                )}
+          <Typography variant="h2" className="pt-5 text-xl text-center">
+            ログイン
+          </Typography>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 mb-2">
+            <div className="flex flex-col items-center justify-center gap-4">
+              <div className="w-full items-center flex gap-3">
+                <AccountBoxIcon />
+                <Input
+                  label="ユーザID"
+                  type="text"
+                  variant="standard"
+                  size="lg"
+                  crossOrigin={undefined}
+                  {...register("id")}
+                />
               </div>
-              <div className="col-span-3"></div>
+
+              <div className="relative w-full items-center flex gap-3">
+                <LockIcon />
+                <Input
+                  label="パスワード"
+                  type={showPassword ? "text" : "password"}
+                  variant="standard"
+                  size="lg"
+                  crossOrigin={undefined}
+                  className="pr-10"
+                  {...register("password")}
+                />
+                <div className="absolute top-3 right-2 text-gray-500 cursor-pointer hover:text-green-500">
+                  {showPassword ? (
+                    <VisibilityIcon onClick={toggleShowPassword} />
+                  ) : (
+                    <VisibilityOffIcon onClick={toggleShowPassword} />
+                  )}
+                </div>
+              </div>
+
               <Button
                 type="submit"
                 variant="filled"
                 color="green"
                 size="lg"
-                className="col-span-3"
+                className="w-full mt-3"
               >
                 {loading ? <Spinner className="m-auto" /> : <>ログイン</>}
               </Button>
@@ -138,6 +148,7 @@ const Login = ({ isInvite }: { isInvite: boolean }) => {
           )}
         </CardBody>
       </Card>
+      {/* </div> */}
 
       <IncomeAndExpenseConfirmDialog
         open={openDialog}
