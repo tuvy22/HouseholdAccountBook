@@ -22,10 +22,6 @@ type UserHandler interface {
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
-
-	GetUserInviteUrl(c *gin.Context)
-	SetInviteCookie(c *gin.Context)
-	DeleteInviteCookie(c *gin.Context)
 }
 
 type userHandlerImpl struct {
@@ -202,45 +198,6 @@ func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
 		errorResponder(c, err)
 		return
 	}
-	c.Status(http.StatusOK)
-}
-
-func (h *userHandlerImpl) GetUserInviteUrl(c *gin.Context) {
-	// ログインデータ取得
-	loginUser, err := GetLoginUser(c)
-	if err != nil {
-		errorResponder(c, err)
-		return
-	}
-
-	inviteUrl, err := h.usecase.GetUserInviteUrl(loginUser.GroupID)
-	if err != nil {
-		errorResponder(c, err)
-		return
-	}
-
-	c.JSON(http.StatusOK, inviteUrl)
-
-}
-
-func (h *userHandlerImpl) SetInviteCookie(c *gin.Context) {
-	inviteToken, err := h.bindInviteToken(c)
-	if err != nil {
-		errorResponder(c, err)
-		return
-	}
-	_, err = h.usecase.CheckInviteToken(inviteToken.Token)
-	if err != nil {
-		errorResponder(c, err)
-		return
-	}
-	// クッキーにトークンを保存
-	c.SetSameSite(http.SameSiteNoneMode)
-	c.SetCookie(InviteCookieToken, inviteToken.Token, 1800, "/", os.Getenv("ALLOWED_ORIGINS"), true, true)
-}
-
-func (h *userHandlerImpl) DeleteInviteCookie(c *gin.Context) {
-	h.deleteInviteCookie(c)
 	c.Status(http.StatusOK)
 }
 

@@ -20,17 +20,18 @@ type IncomeAndExpenseUsecase interface {
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string, groupID uint) error
 	DeleteIncomeAndExpense(id uint, userId string) error
 
-	GetMonthlyTotal(groupID uint, InitialAmount int) ([]entity.IncomeAndExpenseMonthlyTotal, error)
+	GetMonthlyTotal(groupID uint) ([]entity.IncomeAndExpenseMonthlyTotal, error)
 	GetMonthlyCategory(yearMonth string, groupID uint, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error)
 }
 
 type incomeAndExpenseUsecaseImpl struct {
-	repo     repository.IncomeAndExpenseRepository
-	userRepo repository.UserRepository
+	repo      repository.IncomeAndExpenseRepository
+	userRepo  repository.UserRepository
+	groupRepo repository.GroupRepository
 }
 
-func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository, userRepo repository.UserRepository) IncomeAndExpenseUsecase {
-	return &incomeAndExpenseUsecaseImpl{repo: repo, userRepo: userRepo}
+func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository, userRepo repository.UserRepository, groupRepo repository.GroupRepository) IncomeAndExpenseUsecase {
+	return &incomeAndExpenseUsecaseImpl{repo: repo, userRepo: userRepo, groupRepo: groupRepo}
 }
 
 func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpense(groupID uint, page int) ([]entity.IncomeAndExpenseResponse, error) {
@@ -208,7 +209,7 @@ func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint, userId str
 
 	return u.repo.DeleteIncomeAndExpense(id)
 }
-func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(groupID uint, InitialAmount int) ([]entity.IncomeAndExpenseMonthlyTotal, error) {
+func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(groupID uint) ([]entity.IncomeAndExpenseMonthlyTotal, error) {
 	monthlyTotals := []entity.IncomeAndExpenseMonthlyTotal{}
 	userIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
@@ -227,12 +228,19 @@ func (u *incomeAndExpenseUsecaseImpl) GetMonthlyTotal(groupID uint, InitialAmoun
 	// 期間中のすべての月のリストを作成
 	allMonths := u.generateAllMonths(monthlyTotals[0].YearMonth, monthlyTotals[len(monthlyTotals)-1].YearMonth)
 	// データをマージ
-	result := u.mergeData(monthlyTotals, allMonths)
+	results := u.mergeData(monthlyTotals, allMonths)
 
-	//ユーザーの初期残高と合算
-	result[0].TotalAmount = result[0].TotalAmount + InitialAmount
+	//初期残高と合算
+	group := entity.Group{}
+	err = u.groupRepo.GetGroup(groupID, &group)
+	if err != nil {
+		return monthlyTotals, err
+	}
+	for i, _ := range results {
+		results[i].TotalAmount = results[i].TotalAmount + group.InitialAmount
+	}
 
-	return result, nil
+	return results, nil
 }
 
 func (u *incomeAndExpenseUsecaseImpl) GetMonthlyCategory(yearMonth string, groupID uint, isMinus bool) ([]entity.IncomeAndExpenseMonthlyCategory, error) {

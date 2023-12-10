@@ -2,9 +2,7 @@ package usecase
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
-	"time"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
@@ -17,14 +15,12 @@ import (
 
 type UserUsecase interface {
 	Authenticate(creds entity.Credentials) (entity.UserResponse, entity.UserSession, error)
-	CheckInviteToken(tokenString string) (uint, error)
 	GetAllUser() ([]entity.UserResponse, error)
 	GetGroupAllUser(groupID uint, firstUserID string) ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
 	CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error)
 	UpdateUser(user entity.User) (entity.UserResponse, entity.UserSession, error)
 	DeleteUser(id string) error
-	GetUserInviteUrl(groupId uint) (entity.InviteUrl, error)
 	ChangeGroup(userId string, inviteGroupID uint) error
 }
 
@@ -56,25 +52,6 @@ func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserRes
 	}
 
 	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
-}
-
-func (u *userUsecaseImpl) CheckInviteToken(tokenString string) (uint, error) {
-
-	claims, err := u.checkToken(tokenString, u.config.InviteJWTKey)
-	if err != nil {
-		return entity.GroupIDNone, err
-	}
-	groupIdInterface, ok := claims["group_id"]
-	if !ok {
-		return entity.GroupIDNone, customerrors.NewCustomError(customerrors.ErrInternalServer)
-	}
-
-	if floatValue, ok := groupIdInterface.(float64); ok {
-		groupId := uint(floatValue)
-		return groupId, nil
-	} else {
-		return entity.GroupIDNone, customerrors.NewCustomError(customerrors.ErrBadRequest)
-	}
 }
 
 func (u *userUsecaseImpl) GetAllUser() ([]entity.UserResponse, error) {
@@ -179,7 +156,6 @@ func (u *userUsecaseImpl) UpdateUser(user entity.User) (entity.UserResponse, ent
 	//更新値の設定
 	preUser.Name = user.Name
 	preUser.GroupID = user.GroupID
-	preUser.InitialAmount = user.InitialAmount
 
 	return u.convertToUserResponse(user), u.convertToUserSession(user), u.repo.UpdateUser(&preUser)
 }
@@ -189,41 +165,18 @@ func (u *userUsecaseImpl) DeleteUser(id string) error {
 	return u.repo.DeleteUser(id)
 }
 
-func (u *userUsecaseImpl) GetUserInviteUrl(groupId uint) (entity.InviteUrl, error) {
-	// JWTトークンの生成
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"group_id": groupId,
-		"exp":      time.Now().Add(time.Minute * 30).Unix(),
-	})
-
-	tokenString, err := token.SignedString(u.config.InviteJWTKey)
-	if err != nil {
-		return entity.InviteUrl{}, err
-	}
-	// 生成したトークンをURLに組み込む
-	inviteURLString := fmt.Sprintf("https://%s/user-invite?token=%s", os.Getenv("DOMAIN"), tokenString)
-
-	inviteUrl := entity.InviteUrl{
-		Url: inviteURLString,
-	}
-
-	return inviteUrl, nil
-}
-
 func (u *userUsecaseImpl) convertToUserResponse(user entity.User) entity.UserResponse {
 	return entity.UserResponse{
-		ID:            user.ID,
-		Name:          user.Name,
-		GroupID:       user.GroupID,
-		InitialAmount: user.InitialAmount,
+		ID:      user.ID,
+		Name:    user.Name,
+		GroupID: user.GroupID,
 	}
 }
 func (u *userUsecaseImpl) convertToUserSession(user entity.User) entity.UserSession {
 	return entity.UserSession{
-		ID:            user.ID,
-		Name:          user.Name,
-		GroupID:       user.GroupID,
-		InitialAmount: user.InitialAmount,
+		ID:      user.ID,
+		Name:    user.Name,
+		GroupID: user.GroupID,
 	}
 }
 
@@ -232,10 +185,9 @@ func (u *userUsecaseImpl) convertToUserResponses(users []entity.User) []entity.U
 
 	for _, user := range users {
 		userResponse := entity.UserResponse{
-			ID:            user.ID,
-			Name:          user.Name,
-			GroupID:       user.GroupID,
-			InitialAmount: user.InitialAmount,
+			ID:      user.ID,
+			Name:    user.Name,
+			GroupID: user.GroupID,
 		}
 		userResponses = append(userResponses, userResponse)
 	}

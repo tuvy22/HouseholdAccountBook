@@ -16,10 +16,9 @@ func GetLoginUser(c *gin.Context) (entity.UserResponse, error) {
 		return entity.UserResponse{}, customerrors.NewCustomError(customerrors.ErrNoSession)
 	}
 	userResponse := entity.UserResponse{
-		ID:            userSession.ID,
-		Name:          userSession.Name,
-		GroupID:       userSession.GroupID,
-		InitialAmount: userSession.InitialAmount,
+		ID:      userSession.ID,
+		Name:    userSession.Name,
+		GroupID: userSession.GroupID,
 	}
 
 	return userResponse, nil

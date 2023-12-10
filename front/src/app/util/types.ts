@@ -48,7 +48,6 @@ export interface User {
   id: string;
   name: string;
   groupId: number;
-  initialAmount: number;
 }
 export interface UserCreate {
   id: string;
@@ -61,6 +60,10 @@ export interface InviteUrl {
 
 export interface InviteToken {
   token: string;
+}
+
+export interface InitialAmount {
+  amount: number;
 }
 
 export interface Category {

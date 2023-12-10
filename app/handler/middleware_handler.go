@@ -17,12 +17,14 @@ type MiddlewareHandler interface {
 }
 
 type middlewareHandlerImpl struct {
-	usecase usecase.UserUsecase
+	userUsecase  usecase.UserUsecase
+	groupUsecase usecase.GroupUsecase
 }
 
-func NewMiddlewareHandler(u usecase.UserUsecase) MiddlewareHandler {
+func NewMiddlewareHandler(userUsecase usecase.UserUsecase, groupUsecase usecase.GroupUsecase) MiddlewareHandler {
 	return &middlewareHandlerImpl{
-		usecase: u,
+		userUsecase:  userUsecase,
+		groupUsecase: groupUsecase,
 	}
 }
 
@@ -67,7 +69,7 @@ func (h *middlewareHandlerImpl) CheckInviteToken() gin.HandlerFunc {
 			}
 			return
 		}
-		groupId, err := h.usecase.CheckInviteToken(tokenString)
+		groupId, err := h.groupUsecase.CheckInviteToken(tokenString)
 		if err != nil {
 			errorResponder(c, customerrors.NewCustomError(customerrors.ErrInvalidCredentials))
 			return

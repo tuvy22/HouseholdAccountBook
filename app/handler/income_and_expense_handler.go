@@ -210,7 +210,7 @@ func (h *incomeAndExpenseHandlerImpl) GetMonthlyTotal(c *gin.Context) {
 		errorResponder(c, err)
 		return
 	}
-	monthlyTotals, err := h.usecase.GetMonthlyTotal(loginUser.GroupID, loginUser.InitialAmount)
+	monthlyTotals, err := h.usecase.GetMonthlyTotal(loginUser.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return

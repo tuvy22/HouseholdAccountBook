@@ -6,6 +6,8 @@ import {
   IncomeAndExpenseMonthlyCategory,
   LiquidationCreate,
   Category,
+  InitialAmount,
+  InviteToken,
 } from "@/app/util/types";
 import axios from "axios";
 import { apiHandleError } from "./apiHandleError";
@@ -140,6 +142,41 @@ export const updateUser = async (user: User) => {
   }
 };
 
+export const getInitialAmount = async () => {
+  try {
+    const response = await axios.get("/api/private/group/initial-amount");
+
+    const initialAmount: InitialAmount = response.data;
+
+    return initialAmount.amount;
+  } catch (error) {
+    throw new Error(apiHandleError(error));
+  }
+};
+
+export const putInitialAmount = async (amount: number) => {
+  const initialAmount: InitialAmount = {
+    amount: amount,
+  };
+
+  try {
+    const response = await axios.put(
+      "/api/private/group/initial-amount",
+      initialAmount,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const result: InitialAmount = response.data;
+
+    return result.amount;
+  } catch (error) {
+    throw new Error(apiHandleError(error));
+  }
+};
+
 export const getUserInviteUrl = async () => {
   try {
     const response = await axios.get("/api/private/user-invite-url");
@@ -151,11 +188,15 @@ export const getUserInviteUrl = async () => {
     throw new Error(apiHandleError(error));
   }
 };
-export const putInviteToken = async (token: string) => {
+export const postInviteToken = async (token: string) => {
+  const inviteToken: InviteToken = {
+    token: token,
+  };
+
   try {
     const response = await axios.post(
       "/api/public/invite-cookie",
-      { token: token },
+      inviteToken,
       {
         headers: {
           "Content-Type": "application/json",

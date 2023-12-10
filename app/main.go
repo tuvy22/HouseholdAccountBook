@@ -44,7 +44,7 @@ func main() {
 	validate := validator.New()
 	useValidator := customvalidator.NewUserValidator(validate)
 
-	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo, userRepo)
+	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo, userRepo, groupRepo)
 	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
 
 	liquidationUsecase := usecase.NewLiquidationUsecase(liquidationRepo, incomeAndExpenseRepo, userRepo)
@@ -56,11 +56,14 @@ func main() {
 	password := password.NewPassWord()
 	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, categoryRepo, password, originalConfig, useValidator)
 	userHandler := handler.NewUserHandler(userUsecase)
-	middlewareHandler := handler.NewMiddlewareHandler(userUsecase)
+	groupUsecase := usecase.NewGroupUsecase(groupRepo, originalConfig)
+	groupHandler := handler.NewGroupHandler(groupUsecase)
+
+	middlewareHandler := handler.NewMiddlewareHandler(userUsecase, groupUsecase)
 
 	responsedOKHandler := handler.NewResponsedOKHandler()
 
-	r := router.NewRouter(originalConfig, userHandler, incomeAndExpenseHandler, liquidationHandler, categoryHandler, responsedOKHandler, middlewareHandler)
+	r := router.NewRouter(originalConfig, userHandler, groupHandler, incomeAndExpenseHandler, liquidationHandler, categoryHandler, responsedOKHandler, middlewareHandler)
 
 	r.Run(":8080")
 }

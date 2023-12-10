@@ -1,8 +1,9 @@
 import { AlertValue } from "./AlertCustoms";
 import { Alert } from "../materialTailwindExports";
+import { useState } from "react";
 
 export function AlertCustom({ colorAndValue }: { colorAndValue: AlertValue }) {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
 
   return (
     <>

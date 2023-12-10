@@ -4,10 +4,14 @@ import { Button, Input, Typography } from "@/app/materialTailwindExports";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { updateUser } from "@/app/util/apiClient";
+import { useEffect, useState } from "react";
+import {
+  getInitialAmount,
+  putInitialAmount,
+  updateUser,
+} from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
-import { addSuccess, useAlert } from "@/app/context/AlertProvider";
+import { addError, addSuccess, useAlert } from "@/app/context/AlertProvider";
 import { AlertValue } from "@/app/components/AlertCustoms";
 import {
   InitialAmountSchema,
@@ -23,17 +27,42 @@ export function InitialAmount() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<InitialAmountSchema>({
     resolver: zodResolver(initialAmountSchema),
     defaultValues: {
-      amount: user.user.initialAmount?.toString() ?? "",
+      amount: "",
     },
   });
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const fetchAmount = await getInitialAmount();
+        const resetAmount: InitialAmountSchema = {
+          amount: fetchAmount.toString(),
+        };
+
+        reset(resetAmount);
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
+    };
+    fetch();
+  }, [alert]);
+
   const onSubmit = async (data: InitialAmountSchema) => {
-    user.user.initialAmount = parseInt(data.amount, 10);
     try {
-      await updateUser(user.user);
+      const updateAmount = await putInitialAmount(parseInt(data.amount, 10));
+      const resetAmount: InitialAmountSchema = {
+        amount: updateAmount.toString(),
+      };
+
+      reset(resetAmount);
+
       //結果アラート
       addSuccess("更新が成功しました。", alert);
     } catch (error) {
@@ -42,6 +71,7 @@ export function InitialAmount() {
       }
     }
   };
+
   return (
     <form
       className="w-full max-w-sm mx-auto"

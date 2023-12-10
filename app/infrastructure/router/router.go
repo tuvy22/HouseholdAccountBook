@@ -12,7 +12,7 @@ import (
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
 )
 
-func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, liquidationHandler handler.LiquidationHandler, categoryHandler handler.CategoryHandler, responsedOKHandler handler.ResponsedOKHandler, middlewareHandler handler.MiddlewareHandler) *gin.Engine {
+func NewRouter(cfg config.Config, userHandler handler.UserHandler, groupHandler handler.GroupHandler, incomeAndExpenseHandler handler.IncomeAndExpenseHandler, liquidationHandler handler.LiquidationHandler, categoryHandler handler.CategoryHandler, responsedOKHandler handler.ResponsedOKHandler, middlewareHandler handler.MiddlewareHandler) *gin.Engine {
 	r := gin.Default()
 
 	// クッキーストアの設定
@@ -35,8 +35,8 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	public.POST("/auth", userHandler.Authenticate)
 	public.POST("/user", userHandler.CreateUser)
 	publicSetInviteCookie := r.Group("/api/public")
-	publicSetInviteCookie.POST("/invite-cookie", userHandler.SetInviteCookie)
-	publicSetInviteCookie.DELETE("/invite-cookie", userHandler.DeleteInviteCookie)
+	publicSetInviteCookie.POST("/invite-cookie", groupHandler.SetInviteCookie)
+	publicSetInviteCookie.DELETE("/invite-cookie", groupHandler.DeleteInviteCookie)
 
 	localhost := r.Group("/api/localhost")
 	localhost.Use(middlewareHandler.LocalhostOnly())
@@ -59,7 +59,10 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, incomeAndExpe
 	authorized.DELETE("/user/:id", userHandler.DeleteUser)
 	authorized.PUT("/user/:id", userHandler.UpdateUser)
 	authorized.GET("/user/group-all", userHandler.GetGroupAllUser)
-	authorized.GET("/user-invite-url", userHandler.GetUserInviteUrl)
+	authorized.GET("/user-invite-url", groupHandler.GetUserInviteUrl)
+
+	authorized.GET("/group/initial-amount", groupHandler.GetInitialAmount)
+	authorized.PUT("/group/initial-amount", groupHandler.UpdateInitialAmount)
 
 	authorized.POST("/income-and-expense", incomeAndExpenseHandler.CreateIncomeAndExpense)
 	authorized.PUT("/income-and-expense/:id", incomeAndExpenseHandler.UpdateIncomeAndExpense)

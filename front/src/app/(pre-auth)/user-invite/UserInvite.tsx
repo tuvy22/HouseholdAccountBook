@@ -8,7 +8,7 @@ import {
   Typography,
   Button,
 } from "../../materialTailwindExports";
-import { putInviteToken } from "@/app/util/apiClient";
+import { postInviteToken } from "@/app/util/apiClient";
 
 import { useState } from "react";
 
@@ -20,7 +20,7 @@ const UserInvite = () => {
 
   const onSubmitLogin = async () => {
     try {
-      await putInviteToken(token ? token : "");
+      await postInviteToken(token ? token : "");
       router.push("/login");
     } catch (error) {
       if (error instanceof Error) {
@@ -30,7 +30,7 @@ const UserInvite = () => {
   };
   const onSubmitRegister = async () => {
     try {
-      await putInviteToken(token ? token : "");
+      await postInviteToken(token ? token : "");
       router.push("/user-register");
     } catch (error) {
       if (error instanceof Error) {
