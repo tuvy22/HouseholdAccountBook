@@ -13,7 +13,6 @@ import { scaleOrdinal } from "d3-scale";
 import { useEffect, useState } from "react";
 import { getIncomeAndExpenseMonthlyCategory } from "@/app/util/apiClient";
 import { Typography } from "@/app/materialTailwindExports";
-import { AlertValue } from "@/app/components/AlertCustoms";
 import { addError, useAlert } from "@/app/context/AlertProvider";
 
 export const IncomeAndExpensePieChart = ({
@@ -72,7 +71,7 @@ export const IncomeAndExpensePieChart = ({
     };
 
     fetchData();
-  }, [isMinus, yearMonth]);
+  }, [alert, isMinus, yearMonth]);
   useEffect(() => {
     setTotalCategoryAmount(
       data.reduce((sum, item) => sum + item.categoryAmount, 0)
@@ -85,10 +84,7 @@ export const IncomeAndExpensePieChart = ({
 
   return (
     <>
-      <Typography
-        variant="h2"
-        className="pt-5 text-lg text-center md:text-left"
-      >
+      <div className="pt-5 text-lg text-center md:text-left">
         <div
           className={`border-b-2 inline-block ${
             isMinus ? "border-red-500" : "border-blue-500"
@@ -104,7 +100,7 @@ export const IncomeAndExpensePieChart = ({
         >
           {`${isMinus ? "-" : ""}${totalCategoryAmount}円`}
         </div>
-      </Typography>
+      </div>
       <ResponsiveContainer height={370}>
         {data.length > 0 ? (
           <PieChart>

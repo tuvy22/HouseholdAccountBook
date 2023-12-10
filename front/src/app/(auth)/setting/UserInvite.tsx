@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  CardBody,
-  Spinner,
-  Typography,
-} from "@/app/materialTailwindExports";
+import { Spinner, Typography } from "@/app/materialTailwindExports";
 
 import { useEffect, useState } from "react";
 
@@ -47,7 +41,7 @@ export function UserInvite() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <Typography color="gray" className="font-normal break-all">
+      <Typography color="gray" className="break-all">
         {url}
         <ContentCopyIcon
           onClick={copyToClipboard}
@@ -56,7 +50,7 @@ export function UserInvite() {
       </Typography>
       <div className="text-center mt-10">
         {loading ? (
-          <Spinner className="m-auto" />
+          <Spinner className="m-auto" fontSize="large" />
         ) : (
           <RefreshIcon
             className="cursor-pointer hover:text-green-500"

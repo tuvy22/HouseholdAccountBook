@@ -1,14 +1,12 @@
 import { MemoPopover } from "@/app/components/MemoPopover";
-import { Category, IncomeAndExpense } from "@/app/util/types";
-import { isMinus, toDateString } from "@/app/util/util";
-import { Card, Checkbox, Typography } from "@/app/materialTailwindExports";
-import EditIcon from "./EditIcon";
-import IncomeAndExpenseDeleteIcon from "./IncomeAndExpenseDeleteIcon";
-import BillingPopover from "./BillingPopover";
-import { CheckedItems } from "../(auth)/liquidation/search-result/LiquidationSearchResult";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import React from "react";
+import { IncomeAndExpense } from "@/app/util/types";
+import { toDateString } from "@/app/util/util";
+import { Card } from "@/app/materialTailwindExports";
+import EditIcon from "../EditIcon";
+import IncomeAndExpenseDeleteIcon from "../IncomeAndExpenseDeleteIcon";
+import BillingPopover from "../BillingPopover";
+import { CheckedItems } from "../../(auth)/liquidation/search-result/LiquidationSearchResult";
+
 import TableThTypography from "./TableThTypography";
 import TableThCheckBox from "./TableThCheckBox";
 import TableTypography from "./TableTypography";
@@ -16,6 +14,7 @@ import TableTdDate from "./TableTdDate";
 import TableTdCheckbox from "./TableTdCheckbox";
 import TableTd from "./TableTd";
 import TableTdAmount from "./TableTdAmount";
+import React from "react";
 
 export const IncomeAndExpenseTable = ({
   tableData,
@@ -230,15 +229,11 @@ export const IncomeAndExpenseTable = ({
                           </TableTd>
 
                           <TableTd rowSpan={2}>
-                            {incomeAndExpense.memo.length >= 10 ? (
+                            {incomeAndExpense.memo.length >= 1 && (
                               <MemoPopover
                                 content={incomeAndExpense.memo}
                                 buttonText="表示"
                               />
-                            ) : (
-                              <TableTypography>
-                                {incomeAndExpense.memo}
-                              </TableTypography>
                             )}
                           </TableTd>
 

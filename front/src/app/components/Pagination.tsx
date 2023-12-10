@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Button, IconButton } from "@material-tailwind/react";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";

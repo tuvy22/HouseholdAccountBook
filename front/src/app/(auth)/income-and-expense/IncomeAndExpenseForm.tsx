@@ -2,17 +2,14 @@
 
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
-import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
+import { IncomeAndExpenseTabs } from "../../components/IncomeAndExpenseTabs";
 import { IncomeExpenseSchema } from "./IncomeAndExpenseSchema";
 
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
 import { useState } from "react";
 import { postIncomeAndExpense } from "@/app/util/apiClient";
-import {
-  IncomeAndExpenseBillingUser,
-  IncomeAndExpense,
-} from "@/app/util/types";
+import { IncomeAndExpense } from "@/app/util/types";
 import { addError, useAlert } from "@/app/context/AlertProvider";
 import { Spinner } from "@/app/materialTailwindExports";
 import { toDateObject } from "@/app/util/util";
@@ -40,7 +37,7 @@ export const IncomeAndExpenseForm = () => {
       amount: isMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: toDateObject(data.date),
-      registerUserID: loginUser.id == null ? "" : loginUser.id,
+      registerUserID: loginUser.id,
       billingUsers: convertToBillingUsers(billingUsers, isMinus),
       registerUserName: "",
     };

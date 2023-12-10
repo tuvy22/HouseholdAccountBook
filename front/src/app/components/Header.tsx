@@ -45,7 +45,7 @@ const Header = () => {
           className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
         >
           <MenuBookIcon />
-          <Typography variant="h3" className="text-xl">
+          <Typography variant="h2" className="text-xl">
             入力
           </Typography>
         </Link>
@@ -54,7 +54,7 @@ const Header = () => {
           className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
         >
           <AccountBalanceWalletIcon />
-          <Typography variant="h3" className="text-xl">
+          <Typography variant="h2" className="text-xl">
             清算
           </Typography>
         </Link>
@@ -63,7 +63,7 @@ const Header = () => {
           className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
         >
           <LineAxisIcon />
-          <Typography variant="h3" className="text-xl">
+          <Typography variant="h2" className="text-xl">
             ダッシュボード
           </Typography>
         </Link>
@@ -73,12 +73,12 @@ const Header = () => {
           className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
         >
           <BuildIcon />
-          <Typography variant="h3" className="text-xl">
+          <Typography variant="h2" className="text-xl">
             設定
           </Typography>
         </Link>
       </nav>
-      <div className="hidden md:flex flex-1 items-center  gap-3 justify-end w-full">
+      <div className="hidden md:flex flex-1 items-center  gap-3 justify-end">
         <HeaderUser />
         <LogoutIcon
           onClick={handleLogout}

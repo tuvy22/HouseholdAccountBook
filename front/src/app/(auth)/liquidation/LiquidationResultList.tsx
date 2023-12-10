@@ -1,24 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
-
 import { Liquidation } from "@/app/util/types";
 import { Button, Card, Typography } from "@/app/materialTailwindExports";
-import { useRouter } from "next/navigation";
 import { toDateString } from "@/app/util/util";
 import { getLiquidations } from "@/app/util/apiServer";
 import Link from "next/link";
 import LiquidationFlow from "./LiquidationFlow";
-import ClearIcon from "@mui/icons-material/Clear";
 import LiquidationDeleteIcon from "@/app/components/LiquidationDeleteIcon";
-import TableThTypography from "@/app/components/TableThTypography";
-import TableTd from "@/app/components/TableTd";
-import TableTypography from "@/app/components/TableTypography";
-
-// const TABLE_INFO = [
-//   { header: "清算日", addClassName: "" },
-//   { header: "登録", addClassName: "" },
-//   { header: "清算内容", addClassName: "" },
-//   { header: "", addClassName: "w-28" },
-// ];
+import TableThTypography from "@/app/components/table/TableThTypography";
+import TableTd from "@/app/components/table/TableTd";
+import TableTypography from "@/app/components/table/TableTypography";
+import React from "react";
 
 export const LiquidationResultList = async () => {
   const fetchData = await getLiquidations();
@@ -28,14 +18,14 @@ export const LiquidationResultList = async () => {
       <div className="flex md:justify-between justify-center flex-col md:flex-row">
         <div>
           <Typography
-            variant="h4"
-            color="blue-gray"
-            className="text-xl text-center md:text-left"
+            variant="h3"
+            color="gray"
+            className="text-center md:text-left"
           >
             清算結果一覧
           </Typography>
         </div>
-        <div className="mt-3 md:mt-0">
+        <div className="mt-6 md:mt-0">
           <Link href="/liquidation/search">
             <Button
               variant="gradient"
@@ -86,9 +76,9 @@ export const LiquidationResultList = async () => {
                 );
 
                 return (
-                  <>
+                  <React.Fragment key={index}>
                     {/* デスクトップ表示 */}
-                    <tr key={index} className="hidden md:table-row break-all">
+                    <tr className="hidden md:table-row break-all">
                       <TableTd>
                         <TableTypography>
                           {toDateString(new Date(liquidation.date))}
@@ -107,14 +97,16 @@ export const LiquidationResultList = async () => {
                         />
                       </TableTd>
                       <TableTd>
-                        <TableTypography>
-                          <LiquidationDeleteIcon liquidation={liquidation} />
-                        </TableTypography>
+                        <div className="flex justify-end">
+                          <TableTypography>
+                            <LiquidationDeleteIcon liquidation={liquidation} />
+                          </TableTypography>
+                        </div>
                       </TableTd>
                     </tr>
 
                     {/* スマホ表示 */}
-                    <tr key={index} className="table-row md:hidden break-all">
+                    <tr className="table-row md:hidden break-all">
                       <TableTd>
                         <TableTypography>
                           {toDateString(new Date(liquidation.date))}
@@ -133,7 +125,7 @@ export const LiquidationResultList = async () => {
                         </div>
                       </TableTd>
                     </tr>
-                    <tr key={index} className="table-row md:hidden break-all">
+                    <tr className="table-row md:hidden break-all">
                       <TableTd colSpan={2}>
                         <LiquidationFlow
                           registerUserName={liquidation.registerUserName}
@@ -142,7 +134,7 @@ export const LiquidationResultList = async () => {
                         />
                       </TableTd>
                     </tr>
-                  </>
+                  </React.Fragment>
                 );
               })}
             </tbody>

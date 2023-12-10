@@ -44,22 +44,20 @@ export function InitialAmount() {
   };
   return (
     <form
-      className="mx-auto items-center mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
+      className="w-full max-w-sm mx-auto"
       onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
     >
-      <div className="mb-1 flex flex-col gap-6">
-        <Input
-          label={"初期残高"}
-          type="number"
-          variant="outlined"
-          size="lg"
-          crossOrigin={undefined}
-          {...register("amount")}
-        />
-        {errors.amount && (
-          <div className="text-red-500">{errors.amount.message}</div>
-        )}
-      </div>
+      <Input
+        label={"初期残高"}
+        type="number"
+        variant="outlined"
+        size="lg"
+        crossOrigin={undefined}
+        {...register("amount")}
+      />
+      {errors.amount && (
+        <div className="text-red-500">{errors.amount.message}</div>
+      )}
       <SubmitButtonForm buttonName={"更新"} buttonColor={"green"} />
     </form>
   );

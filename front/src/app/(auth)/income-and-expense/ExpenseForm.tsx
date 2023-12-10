@@ -84,12 +84,7 @@ export const ExpenseForm = ({
       <form onSubmit={(e) => handleSubmit((data) => onSubmit(data, true))(e)}>
         <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
           <DateForm errors={errors} register={register} />
-          <CategoryForm
-            errors={errors}
-            register={register}
-            control={control}
-            options={categorys}
-          />
+          <CategoryForm errors={errors} control={control} options={categorys} />
           <AmountForm errors={errors} register={register} />
           <MemoForm errors={errors} register={register} />
           <BillingUserForm

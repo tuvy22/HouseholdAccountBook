@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "清算結果一覧",
 };
 
-export default async function Page() {
+export default function Page() {
   return (
     <>
       <LiquidationResultList />

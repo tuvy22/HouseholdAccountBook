@@ -1,13 +1,11 @@
 "use client";
 
 import SubmitButtonForm from "../../../components/SubmitButtonForm";
-import DateForm from "../../income-and-expense/DateForm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LiquidationSchema, liquidationSchema } from "./LiquidationSchema";
 import {
   Button,
-  Checkbox,
   Input,
   Menu,
   MenuHandler,
@@ -16,12 +14,11 @@ import {
   Typography,
 } from "@/app/materialTailwindExports";
 import React, { useEffect, useState } from "react";
-import { IncomeAndExpense, User } from "@/app/util/types";
+import { User } from "@/app/util/types";
 import { getGroupAllUser } from "@/app/util/apiClient";
-import { toDateObject, toDateString } from "@/app/util/util";
+import { toDateString } from "@/app/util/util";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
-import Link from "next/link";
 import { addError, useAlert } from "@/app/context/AlertProvider";
 
 const LiquidationSearch = () => {
@@ -71,15 +68,13 @@ const LiquidationSearch = () => {
   }, []);
   return (
     <>
-      <form
-        onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
-        className="mt-5"
-      >
+      <form onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}>
         <div className="mx-auto max-w-2xl">
           <div className="flex justify-between">
             <Typography
-              variant="h2"
-              className="text-xl text-center md:text-left"
+              variant="h3"
+              color="gray"
+              className="text-center md:text-left"
             >
               清算対象検索
             </Typography>

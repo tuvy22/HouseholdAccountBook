@@ -27,14 +27,14 @@ export function MdHeaderMenu({
       <MenuHandler>
         <MenuIcon fontSize="large" />
       </MenuHandler>
-      <MenuList className="">
+      <MenuList>
         <MenuItem className="border-b">
           <HeaderUser />
         </MenuItem>
         <MenuItem>
           <Link href="/income-and-expense" className="flex justify-start gap-3">
             <MenuBookIcon />
-            <Typography variant="h3" className="text-xl">
+            <Typography variant="h2" className="text-xl">
               入力
             </Typography>
           </Link>
@@ -42,7 +42,7 @@ export function MdHeaderMenu({
         <MenuItem>
           <Link href="/liquidation" className="flex justify-start gap-3">
             <AccountBalanceWalletIcon />
-            <Typography variant="h3" className="text-xl">
+            <Typography variant="h2" className="text-xl">
               清算
             </Typography>
           </Link>
@@ -50,7 +50,7 @@ export function MdHeaderMenu({
         <MenuItem>
           <Link href="/dashboard" className="flex justify-start gap-3">
             <LineAxisIcon />
-            <Typography variant="h3" className="text-xl">
+            <Typography variant="h2" className="text-xl">
               ダッシュボード
             </Typography>
           </Link>
@@ -58,7 +58,7 @@ export function MdHeaderMenu({
         <MenuItem>
           <Link href="/setting" className="flex justify-start gap-3">
             <BuildIcon />
-            <Typography variant="h3" className="text-xl">
+            <Typography variant="h2" className="text-xl">
               設定
             </Typography>
           </Link>
@@ -66,7 +66,7 @@ export function MdHeaderMenu({
         <MenuItem>
           <div className="flex justify-start gap-3" onClick={handleLogout}>
             <LogoutIcon />
-            <Typography variant="h3" className="text-xl">
+            <Typography variant="h2" className="text-xl">
               ログアウト
             </Typography>
           </div>

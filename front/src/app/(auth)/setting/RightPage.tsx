@@ -1,5 +1,9 @@
-import { Card, CardBody, Typography } from "@/app/materialTailwindExports";
-import React from "react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Typography,
+} from "@/app/materialTailwindExports";
 
 export default function RightPage({
   title = "",
@@ -11,16 +15,14 @@ export default function RightPage({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="p-3 md:p-10 flex items-center justify-center">
-      <Typography variant="h4" color="blue-gray">
-        {title}
-      </Typography>
-      <Typography color="gray" className="px-2 mt-1 font-normal text-center">
-        {message}
-      </Typography>
-      <CardBody className="px-2 w-full text-center md:flex md:justify-center">
-        {children}
-      </CardBody>
+    <Card className="mt-4 md:mt-0 p-3 md:p-10">
+      <CardHeader shadow={false} className="w-full mx-auto">
+        <Typography variant="h3" className="text-center">
+          {title}
+        </Typography>
+        <Typography className="text-center">{message}</Typography>
+      </CardHeader>
+      <CardBody className="mx-auto w-full px-0">{children}</CardBody>
     </Card>
   );
 }

@@ -1,4 +1,3 @@
-import React from "react";
 import { Typography } from "../materialTailwindExports";
 
 export default function Logo() {

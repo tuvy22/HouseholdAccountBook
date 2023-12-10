@@ -1,5 +1,4 @@
 import { IconButton } from "@/app/materialTailwindExports";
-import React from "react";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
@@ -16,7 +15,6 @@ export default function PreOrNextIcon({
     <IconButton
       size="sm"
       variant="outlined"
-      color="gray"
       onClick={clickFn}
       disabled={!morePreOrNext}
       className={!morePreOrNext ? "text-gray-500 border-gray-500" : ""}

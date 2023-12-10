@@ -49,12 +49,11 @@ export function UserName() {
   };
   return (
     <form
-      className="mx-auto mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
       onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
+      className="w-full max-w-sm mx-auto"
     >
-      <div className="mb-1 flex flex-col gap-6">
-        <NameForm errors={errors} updateRegister={register} />
-      </div>
+      <NameForm errors={errors} updateRegister={register} />
+
       <SubmitButtonForm buttonName={"更新"} buttonColor={"green"} />
     </form>
   );

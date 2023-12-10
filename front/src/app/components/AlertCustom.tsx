@@ -1,4 +1,3 @@
-import React from "react";
 import { AlertValue } from "./AlertCustoms";
 import { Alert } from "../materialTailwindExports";
 

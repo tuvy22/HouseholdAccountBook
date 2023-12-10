@@ -1,11 +1,9 @@
-import React from "react";
-
 import {
   getIncomeAndExpense,
   getIncomeAndExpenseMaxPage,
 } from "@/app/util/apiServer";
 
-import { IncomeAndExpenseTable } from "../../components/IncomeAndExpenseTable";
+import { IncomeAndExpenseTable } from "../../components/table/IncomeAndExpenseTable";
 
 import PaginationHandler from "./PaginationHandler";
 

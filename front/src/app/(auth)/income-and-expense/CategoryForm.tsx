@@ -8,12 +8,10 @@ import { Category } from "@/app/util/types";
 
 export default function CategoryForm({
   errors,
-  register,
   control,
   options,
 }: {
   errors: FieldErrors<IncomeExpenseSchema>;
-  register: UseFormRegister<IncomeExpenseSchema>;
   control: Control<IncomeExpenseSchema>;
   options: Category[];
 }) {

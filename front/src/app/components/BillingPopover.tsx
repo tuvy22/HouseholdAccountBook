@@ -5,7 +5,7 @@ import {
   PopoverHandler,
   Typography,
 } from "@/app/materialTailwindExports";
-import React from "react";
+
 import GroupIcon from "@mui/icons-material/Group";
 import Person from "@mui/icons-material/Person";
 import { IncomeAndExpense } from "@/app/util/types";
@@ -50,8 +50,7 @@ export default function BillingPopover({
                       >
                         <Typography
                           variant="small"
-                          color="blue-gray"
-                          className="font-normal leading-none opacity-70"
+                          className="leading-none opacity-70"
                         >
                           {info.header}
                         </Typography>
@@ -71,29 +70,17 @@ export default function BillingPopover({
                         }`}
                       >
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
+                          <Typography variant="small">
                             {billingUser.userName}
                           </Typography>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal text-red-500"
-                          >
+                          <Typography variant="small" className="text-red-500">
                             {`${billingUser.amount}円`}
                           </Typography>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
+                          <Typography variant="small">
                             {billingUser.liquidationID > 0
                               ? "済"
                               : billingUser.userID !==

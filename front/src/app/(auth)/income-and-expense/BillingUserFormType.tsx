@@ -50,7 +50,7 @@ export function convertBillingUserToBillingUserForms(
       checked: hitBu ? true : false,
       disabled: hitBu?.liquidationID || 0 > 0 ? true : false,
       amount: hitBu ? (-hitBu.amount).toString() : "0",
-      amountLock: hitBu ? true : false,
+      amountLock: false,
       id: hitBu ? hitBu.id : 0,
       liquidationID: hitBu ? hitBu.liquidationID : 0,
     };

@@ -20,7 +20,7 @@ const Dashboard = ({
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] grid-rows-[auto_auto_auto] md:grid-rows-[auto_auto] justify-items-center items-center gap-4">
+      <div className="grid grid-cols-[1fr] md:grid-cols-[1fr_1fr] grid-rows-[auto_auto_auto] md:grid-rows-[auto_auto] justify-items-center items-center gap-0 md:gap-4">
         <div className="w-full md:col-span-2">
           <IncomeAndExpenseMonthlyChart
             incomeAndExpenseMonthlyTotal={incomeAndExpenseMonthlyTotal}

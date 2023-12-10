@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { IncomeAndExpenseTable } from "../../../components/IncomeAndExpenseTable";
+import { IncomeAndExpenseTable } from "../../../components/table/IncomeAndExpenseTable";
 import { IncomeAndExpense, LiquidationCreate } from "@/app/util/types";
 import { Button, Card, Typography } from "@/app/materialTailwindExports";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,6 @@ import { useUser } from "@/app/context/UserProvider";
 
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
 import { postLiquidation } from "@/app/util/apiClient";
-import { AlertValue } from "@/app/components/AlertCustoms";
 import { addError, addSuccess, useAlert } from "@/app/context/AlertProvider";
 import LiquidationFlow from "../LiquidationFlow";
 
@@ -179,16 +178,13 @@ export const LiquidationSearchResult = ({
       <div className="flex flex-col md:flex-row items-end md:justify-between">
         <div>
           <Typography
-            variant="h4"
-            color="blue-gray"
+            variant="h3"
+            color="gray"
             className="text-center md:text-left"
           >
             清算対象選択
           </Typography>
-          <Typography
-            color="gray"
-            className="px-2 md:px-0 mt-1 font-normal text-left"
-          >
+          <Typography className="px-2 md:px-0 mt-1 text-left">
             以下から清算対象を選択した後、 清算ボタンを押してください
           </Typography>
         </div>
@@ -197,7 +193,7 @@ export const LiquidationSearchResult = ({
             variant="text"
             color="red"
             onClick={() => {
-              router.push("/liquidation/search");
+              router.back();
             }}
             size="lg"
             className=" w-full md:w-28 row-span-3"
@@ -220,11 +216,8 @@ export const LiquidationSearchResult = ({
       {totalLiquidationAmount !== 0 && (
         <Card className="sticky bottom-0 left-0 right-0 z-30 bg-white bg-opacity-80 px-3 py-2 mt-8 ">
           <div className="grid grid-cols-[1fr] grid-rows[auto_auto_auto] md:grid-cols-[5fr_2fr_auto] md:grid-rows[auto_auto] gap-3 justify-center items-center text-center">
-            <Typography
-              color="gray"
-              className="text-left md:col-span-4 text-lg font-bold"
-            >
-              <span>清算情報</span>
+            <Typography className="text-left md:col-span-4 text-lg font-bold">
+              清算情報
             </Typography>
 
             <LiquidationFlow

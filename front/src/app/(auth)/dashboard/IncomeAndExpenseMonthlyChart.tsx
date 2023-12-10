@@ -89,7 +89,7 @@ export const IncomeAndExpenseMonthlyChart = ({
   }, [startYearMonth, endYearMonth, incomeAndExpenseMonthlyTotal]);
   return (
     <>
-      <div className="flex justify-center md:justify-start gap-4">
+      <div className="flex justify-center items-center md:justify-start gap-4">
         <div className="md:hidden block">
           <PreOrNextIcon
             isPreIcon={true}
@@ -97,7 +97,7 @@ export const IncomeAndExpenseMonthlyChart = ({
             clickFn={prev}
           />
         </div>
-        <Typography variant="h2" className="text-xl text-center md:text-left">
+        <Typography variant="h3" className="text-center md:text-left">
           残高推移
         </Typography>
         <div className="md:hidden block">

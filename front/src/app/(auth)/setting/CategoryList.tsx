@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input } from "@/app/materialTailwindExports";
+import { Input } from "@/app/materialTailwindExports";
 
 import { useEffect } from "react";
 
@@ -14,7 +14,6 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { useUser } from "@/app/context/UserProvider";
 import { addError, addSuccess, useAlert } from "@/app/context/AlertProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertValue } from "@/app/components/AlertCustoms";
 import { CategoryFormData, categorySchema } from "./CategorySchema";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -62,7 +61,7 @@ export default function CategoryList({ isExpense }: { isExpense: boolean }) {
       }
     };
     getAllCategory();
-  }, [reset]);
+  }, [alert, isExpense, reset]);
   const onSubmit = async (data: CategoryFormData) => {
     let datas: Category[] = [];
 
@@ -87,10 +86,7 @@ export default function CategoryList({ isExpense }: { isExpense: boolean }) {
     }
   };
   return (
-    <form
-      className="max-w-screen-lg md:w-96"
-      onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
-    >
+    <form onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}>
       <div className="flex flex-col gap-6">
         {fields.map((field, index) => (
           <div key={index} className="mb-1 gap-1 flex-col">

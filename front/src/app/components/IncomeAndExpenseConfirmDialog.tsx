@@ -50,32 +50,33 @@ export const IncomeAndExpenseConfirmDialog: React.FC<Props> = ({
   }, [open, isOkBtnFocus]);
   return (
     <>
-      <Dialog open={open} handler={handleOpen} size={"xs"}>
+      <Dialog open={open} handler={handleOpen} className="max-w-sm w-full">
         <DialogHeader>{title}</DialogHeader>
         <DialogBody divider>{message}</DialogBody>
-        <DialogFooter>
-          <Button
-            variant="text"
-            color="red"
-            ref={cancelButtonRef}
-            onClick={() => {
-              handleCancel();
-              handleOpen();
-            }}
-            className="mr-1"
-          >
-            {cancelBtnName}
-          </Button>
+        <DialogFooter className="flex flex-col md:flex-row gap-3">
           <Button
             variant="gradient"
             color="green"
             ref={okButtonRef}
+            className="w-full md:w-auto"
             onClick={() => {
               handleOk();
               handleOpen();
             }}
           >
             {okBtnName}
+          </Button>
+          <Button
+            variant="outlined"
+            color="red"
+            className="w-full md:w-auto"
+            ref={cancelButtonRef}
+            onClick={() => {
+              handleCancel();
+              handleOpen();
+            }}
+          >
+            {cancelBtnName}
           </Button>
         </DialogFooter>
       </Dialog>

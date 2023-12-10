@@ -1,5 +1,4 @@
-import React from "react";
-import { Typography } from "../materialTailwindExports";
+import { Typography } from "../../materialTailwindExports";
 
 export default function TableTypography({
   children,
@@ -9,11 +8,7 @@ export default function TableTypography({
   addTypographyClassName?: string;
 }) {
   return (
-    <Typography
-      variant="small"
-      color="blue-gray"
-      className={`font-normal ${addTypographyClassName}`}
-    >
+    <Typography variant="small" className={`${addTypographyClassName}`}>
       {children}
     </Typography>
   );

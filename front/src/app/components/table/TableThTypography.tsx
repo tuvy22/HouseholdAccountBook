@@ -1,5 +1,4 @@
-import React from "react";
-import { Typography } from "../materialTailwindExports";
+import { Typography } from "../../materialTailwindExports";
 
 export default function TableThTypography({
   children,
@@ -20,11 +19,7 @@ export default function TableThTypography({
       rowSpan={rowSpan}
       colSpan={colSpan}
     >
-      <Typography
-        variant="small"
-        color="blue-gray"
-        className="font-normal leading-none opacity-70"
-      >
+      <Typography variant="small" className="opacity-70">
         {children}
       </Typography>
     </th>

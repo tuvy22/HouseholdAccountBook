@@ -15,7 +15,7 @@ import {
   incomeExpenseSchema,
 } from "./IncomeAndExpenseSchema";
 import { isMinus, toDateObject, toDateString } from "@/app/util/util";
-import { IncomeAndExpenseTabs } from "./IncomeAndExpenseTabs";
+import { IncomeAndExpenseTabs } from "../../components/IncomeAndExpenseTabs";
 import { useForm } from "react-hook-form";
 import DateForm from "./DateForm";
 import CategoryForm from "./CategoryForm";
@@ -122,7 +122,6 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
                 <DateForm errors={errors} register={register} />
                 <CategoryForm
                   errors={errors}
-                  register={register}
                   control={control}
                   options={categorys}
                 />

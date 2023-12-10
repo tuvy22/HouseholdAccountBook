@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   Tabs,
   TabsHeader,
@@ -8,6 +7,7 @@ import {
   Tab,
   TabPanel,
 } from "@/app/materialTailwindExports";
+import { Children, useState } from "react";
 
 export const IncomeAndExpenseTabs = ({
   children,
@@ -18,7 +18,7 @@ export const IncomeAndExpenseTabs = ({
   isIncome: boolean;
   isExpense: boolean;
 }) => {
-  const [activeTab, setActiveTab] = React.useState(
+  const [activeTab, setActiveTab] = useState(
     isIncome && !isExpense ? "income" : "expense"
   );
 
@@ -46,10 +46,10 @@ export const IncomeAndExpenseTabs = ({
   const currentBorderColor =
     data.find((item) => item.value === activeTab)?.borderColor || "";
 
-  const childArray = React.Children.toArray(children);
+  const childArray = Children.toArray(children);
 
   return (
-    <Tabs value={activeTab} className="overflow-visible">
+    <Tabs value={activeTab} className="overflow-visible w-full">
       <TabsHeader
         className="rounded-none border-b border-blue-gray-50 bg-transparent p-0"
         indicatorProps={{

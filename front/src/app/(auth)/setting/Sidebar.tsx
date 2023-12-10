@@ -6,16 +6,13 @@ import {
   List,
   ListItem,
   ListItemPrefix,
-  ListItemSuffix,
-  Chip,
   Accordion,
   AccordionHeader,
   AccordionBody,
 } from "@/app/materialTailwindExports";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
+
 import { Dispatch, SetStateAction, useState } from "react";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import GroupIcon from "@mui/icons-material/Group";
 import Person from "@mui/icons-material/Person";
 import CurrencyYenIcon from "@mui/icons-material/CurrencyYen";
@@ -46,13 +43,11 @@ export function Sidebar({
   };
   return (
     <Card
-      className="w-full max-w-[20rem] p-4 md:shadow-xl md:shadow-blue-gray-900/5"
+      className="w-full max-w-sm p-2 md:p-4 md:shadow-xl md:shadow-blue-gray-900/5"
       shadow={false}
     >
       <div className="mb-2 p-4">
-        <Typography variant="h5" color="blue-gray">
-          設定メニュー
-        </Typography>
+        <Typography className="text-xl font-bold">設定メニュー</Typography>
       </div>
       <List>
         <Accordion
@@ -60,7 +55,7 @@ export function Sidebar({
           icon={
             <KeyboardArrowUpIcon
               strokeWidth={2.5}
-              className={`mx-auto h-4 w-4 transition-transform ${
+              className={`mx-auto w-4 transition-transform ${
                 openUser ? "rotate-180" : ""
               }`}
             />
@@ -74,9 +69,7 @@ export function Sidebar({
               <ListItemPrefix>
                 <Person />
               </ListItemPrefix>
-              <Typography color="blue-gray" className="mr-auto font-normal">
-                ユーザー設定
-              </Typography>
+              <Typography className="text-lg mr-auto">ユーザー設定</Typography>
             </AccordionHeader>
           </ListItem>
           <AccordionBody className="py-1">
@@ -85,7 +78,9 @@ export function Sidebar({
                 <ListItemPrefix>
                   <BadgeIcon />
                 </ListItemPrefix>
-                ニックネーム変更
+                <Typography className="h-3 text-base mr-auto">
+                  ニックネーム変更
+                </Typography>
               </ListItem>
               <ListItem
                 onClick={() => handleOpenMenu(SETTING_OPEN.INIT_AMOUNT)}
@@ -93,7 +88,9 @@ export function Sidebar({
                 <ListItemPrefix>
                   <CurrencyYenIcon />
                 </ListItemPrefix>
-                初期残高設定
+                <Typography className="h-3 text-base mr-auto">
+                  初期残高設定
+                </Typography>
               </ListItem>
               <ListItem
                 onClick={() => handleOpenMenu(SETTING_OPEN.PASSWORD_CHANGE)}
@@ -101,13 +98,17 @@ export function Sidebar({
                 <ListItemPrefix>
                   <LockResetIcon />
                 </ListItemPrefix>
-                パスワード変更
+                <Typography className="h-3 text-base mr-auto">
+                  パスワード変更
+                </Typography>
               </ListItem>
               <ListItem onClick={() => handleOpenMenu(SETTING_OPEN.OUT_GROUP)}>
                 <ListItemPrefix>
                   <PersonRemoveIcon />
                 </ListItemPrefix>
-                グループからの脱退
+                <Typography className="h-3 text-base mr-auto">
+                  グループからの脱退
+                </Typography>
               </ListItem>
               <ListItem
                 onClick={() => handleOpenMenu(SETTING_OPEN.OUT_SERVICE)}
@@ -115,7 +116,7 @@ export function Sidebar({
                 <ListItemPrefix>
                   <PersonOffIcon />
                 </ListItemPrefix>
-                退会
+                <Typography className="h-3 text-base mr-auto">退会</Typography>
               </ListItem>
             </List>
           </AccordionBody>
@@ -139,9 +140,7 @@ export function Sidebar({
               <ListItemPrefix>
                 <GroupIcon />
               </ListItemPrefix>
-              <Typography color="blue-gray" className="mr-auto font-normal">
-                グループ設定
-              </Typography>
+              <Typography className="text-lg mr-auto">グループ設定</Typography>
             </AccordionHeader>
           </ListItem>
           <AccordionBody className="py-1">
@@ -154,13 +153,17 @@ export function Sidebar({
                 <ListItemPrefix>
                   <PersonAddAlt1Icon />
                 </ListItemPrefix>
-                ユーザー招待
+                <Typography className="h-3 text-base mr-auto">
+                  ユーザー招待
+                </Typography>
               </ListItem>
               <ListItem onClick={() => handleOpenMenu(SETTING_OPEN.CATEGORY)}>
                 <ListItemPrefix>
                   <CategoryIcon />
                 </ListItemPrefix>
-                カテゴリ変更
+                <Typography className="h-3 text-base mr-auto">
+                  カテゴリ変更
+                </Typography>
               </ListItem>
             </List>
           </AccordionBody>
