@@ -9,6 +9,7 @@ import { InitialAmount } from "./InitialAmount";
 import { useSearchParams } from "next/navigation";
 import { Category } from "./Category";
 import { SideDrawer } from "@/app/components/SideDrawer";
+import { Typography } from "@/app/materialTailwindExports";
 
 export const SETTING_OPEN = {
   USER_NAME: "userName",
@@ -33,18 +34,25 @@ export function Setting() {
             <UserName />
           </RightPage>
         );
-      case SETTING_OPEN.INIT_AMOUNT:
+
+      case SETTING_OPEN.PASSWORD_CHANGE:
         return (
-          <RightPage title="初期残高設定">
-            <InitialAmount />
+          <RightPage>
+            <Typography>comming soon</Typography>
           </RightPage>
         );
-      case SETTING_OPEN.PASSWORD_CHANGE:
-        return <RightPage>comming soon</RightPage>;
       case SETTING_OPEN.OUT_GROUP:
-        return <RightPage>comming soon</RightPage>;
+        return (
+          <RightPage>
+            <Typography>comming soon</Typography>
+          </RightPage>
+        );
       case SETTING_OPEN.OUT_SERVICE:
-        return <RightPage>comming soon</RightPage>;
+        return (
+          <RightPage>
+            <Typography>comming soon</Typography>
+          </RightPage>
+        );
       case SETTING_OPEN.GROUP_USER_INVITATION:
         return (
           <RightPage
@@ -58,6 +66,12 @@ export function Setting() {
             <UserInvite />
           </RightPage>
         );
+      case SETTING_OPEN.INIT_AMOUNT:
+        return (
+          <RightPage title="初期残高設定">
+            <InitialAmount />
+          </RightPage>
+        );
       case SETTING_OPEN.CATEGORY:
         return (
           <RightPage
@@ -67,14 +81,19 @@ export function Setting() {
             <Category />
           </RightPage>
         );
+
       default:
         return (
           <>
             <div className="hidden md:block">
-              <RightPage>左のメニューから選択してください。</RightPage>
+              <RightPage>
+                <Typography>左のメニューから選択してください。</Typography>
+              </RightPage>
             </div>
             <div className="md:hidden">
-              <RightPage>上のメニューを開いて選択してください。</RightPage>
+              <RightPage>
+                <Typography>上のメニューを開いて選択してください。</Typography>
+              </RightPage>
             </div>
           </>
         );

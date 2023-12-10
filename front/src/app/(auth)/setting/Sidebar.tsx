@@ -83,16 +83,6 @@ export function Sidebar({
                 </Typography>
               </ListItem>
               <ListItem
-                onClick={() => handleOpenMenu(SETTING_OPEN.INIT_AMOUNT)}
-              >
-                <ListItemPrefix>
-                  <CurrencyYenIcon />
-                </ListItemPrefix>
-                <Typography className="h-3 text-base mr-auto">
-                  初期残高設定
-                </Typography>
-              </ListItem>
-              <ListItem
                 onClick={() => handleOpenMenu(SETTING_OPEN.PASSWORD_CHANGE)}
               >
                 <ListItemPrefix>
@@ -155,6 +145,16 @@ export function Sidebar({
                 </ListItemPrefix>
                 <Typography className="h-3 text-base mr-auto">
                   ユーザー招待
+                </Typography>
+              </ListItem>
+              <ListItem
+                onClick={() => handleOpenMenu(SETTING_OPEN.INIT_AMOUNT)}
+              >
+                <ListItemPrefix>
+                  <CurrencyYenIcon />
+                </ListItemPrefix>
+                <Typography className="h-3 text-base mr-auto">
+                  初期残高設定
                 </Typography>
               </ListItem>
               <ListItem onClick={() => handleOpenMenu(SETTING_OPEN.CATEGORY)}>

@@ -16,13 +16,14 @@ export default function RightPage({
 }) {
   return (
     <Card className="mt-4 md:mt-0 p-3 md:p-10">
-      <CardHeader shadow={false} className="w-full mx-auto">
-        <Typography variant="h3" className="text-center">
-          {title}
-        </Typography>
-        <Typography className="text-center">{message}</Typography>
-      </CardHeader>
-      <CardBody className="mx-auto w-full px-0">{children}</CardBody>
+      <Typography variant="h3" className="text-center">
+        {title}
+      </Typography>
+      <Typography className="text-center">{message}</Typography>
+
+      <CardBody className="flex justify-center items-center w-full px-0">
+        {children}
+      </CardBody>
     </Card>
   );
 }
