@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/password"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
@@ -33,10 +34,11 @@ type userUsecaseImpl struct {
 	categoryRepo repository.CategoryRepository
 	password     password.Password
 	config       config.Config
+	useValidator customvalidator.UserValidator
 }
 
-func NewUserUsecase(repo repository.UserRepository, groupRepo repository.GroupRepository, categoryRepo repository.CategoryRepository, password password.Password, config config.Config) UserUsecase {
-	return &userUsecaseImpl{repo: repo, groupRepo: groupRepo, categoryRepo: categoryRepo, password: password, config: config}
+func NewUserUsecase(repo repository.UserRepository, groupRepo repository.GroupRepository, categoryRepo repository.CategoryRepository, password password.Password, config config.Config, useValidator customvalidator.UserValidator) UserUsecase {
+	return &userUsecaseImpl{repo: repo, groupRepo: groupRepo, categoryRepo: categoryRepo, password: password, config: config, useValidator: useValidator}
 }
 
 func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserResponse, entity.UserSession, error) {
@@ -105,10 +107,11 @@ func (u *userUsecaseImpl) GetUser(id string) (entity.UserResponse, error) {
 	return u.convertToUserResponse(user), nil
 }
 func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error) {
-	hashPassword, err := u.password.HashPassword(userCreate.Password)
+	err := u.useValidator.UserCreateValidate(userCreate)
 	if err != nil {
-		return entity.UserResponse{}, entity.UserSession{}, err
+		return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
+
 	err = u.checkRegisteredUserID(userCreate.ID)
 	if err != nil {
 		return entity.UserResponse{}, entity.UserSession{}, err
@@ -143,6 +146,10 @@ func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID
 		//招待されたグループに入る
 		groupId = inviteGroupID
 
+	}
+	hashPassword, err := u.password.HashPassword(userCreate.Password)
+	if err != nil {
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	createUser := entity.User{

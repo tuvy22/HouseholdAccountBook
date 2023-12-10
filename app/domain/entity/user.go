@@ -12,9 +12,9 @@ type User struct {
 	UpdatedAt     time.Time `gorm:"update_at"`
 }
 type UserCreate struct {
-	ID       string `json:"id"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
+	ID       string `json:"id" validate:"required,min=5,max=10,alphanum"`
+	Password string `json:"password" validate:"required,min=8,max=50,password"`
+	Name     string `json:"name" validate:"required,min=1,max=10"`
 }
 
 type UserResponse struct {

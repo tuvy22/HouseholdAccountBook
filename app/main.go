@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-contrib/cors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/password"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
@@ -14,6 +15,8 @@ import (
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/db"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/router"
+
+	"github.com/go-playground/validator/v10"
 )
 
 func init() {
@@ -38,6 +41,9 @@ func main() {
 	liquidationRepo := repository.NewLiquidationRepository(db.GetDB())
 	categoryRepo := repository.NewCategoryRepository(db.GetDB())
 
+	validate := validator.New()
+	useValidator := customvalidator.NewUserValidator(validate)
+
 	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo, userRepo)
 	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
 
@@ -48,7 +54,7 @@ func main() {
 	categoryHandler := handler.NewCategoryHandler(categoryUsecase)
 
 	password := password.NewPassWord()
-	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, categoryRepo, password, originalConfig)
+	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, categoryRepo, password, originalConfig, useValidator)
 	userHandler := handler.NewUserHandler(userUsecase)
 	middlewareHandler := handler.NewMiddlewareHandler(userUsecase)
 
