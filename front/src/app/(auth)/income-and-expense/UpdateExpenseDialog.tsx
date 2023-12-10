@@ -110,7 +110,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
 
   return (
     <>
-      <Dialog open={open} handler={handleOpen}>
+      <Dialog open={open} size={"xl"} handler={handleOpen}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>編集</DialogHeader>
           <DialogBody>

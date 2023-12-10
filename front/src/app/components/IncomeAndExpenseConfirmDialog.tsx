@@ -8,7 +8,6 @@ import {
   DialogBody,
   DialogFooter,
 } from "../materialTailwindExports";
-import { useForm } from "react-hook-form";
 
 type Props = {
   title: string;
@@ -50,7 +49,7 @@ export const IncomeAndExpenseConfirmDialog: React.FC<Props> = ({
   }, [open, isOkBtnFocus]);
   return (
     <>
-      <Dialog open={open} handler={handleOpen} className="max-w-sm w-full">
+      <Dialog open={open} handler={handleOpen}>
         <DialogHeader>{title}</DialogHeader>
         <DialogBody divider>{message}</DialogBody>
         <DialogFooter className="flex flex-col md:flex-row gap-3">
