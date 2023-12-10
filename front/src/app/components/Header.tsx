@@ -21,7 +21,7 @@ const Header = () => {
   const handleLogout = async (e: React.FormEvent) => {
     try {
       await authDel();
-      router.push("/login");
+      router.push("/login", { scroll: false });
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

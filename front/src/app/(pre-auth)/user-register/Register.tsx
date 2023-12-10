@@ -79,6 +79,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
     <>
       <Link
         href="/login"
+        scroll={false}
         className="fixed top-20 md:top-2 right-1 md:right-4 z-50"
       >
         <Button

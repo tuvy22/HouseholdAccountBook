@@ -73,6 +73,7 @@ export function Login({ isInvite }: { isInvite: boolean }) {
     <>
       <Link
         href="/user-register"
+        scroll={false}
         className="fixed top-20 md:top-2 right-1 md:right-4 z-50"
       >
         <Button
