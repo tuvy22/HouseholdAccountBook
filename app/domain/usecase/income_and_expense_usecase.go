@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 )
@@ -16,7 +17,7 @@ type IncomeAndExpenseUsecase interface {
 	GetAllIncomeAndExpenseMaxPage(groupID uint) (int, error)
 	GetIncomeAndExpenseLiquidations(fromDate time.Time, toDate time.Time, loginUserID string, billingUserID string, groupID uint) ([]entity.IncomeAndExpenseResponse, error)
 
-	CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string, groupID uint) error
+	CreateIncomeAndExpense(data entity.IncomeAndExpense, userId string, groupID uint) error
 	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string, groupID uint) error
 	DeleteIncomeAndExpense(id uint, userId string) error
 
@@ -25,13 +26,14 @@ type IncomeAndExpenseUsecase interface {
 }
 
 type incomeAndExpenseUsecaseImpl struct {
-	repo      repository.IncomeAndExpenseRepository
-	userRepo  repository.UserRepository
-	groupRepo repository.GroupRepository
+	repo                      repository.IncomeAndExpenseRepository
+	userRepo                  repository.UserRepository
+	groupRepo                 repository.GroupRepository
+	incomeAndExpenseValidator customvalidator.IncomeAndExpenseValidator
 }
 
-func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository, userRepo repository.UserRepository, groupRepo repository.GroupRepository) IncomeAndExpenseUsecase {
-	return &incomeAndExpenseUsecaseImpl{repo: repo, userRepo: userRepo, groupRepo: groupRepo}
+func NewIncomeAndExpenseUsecase(repo repository.IncomeAndExpenseRepository, userRepo repository.UserRepository, groupRepo repository.GroupRepository, incomeAndExpenseValidator customvalidator.IncomeAndExpenseValidator) IncomeAndExpenseUsecase {
+	return &incomeAndExpenseUsecaseImpl{repo: repo, userRepo: userRepo, groupRepo: groupRepo, incomeAndExpenseValidator: incomeAndExpenseValidator}
 }
 
 func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpense(groupID uint, page int) ([]entity.IncomeAndExpenseResponse, error) {
@@ -106,9 +108,13 @@ func (u *incomeAndExpenseUsecaseImpl) sortByDateDescIDDesc(a, b *entity.IncomeAn
 	return a.Date.After(b.Date) // 日付で降順
 }
 
-func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpenseWithBillingUser(data entity.IncomeAndExpense, userId string, groupID uint) error {
+func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(data entity.IncomeAndExpense, userId string, groupID uint) error {
 
-	err := u.validateUserID(data, userId)
+	err := u.incomeAndExpenseValidator.IncomeAndExpenseValidate(data)
+	if err != nil {
+		return err
+	}
+	err = u.validateUserID(data, userId)
 	if err != nil {
 		return err
 	}
@@ -130,8 +136,14 @@ func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpenseWithBillingUser(data
 	return u.repo.CreateIncomeAndExpense(&data)
 }
 func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string, groupID uint) error {
+
+	err := u.incomeAndExpenseValidator.IncomeAndExpenseValidate(incomeAndExpense)
+	if err != nil {
+		return err
+	}
+
 	preIncomeAndExpense := entity.IncomeAndExpense{}
-	err := u.repo.GetIncomeAndExpense(incomeAndExpense.ID, &preIncomeAndExpense)
+	err = u.repo.GetIncomeAndExpense(incomeAndExpense.ID, &preIncomeAndExpense)
 	if err != nil {
 		return err
 	}

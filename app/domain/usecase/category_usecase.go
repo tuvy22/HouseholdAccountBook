@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 )
@@ -13,11 +14,12 @@ type CategoryUsecase interface {
 }
 
 type categoryUsecaseImpl struct {
-	repo repository.CategoryRepository
+	repo              repository.CategoryRepository
+	categoryValidator customvalidator.CategoryValidator
 }
 
-func NewCategoryUsecase(repo repository.CategoryRepository) CategoryUsecase {
-	return &categoryUsecaseImpl{repo: repo}
+func NewCategoryUsecase(repo repository.CategoryRepository, categoryValidator customvalidator.CategoryValidator) CategoryUsecase {
+	return &categoryUsecaseImpl{repo: repo, categoryValidator: categoryValidator}
 }
 
 func (u *categoryUsecaseImpl) GetAllIncomeCategory(groupID uint) ([]entity.CategoryResponse, error) {
@@ -52,6 +54,11 @@ func (u *categoryUsecaseImpl) ReplaceAllCategory(categorys []entity.Category, is
 	}
 
 	err = u.validateIsExpense(categorys, isExpense)
+	if err != nil {
+		return err
+	}
+
+	err = u.categoryValidator.CategoryReplaceAllValidate(categorys)
 	if err != nil {
 		return err
 	}

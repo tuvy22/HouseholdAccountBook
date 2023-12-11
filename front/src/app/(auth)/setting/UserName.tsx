@@ -1,15 +1,7 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  CardBody,
-  Typography,
-} from "@/app/materialTailwindExports";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import {
   UserUpdateSchema,
   userUpdateSchema,
@@ -18,8 +10,8 @@ import NameForm from "@/app/components/NameForm";
 import { updateUser } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
 import { addError, addSuccess, useAlert } from "@/app/context/AlertProvider";
-import { AlertValue } from "@/app/components/AlertCustoms";
 import SubmitButtonForm from "@/app/components/SubmitButtonForm";
+import { UserUpdate } from "@/app/util/types";
 
 export function UserName() {
   const user = useUser();
@@ -36,9 +28,14 @@ export function UserName() {
     },
   });
   const onSubmit = async (data: UserUpdateSchema) => {
-    user.user.name = data.name;
+    const userUpdate: UserUpdate = {
+      id: user.user.id,
+      name: data.name,
+    };
+
     try {
-      await updateUser(user.user);
+      const updatedUser = await updateUser(userUpdate);
+      user.setUser(updatedUser);
       //結果アラート
       addSuccess("更新が成功しました。", alert);
     } catch (error) {

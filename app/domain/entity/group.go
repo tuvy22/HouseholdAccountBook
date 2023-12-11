@@ -15,7 +15,7 @@ type Group struct {
 }
 
 type InitialAmount struct {
-	Amount int `json:"amount"`
+	Amount int `json:"amount" validate:"gte=-99999999,lte=99999999"`
 }
 
 type InviteUrl struct {

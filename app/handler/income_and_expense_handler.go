@@ -143,7 +143,7 @@ func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.CreateIncomeAndExpenseWithBillingUser(data, loginUser.ID, loginUser.GroupID)
+	err = h.usecase.CreateIncomeAndExpense(data, loginUser.ID, loginUser.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return

@@ -165,7 +165,7 @@ func (h *userHandlerImpl) CreateUser(c *gin.Context) {
 }
 func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 
-	user, err := h.bindUser(c)
+	user, err := h.bindUserUpdate(c)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -173,7 +173,7 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 
 	user.ID = c.Param("id")
 
-	_, userSession, err := h.usecase.UpdateUser(user)
+	userResponse, userSession, err := h.usecase.UpdateUser(user)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -188,7 +188,7 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, userResponse)
 }
 
 func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
@@ -214,6 +214,13 @@ func (h *userHandlerImpl) bindUserCreate(c *gin.Context) (entity.UserCreate, err
 		return userCreate, err
 	}
 	return userCreate, nil
+}
+func (h *userHandlerImpl) bindUserUpdate(c *gin.Context) (entity.UserUpdate, error) {
+	userUpdate := entity.UserUpdate{}
+	if err := c.ShouldBindJSON(&userUpdate); err != nil {
+		return userUpdate, err
+	}
+	return userUpdate, nil
 }
 
 func (h *userHandlerImpl) bindInviteToken(c *gin.Context) (entity.InviteToken, error) {

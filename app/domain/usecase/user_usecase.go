@@ -19,22 +19,22 @@ type UserUsecase interface {
 	GetGroupAllUser(groupID uint, firstUserID string) ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
 	CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error)
-	UpdateUser(user entity.User) (entity.UserResponse, entity.UserSession, error)
+	UpdateUser(user entity.UserUpdate) (entity.UserResponse, entity.UserSession, error)
 	DeleteUser(id string) error
 	ChangeGroup(userId string, inviteGroupID uint) error
 }
 
 type userUsecaseImpl struct {
-	repo         repository.UserRepository
-	groupRepo    repository.GroupRepository
-	categoryRepo repository.CategoryRepository
-	password     password.Password
-	config       config.Config
-	useValidator customvalidator.UserValidator
+	repo          repository.UserRepository
+	groupRepo     repository.GroupRepository
+	categoryRepo  repository.CategoryRepository
+	password      password.Password
+	config        config.Config
+	userValidator customvalidator.UserValidator
 }
 
-func NewUserUsecase(repo repository.UserRepository, groupRepo repository.GroupRepository, categoryRepo repository.CategoryRepository, password password.Password, config config.Config, useValidator customvalidator.UserValidator) UserUsecase {
-	return &userUsecaseImpl{repo: repo, groupRepo: groupRepo, categoryRepo: categoryRepo, password: password, config: config, useValidator: useValidator}
+func NewUserUsecase(repo repository.UserRepository, groupRepo repository.GroupRepository, categoryRepo repository.CategoryRepository, password password.Password, config config.Config, userValidator customvalidator.UserValidator) UserUsecase {
+	return &userUsecaseImpl{repo: repo, groupRepo: groupRepo, categoryRepo: categoryRepo, password: password, config: config, userValidator: userValidator}
 }
 
 func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserResponse, entity.UserSession, error) {
@@ -84,9 +84,9 @@ func (u *userUsecaseImpl) GetUser(id string) (entity.UserResponse, error) {
 	return u.convertToUserResponse(user), nil
 }
 func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error) {
-	err := u.useValidator.UserCreateValidate(userCreate)
+	err := u.userValidator.UserCreateValidate(userCreate)
 	if err != nil {
-		return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrBadRequest)
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	err = u.checkRegisteredUserID(userCreate.ID)
@@ -147,17 +147,26 @@ func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID
 
 	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
 }
-func (u *userUsecaseImpl) UpdateUser(user entity.User) (entity.UserResponse, entity.UserSession, error) {
-	preUser := entity.User{}
-	err := u.repo.GetUser(user.ID, &preUser)
+func (u *userUsecaseImpl) UpdateUser(userUpdate entity.UserUpdate) (entity.UserResponse, entity.UserSession, error) {
+	err := u.userValidator.UserUpdateValidate(userUpdate)
+	if err != nil {
+		return entity.UserResponse{}, entity.UserSession{}, err
+	}
+
+	user := entity.User{}
+	err = u.repo.GetUser(userUpdate.ID, &user)
 	if err != nil {
 		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 	//更新値の設定
-	preUser.Name = user.Name
-	preUser.GroupID = user.GroupID
+	user.Name = userUpdate.Name
 
-	return u.convertToUserResponse(user), u.convertToUserSession(user), u.repo.UpdateUser(&preUser)
+	err = u.repo.UpdateUser(&user)
+	if err != nil {
+		return entity.UserResponse{}, entity.UserSession{}, err
+	}
+
+	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
 }
 
 func (u *userUsecaseImpl) DeleteUser(id string) error {

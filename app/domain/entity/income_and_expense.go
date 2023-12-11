@@ -15,12 +15,20 @@ type IncomeAndExpense struct {
 	RegisterUserID string    `gorm:"column:register_user_id"`
 	BillingUsers   []IncomeAndExpenseBillingUser
 }
+
+type IncomeAndExpenseValidate struct {
+	Category string    `validate:"required"`
+	Amount   int       `validate:"gte=-99999999,lte=99999999"`
+	Memo     string    `validate:"max=50"`
+	Date     time.Time `validate:"required"`
+}
+
 type IncomeAndExpenseResponse struct {
-	ID               uint                                  `json:"id" `
-	Category         string                                `json:"category" `
-	Amount           int                                   `json:"amount" `
-	Memo             string                                `json:"memo" `
-	Date             time.Time                             `json:"date" `
+	ID               uint                                  `json:"id"`
+	Category         string                                `json:"category"`
+	Amount           int                                   `json:"amount"`
+	Memo             string                                `json:"memo"`
+	Date             time.Time                             `json:"date"`
 	RegisterUserID   string                                `json:"registerUserID"`
 	RegisterUserName string                                `json:"registerUserName"`
 	BillingUsers     []IncomeAndExpenseBillingUserResponse `json:"billingUsers"`

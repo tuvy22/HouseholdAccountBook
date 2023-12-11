@@ -21,7 +21,7 @@ const UserInvite = () => {
   const onSubmitLogin = async () => {
     try {
       await postInviteToken(token ? token : "");
-      router.push("/login");
+      router.push("/login", { scroll: false });
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -31,7 +31,7 @@ const UserInvite = () => {
   const onSubmitRegister = async () => {
     try {
       await postInviteToken(token ? token : "");
-      router.push("/user-register");
+      router.push("/user-register", { scroll: false });
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

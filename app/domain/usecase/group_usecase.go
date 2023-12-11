@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 	"github.com/ten313/HouseholdAccountBook/app/infrastructure/config"
@@ -20,12 +21,13 @@ type GroupUsecase interface {
 }
 
 type groupUsecaseImpl struct {
-	repo   repository.GroupRepository
-	config config.Config
+	repo           repository.GroupRepository
+	config         config.Config
+	groupValidator customvalidator.GroupValidator
 }
 
-func NewGroupUsecase(repo repository.GroupRepository, config config.Config) GroupUsecase {
-	return &groupUsecaseImpl{repo: repo, config: config}
+func NewGroupUsecase(repo repository.GroupRepository, config config.Config, groupValidator customvalidator.GroupValidator) GroupUsecase {
+	return &groupUsecaseImpl{repo: repo, config: config, groupValidator: groupValidator}
 }
 
 func (u *groupUsecaseImpl) CheckInviteToken(tokenString string) (uint, error) {
@@ -77,8 +79,14 @@ func (u *groupUsecaseImpl) GetInitialAmount(groupId uint) (entity.InitialAmount,
 	return u.convertToInitialAmount(group.InitialAmount), nil
 }
 func (u *groupUsecaseImpl) UpdateInitialAmount(groupId uint, initialAmount entity.InitialAmount) (entity.InitialAmount, error) {
+
+	err := u.groupValidator.InitialAmountValidate(initialAmount)
+	if err != nil {
+		return u.convertToInitialAmount(0), err
+	}
+
 	group := entity.Group{}
-	err := u.repo.GetGroup(groupId, &group)
+	err = u.repo.GetGroup(groupId, &group)
 	if err != nil {
 		return u.convertToInitialAmount(0), err
 	}

@@ -54,6 +54,12 @@ export interface UserCreate {
   password: string;
   name: string;
 }
+
+export interface UserUpdate {
+  id: string;
+  name: string;
+}
+
 export interface InviteUrl {
   url: string;
 }

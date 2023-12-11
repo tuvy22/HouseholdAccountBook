@@ -8,6 +8,7 @@ import {
   Category,
   InitialAmount,
   InviteToken,
+  UserUpdate,
 } from "@/app/util/types";
 import axios from "axios";
 import { apiHandleError } from "./apiHandleError";
@@ -128,7 +129,7 @@ export const postUser = async (user: UserCreate) => {
     throw new Error(apiHandleError(error));
   }
 };
-export const updateUser = async (user: User) => {
+export const updateUser = async (user: UserUpdate) => {
   try {
     const response = await axios.put(`/api/private/user/${user.id}`, user, {
       headers: {

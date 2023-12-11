@@ -14,7 +14,7 @@ type Liquidation struct {
 }
 
 type LiquidationCreate struct {
-	Date            time.Time `json:"date"`
+	Date            time.Time `json:"date" validate:"required"`
 	RegisterUserID  string    `json:"registerUserID"`
 	TargetUserID    string    `json:"targetUserID"`
 	BillingUsersIds []uint    `json:"billingUsersIds"`

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 )
@@ -13,18 +14,24 @@ type LiquidationUsecase interface {
 }
 
 type liquidationUsecaseImpl struct {
-	repo     repository.LiquidationRepository
-	ieRepo   repository.IncomeAndExpenseRepository
-	userRepo repository.UserRepository
+	repo                 repository.LiquidationRepository
+	ieRepo               repository.IncomeAndExpenseRepository
+	userRepo             repository.UserRepository
+	liquidationValidator customvalidator.LiquidationValidator
 }
 
-func NewLiquidationUsecase(repo repository.LiquidationRepository, ieRepo repository.IncomeAndExpenseRepository, userRepo repository.UserRepository) LiquidationUsecase {
-	return &liquidationUsecaseImpl{repo: repo, ieRepo: ieRepo, userRepo: userRepo}
+func NewLiquidationUsecase(repo repository.LiquidationRepository, ieRepo repository.IncomeAndExpenseRepository, userRepo repository.UserRepository, liquidationValidator customvalidator.LiquidationValidator) LiquidationUsecase {
+	return &liquidationUsecaseImpl{repo: repo, ieRepo: ieRepo, userRepo: userRepo, liquidationValidator: liquidationValidator}
 }
 
 func (u *liquidationUsecaseImpl) CreateLiquidation(data entity.LiquidationCreate, userId string, groupId uint) error {
 
-	err := u.validateUserID(data, userId)
+	err := u.liquidationValidator.LiquidationCreateValidate(data)
+	if err != nil {
+		return err
+	}
+
+	err = u.validateUserID(data, userId)
 	if err != nil {
 		return err
 	}

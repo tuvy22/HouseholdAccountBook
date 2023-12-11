@@ -14,6 +14,10 @@ type IncomeAndExpenseBillingUser struct {
 	LiquidationID      uint   `gorm:"column:liquidation_id"`
 }
 
+type IncomeAndExpenseBillingUserValidate struct {
+	Amount int `validate:"gte=-99999999,lte=99999999"`
+}
+
 type IncomeAndExpenseBillingUserResponse struct {
 	ID                 uint   `json:"id" `
 	IncomeAndExpenseID uint   `json:"incomeAndExpenseID"`

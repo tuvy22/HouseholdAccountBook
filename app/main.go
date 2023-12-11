@@ -42,21 +42,26 @@ func main() {
 	categoryRepo := repository.NewCategoryRepository(db.GetDB())
 
 	validate := validator.New()
-	useValidator := customvalidator.NewUserValidator(validate)
+	userValidator := customvalidator.NewUserValidator(validate)
+	incomeAndExpenseValidator := customvalidator.NewIncomeAndExpenseValidator(validate)
+	liquidationValidator := customvalidator.NewLiquidationValidator(validate)
+	categoryValidator := customvalidator.NewCategoryValidator(validate)
+	groupValidator := customvalidator.NewGroupValidator(validate)
 
-	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo, userRepo, groupRepo)
+	incomeAndExpenseUsecase := usecase.NewIncomeAndExpenseUsecase(incomeAndExpenseRepo, userRepo, groupRepo, incomeAndExpenseValidator)
 	incomeAndExpenseHandler := handler.NewIncomeAndExpenseHandler(incomeAndExpenseUsecase)
 
-	liquidationUsecase := usecase.NewLiquidationUsecase(liquidationRepo, incomeAndExpenseRepo, userRepo)
+	liquidationUsecase := usecase.NewLiquidationUsecase(liquidationRepo, incomeAndExpenseRepo, userRepo, liquidationValidator)
 	liquidationHandler := handler.NewLiquidationHandler(liquidationUsecase)
 
-	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo)
+	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo, categoryValidator)
 	categoryHandler := handler.NewCategoryHandler(categoryUsecase)
 
 	password := password.NewPassWord()
-	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, categoryRepo, password, originalConfig, useValidator)
+	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, categoryRepo, password, originalConfig, userValidator)
 	userHandler := handler.NewUserHandler(userUsecase)
-	groupUsecase := usecase.NewGroupUsecase(groupRepo, originalConfig)
+
+	groupUsecase := usecase.NewGroupUsecase(groupRepo, originalConfig, groupValidator)
 	groupHandler := handler.NewGroupHandler(groupUsecase)
 
 	middlewareHandler := handler.NewMiddlewareHandler(userUsecase, groupUsecase)
