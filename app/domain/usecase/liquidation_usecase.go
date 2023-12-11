@@ -31,11 +31,11 @@ func (u *liquidationUsecaseImpl) CreateLiquidation(data entity.LiquidationCreate
 		return err
 	}
 
-	err = u.validateUserID(data, userId)
+	err = u.checkRegisterUserID(data, userId)
 	if err != nil {
 		return err
 	}
-	err = u.validateBillingUserID(data.BillingUsersIds, groupId)
+	err = u.checkBillingUserID(data.BillingUsersIds, groupId)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (u *liquidationUsecaseImpl) DeleteLiquidation(liquidationID uint, userId st
 		return err
 	}
 
-	err = u.validateLiquidationID(liquidation, userId)
+	err = u.checkLiquidationID(liquidation, userId)
 	if err != nil {
 		return err
 	}
@@ -109,14 +109,14 @@ func (u *liquidationUsecaseImpl) GetAllLiquidation(groupID uint) ([]entity.Liqui
 	return results, nil
 }
 
-func (u *liquidationUsecaseImpl) validateUserID(data entity.LiquidationCreate, userId string) error {
+func (u *liquidationUsecaseImpl) checkRegisterUserID(data entity.LiquidationCreate, userId string) error {
 	if data.RegisterUserID != userId {
 		return customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
 	return nil
 }
 
-func (u *liquidationUsecaseImpl) validateBillingUserID(liquidationBillingUserIds []uint, groupID uint) error {
+func (u *liquidationUsecaseImpl) checkBillingUserID(liquidationBillingUserIds []uint, groupID uint) error {
 	// グループに属するユーザーIDを取得
 	userIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
@@ -147,7 +147,7 @@ func (u *liquidationUsecaseImpl) validateBillingUserID(liquidationBillingUserIds
 	return nil
 }
 
-func (u *liquidationUsecaseImpl) validateLiquidationID(liquidation entity.Liquidation, userId string) error {
+func (u *liquidationUsecaseImpl) checkLiquidationID(liquidation entity.Liquidation, userId string) error {
 
 	//自分自身で登録したデータであるかを確認
 	if liquidation.RegisterUserID != userId {

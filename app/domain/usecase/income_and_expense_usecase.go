@@ -114,20 +114,20 @@ func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(data entity.IncomeA
 	if err != nil {
 		return err
 	}
-	err = u.validateUserID(data, userId)
+	err = u.checkRegisterUserID(data, userId)
 	if err != nil {
 		return err
 	}
-	u.validateBillingUserID(data, groupID)
+	u.checkBillingUserID(data, groupID)
 	if err != nil {
 		return err
 	}
-	err = u.validateBillingUserPlus(data)
+	err = u.checkBillingUserAmount(data)
 	if err != nil {
 		return err
 	}
 
-	err = u.validateBillingUserTotal(data)
+	err = u.checkBillingUserTotalAmount(data)
 	if err != nil {
 		return err
 	}
@@ -148,21 +148,21 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense en
 		return err
 	}
 
-	err = u.validateUserID(preIncomeAndExpense, userId)
+	err = u.checkRegisterUserID(preIncomeAndExpense, userId)
 	if err != nil {
 		return err
 	}
-	u.validateBillingUserID(incomeAndExpense, groupID)
-	if err != nil {
-		return err
-	}
-
-	err = u.validateBillingUserPlus(incomeAndExpense)
+	u.checkBillingUserID(incomeAndExpense, groupID)
 	if err != nil {
 		return err
 	}
 
-	err = u.validateBillingUserTotal(incomeAndExpense)
+	err = u.checkBillingUserAmount(incomeAndExpense)
+	if err != nil {
+		return err
+	}
+
+	err = u.checkBillingUserTotalAmount(incomeAndExpense)
 	if err != nil {
 		return err
 	}
@@ -185,7 +185,7 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense en
 		if preBu, exists := preBuMap[bu.ID]; exists {
 
 			//清算済みは金額変更を許容しない
-			err = u.validateLiquidationAmount(bu.Amount, preBu)
+			err = u.checkLiquidationAmountChange(bu.Amount, preBu)
 			if err != nil {
 				return err
 			}
@@ -210,11 +210,11 @@ func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint, userId str
 		return err
 	}
 
-	err = u.validateUserID(preIncomeAndExpense, userId)
+	err = u.checkRegisterUserID(preIncomeAndExpense, userId)
 	if err != nil {
 		return err
 	}
-	err = u.validateBillingUserDelete(preIncomeAndExpense)
+	err = u.checkBillingUserDelete(preIncomeAndExpense)
 	if err != nil {
 		return err
 	}
@@ -281,14 +281,14 @@ func (u *incomeAndExpenseUsecaseImpl) covertBillingUserPlusDelete(data []entity.
 	return result
 }
 
-func (u *incomeAndExpenseUsecaseImpl) validateUserID(incomeAndExpense entity.IncomeAndExpense, userId string) error {
+func (u *incomeAndExpenseUsecaseImpl) checkRegisterUserID(incomeAndExpense entity.IncomeAndExpense, userId string) error {
 	if incomeAndExpense.RegisterUserID != userId {
 		return customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
 	return nil
 }
 
-func (u *incomeAndExpenseUsecaseImpl) validateBillingUserPlus(data entity.IncomeAndExpense) error {
+func (u *incomeAndExpenseUsecaseImpl) checkBillingUserAmount(data entity.IncomeAndExpense) error {
 
 	for _, billingUser := range data.BillingUsers {
 		if billingUser.Amount > 0 {
@@ -299,7 +299,7 @@ func (u *incomeAndExpenseUsecaseImpl) validateBillingUserPlus(data entity.Income
 	return nil
 }
 
-func (u *incomeAndExpenseUsecaseImpl) validateBillingUserTotal(data entity.IncomeAndExpense) error {
+func (u *incomeAndExpenseUsecaseImpl) checkBillingUserTotalAmount(data entity.IncomeAndExpense) error {
 	if data.Amount >= 0 {
 		//収入はチェック対象外
 		return nil
@@ -320,7 +320,7 @@ func (u *incomeAndExpenseUsecaseImpl) validateBillingUserTotal(data entity.Incom
 
 	return nil
 }
-func (u *incomeAndExpenseUsecaseImpl) validateBillingUserID(data entity.IncomeAndExpense, groupID uint) error {
+func (u *incomeAndExpenseUsecaseImpl) checkBillingUserID(data entity.IncomeAndExpense, groupID uint) error {
 	groupUserIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
 		return err
@@ -342,7 +342,7 @@ func (u *incomeAndExpenseUsecaseImpl) validateBillingUserID(data entity.IncomeAn
 	return nil
 }
 
-func (u *incomeAndExpenseUsecaseImpl) validateBillingUserDelete(data entity.IncomeAndExpense) error {
+func (u *incomeAndExpenseUsecaseImpl) checkBillingUserDelete(data entity.IncomeAndExpense) error {
 
 	countLiquidation := 0
 	countLiquidationComplete := 0
@@ -363,7 +363,7 @@ func (u *incomeAndExpenseUsecaseImpl) validateBillingUserDelete(data entity.Inco
 	return customerrors.NewCustomError(customerrors.ErrBadRequest)
 }
 
-func (u *incomeAndExpenseUsecaseImpl) validateLiquidationAmount(amount int, preBu entity.IncomeAndExpenseBillingUser) error {
+func (u *incomeAndExpenseUsecaseImpl) checkLiquidationAmountChange(amount int, preBu entity.IncomeAndExpenseBillingUser) error {
 	if preBu.LiquidationID != entity.NoneLiquidationID && amount != preBu.Amount {
 		//精算済みの金額変更はエラー
 		return customerrors.NewCustomError(customerrors.ErrBadRequest)

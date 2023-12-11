@@ -43,17 +43,17 @@ func (u *categoryUsecaseImpl) getAllCategory(groupID uint, isExpense bool) ([]en
 
 func (u *categoryUsecaseImpl) ReplaceAllCategory(categorys []entity.Category, isExpense bool, groupID uint) error {
 
-	err := u.validateCategorysLen(categorys)
+	err := u.checkCategorysLenZero(categorys)
 	if err != nil {
 		return err
 	}
 
-	err = u.validateGroupID(categorys, groupID)
+	err = u.checkGroupID(categorys, groupID)
 	if err != nil {
 		return err
 	}
 
-	err = u.validateIsExpense(categorys, isExpense)
+	err = u.checkExpense(categorys, isExpense)
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (u *categoryUsecaseImpl) ReplaceAllCategory(categorys []entity.Category, is
 	}
 	return nil
 }
-func (u *categoryUsecaseImpl) validateCategorysLen(categorys []entity.Category) error {
+func (u *categoryUsecaseImpl) checkCategorysLenZero(categorys []entity.Category) error {
 
 	if len(categorys) == 0 {
 		return customerrors.NewCustomError(customerrors.ErrCategorysLenZero)
@@ -84,7 +84,7 @@ func (u *categoryUsecaseImpl) validateCategorysLen(categorys []entity.Category) 
 	return nil
 }
 
-func (u *categoryUsecaseImpl) validateGroupID(categorys []entity.Category, groupID uint) error {
+func (u *categoryUsecaseImpl) checkGroupID(categorys []entity.Category, groupID uint) error {
 	for _, category := range categorys {
 		if category.GroupID != groupID {
 			return customerrors.NewCustomError(customerrors.ErrBadRequest)
@@ -92,7 +92,7 @@ func (u *categoryUsecaseImpl) validateGroupID(categorys []entity.Category, group
 	}
 	return nil
 }
-func (u *categoryUsecaseImpl) validateIsExpense(categorys []entity.Category, isExpense bool) error {
+func (u *categoryUsecaseImpl) checkExpense(categorys []entity.Category, isExpense bool) error {
 	for _, category := range categorys {
 		if category.IsExpense != isExpense {
 			return customerrors.NewCustomError(customerrors.ErrBadRequest)
