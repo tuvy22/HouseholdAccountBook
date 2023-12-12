@@ -4,15 +4,15 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customlogger"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
-	"github.com/ten313/HouseholdAccountBook/app/domain/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 var (
 	db  *gorm.DB
-	log logger.Logger
+	log customlogger.Logger
 )
 
 func GetDB() *gorm.DB {
@@ -20,7 +20,7 @@ func GetDB() *gorm.DB {
 }
 
 func init() {
-	log = logger.NewLogrusLogger()
+	log = customlogger.NewLogrusLogger()
 
 	// .env ファイルから環境変数をロード
 	if err := godotenv.Load(); err != nil {

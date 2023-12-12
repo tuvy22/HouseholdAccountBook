@@ -11,6 +11,8 @@ const (
 	ErrCategorysLenZero ErrorCode = "categorys_len_zero"
 	//ユーザー別の立替額が合計額と一致しない
 	ErrBillUserExpenseUnMatch ErrorCode = "bill_user_expense_un_match"
+	//変更前のパスワードでの認証が成功しない
+	ErrPrePasswordCredentials ErrorCode = "pre_password_credentials"
 	//認証失敗
 	ErrInvalidCredentials ErrorCode = "invalid_credentials"
 	//ログイン失敗
@@ -24,8 +26,7 @@ const (
 )
 
 type CustomError struct {
-	Code    ErrorCode
-	Message string
+	Code ErrorCode
 }
 
 func (e *CustomError) Error() string {

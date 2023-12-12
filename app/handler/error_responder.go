@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
-	"github.com/ten313/HouseholdAccountBook/app/domain/logger"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customlogger"
 )
 
 func errorResponder(c *gin.Context, paramErr error) {
@@ -24,6 +24,8 @@ func errorResponder(c *gin.Context, paramErr error) {
 			statusCode = http.StatusBadRequest
 		case customerrors.ErrBillUserExpenseUnMatch:
 			statusCode = http.StatusBadRequest
+		case customerrors.ErrPrePasswordCredentials:
+			statusCode = http.StatusUnauthorized
 		case customerrors.ErrInvalidCredentials:
 			statusCode = http.StatusUnauthorized
 		case customerrors.ErrInvalidLogin:
@@ -48,7 +50,7 @@ func errorResponder(c *gin.Context, paramErr error) {
 	}
 
 	//ログ出力
-	logger := logger.NewLogrusLogger()
+	logger := customlogger.NewLogrusLogger()
 	if statusCode >= http.StatusInternalServerError {
 		logger.Error(userID, paramErr)
 	} else {

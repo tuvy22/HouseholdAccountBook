@@ -29,12 +29,11 @@ export function UserName() {
   });
   const onSubmit = async (data: UserUpdateSchema) => {
     const userUpdate: UserUpdate = {
-      id: user.user.id,
       name: data.name,
     };
 
     try {
-      const updatedUser = await updateUser(userUpdate);
+      const updatedUser = await updateUser(user.user.id, userUpdate);
       user.setUser(updatedUser);
       //結果アラート
       addSuccess("更新が成功しました。", alert);

@@ -1,4 +1,4 @@
-package logger
+package customlogger
 
 import (
 	"runtime"
@@ -26,16 +26,16 @@ func NewLogrusLogger() Logger {
 	return &logrusLoggerImpl{logger}
 }
 
-func (l *logrusLoggerImpl) Info(userId string, msg string) {
+func (l *logrusLoggerImpl) Info(userId string, code string) {
 	l.Logger.WithFields(logrus.Fields{
 		"login_id": userId,
-	}).Info(msg)
+	}).Info(code)
 }
 
-func (l *logrusLoggerImpl) Warn(userId string, msg string) {
+func (l *logrusLoggerImpl) Warn(userId string, code string) {
 	l.Logger.WithFields(logrus.Fields{
 		"login_id": userId,
-	}).Warn(msg)
+	}).Warn(code)
 }
 func (l *logrusLoggerImpl) Error(userId string, err error) {
 	l.error(userId, err.Error())
@@ -44,11 +44,11 @@ func (l *logrusLoggerImpl) ErrorMsg(userId string, msg string) {
 	l.error(userId, msg)
 }
 
-func (l *logrusLoggerImpl) error(userId string, msg string) {
+func (l *logrusLoggerImpl) error(userId string, code string) {
 	l.Logger.WithFields(logrus.Fields{
 		"login_id":    userId,
 		"stack_trace": getStackTrace(),
-	}).Error(msg)
+	}).Error()
 }
 
 func getStackTrace() string {

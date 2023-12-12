@@ -11,6 +11,7 @@ import (
 type UserValidator interface {
 	UserCreateValidate(user entity.UserCreate) error
 	UserUpdateValidate(user entity.UserUpdate) error
+	PasswordChangeValidate(passwordChange entity.PasswordChange) error
 }
 
 type userValidatorImpl struct {
@@ -37,16 +38,6 @@ func (v *userValidatorImpl) UserCreateValidate(user entity.UserCreate) error {
 
 }
 
-func (v *userValidatorImpl) passwordValidation(fl validator.FieldLevel) bool {
-	password := fl.Field().String()
-	// 英字、数字、記号を含むかどうかをチェック
-	hasLetter := regexp.MustCompile(`[A-Za-z]`).MatchString(password)
-	hasNumber := regexp.MustCompile(`\d`).MatchString(password)
-	hasSymbol := regexp.MustCompile(`[^A-Za-z\d]`).MatchString(password)
-
-	return hasLetter && hasNumber && hasSymbol
-}
-
 func (v *userValidatorImpl) UserUpdateValidate(user entity.UserUpdate) error {
 
 	err := v.dataValidate.Struct(user)
@@ -55,4 +46,29 @@ func (v *userValidatorImpl) UserUpdateValidate(user entity.UserUpdate) error {
 	}
 	return nil
 
+}
+
+func (v *userValidatorImpl) PasswordChangeValidate(passwordChange entity.PasswordChange) error {
+
+	err := v.dataValidate.RegisterValidation("password", v.passwordValidation)
+	if err != nil {
+		return customerrors.NewCustomError(customerrors.ErrBadRequest)
+	}
+
+	err = v.dataValidate.Struct(passwordChange)
+	if err != nil {
+		return customerrors.NewCustomError(customerrors.ErrBadRequest)
+	}
+	return nil
+
+}
+
+func (v *userValidatorImpl) passwordValidation(fl validator.FieldLevel) bool {
+	password := fl.Field().String()
+	// 英字、数字、記号を含むかどうかをチェック
+	hasLetter := regexp.MustCompile(`[A-Za-z]`).MatchString(password)
+	hasNumber := regexp.MustCompile(`\d`).MatchString(password)
+	hasSymbol := regexp.MustCompile(`[^A-Za-z\d]`).MatchString(password)
+
+	return hasLetter && hasNumber && hasSymbol
 }

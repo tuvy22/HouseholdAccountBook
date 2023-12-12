@@ -20,8 +20,15 @@ import { toDateString } from "@/app/util/util";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
 import { addError, useAlert } from "@/app/context/AlertProvider";
+import { useLiquidationSearchForm } from "@/app/context/LiquidationSearchFormProvider";
+import { LiquidationSearchForm } from "@/app/context/LiquidationSearchFormContext";
 
 const LiquidationSearch = () => {
+  const liquidationSearchForm = useLiquidationSearchForm();
+  const contextFromDate = liquidationSearchForm.liquidationSearchForm.fromDate;
+  const contextToDate = liquidationSearchForm.liquidationSearchForm.toDate;
+  const contextUserID = liquidationSearchForm.liquidationSearchForm.userId;
+
   const {
     register,
     handleSubmit,
@@ -29,29 +36,36 @@ const LiquidationSearch = () => {
   } = useForm<LiquidationSchema>({
     resolver: zodResolver(liquidationSchema),
     defaultValues: {
-      fromDate: "",
-      toDate: toDateString(new Date()),
+      fromDate: contextFromDate ? contextFromDate : "",
+      toDate: contextToDate ? contextToDate : toDateString(new Date()),
     },
   });
   const [groupData, setGroupData] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<User>();
+  const [selectedUserID, setSelectedUserID] = useState<string>();
   const [selectedUserError, setSelectedError] = useState("");
 
   const router = useRouter();
   const loginUser = useUser().user;
+
   const alert = useAlert();
 
   // フォーム送信時の処理
   const onSubmit = async (data: LiquidationSchema) => {
-    if (!selectedUser) {
+    if (!selectedUserID) {
       setSelectedError("清算相手が選択されていません。");
       return;
     }
+    //検索条件の保存
+    const saveLiquidationSearchForm: LiquidationSearchForm = {
+      fromDate: data.fromDate,
+      toDate: data.toDate,
+      userId: selectedUserID,
+    };
+    liquidationSearchForm.setLiquidationSearchForm(saveLiquidationSearchForm);
+
     // 検索画面に遷移
     router.push(
-      `/liquidation/search-result?from-date=${data.fromDate}&to-date=${
-        data.toDate
-      }&target-user=${selectedUser?.id || ""}`
+      `/liquidation/search-result?from-date=${data.fromDate}&to-date=${data.toDate}&target-user=${selectedUserID}`
     );
   };
   useEffect(() => {
@@ -66,6 +80,12 @@ const LiquidationSearch = () => {
     };
     fetchData();
   }, []);
+
+  //検索条件(精算対象)の復元
+  useEffect(() => {
+    setSelectedUserID(contextUserID ? contextUserID : "");
+  }, [contextUserID]);
+
   return (
     <>
       <form onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}>
@@ -118,9 +138,9 @@ const LiquidationSearch = () => {
                       groupUser.id != loginUser.id && (
                         <MenuItem
                           key={index}
-                          onClick={() => setSelectedUser(groupUser)}
+                          onClick={() => setSelectedUserID(groupUser.id)}
                           className={`py-2 my-1 ${
-                            selectedUser === groupUser ? "bg-gray-200" : ""
+                            selectedUserID === groupUser.id ? "bg-gray-200" : ""
                           }`}
                         >
                           <label className="flex cursor-pointer items-center gap-2 p-2">

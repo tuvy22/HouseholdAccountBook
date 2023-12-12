@@ -20,6 +20,8 @@ import {
   userCreateSchema,
 } from "../../components/UserSchema";
 import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
+import UserIDForm from "@/app/components/UserIDForm";
+import PasswordForm from "@/app/components/PasswordForm";
 
 export const Register = ({ isInvite }: { isInvite: boolean }) => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -109,42 +111,19 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
           >
             <div className="flex flex-col items-center justify-center gap-4">
               <NameForm errors={errors} createRegister={register} />
-              <Input
-                label="ユーザID"
-                type="text"
-                variant="outlined"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("id")}
+              <UserIDForm errors={errors} register={register} />
+              <PasswordForm
+                label={"パスワード"}
+                createRegister={register}
+                createRegisterName={"password"}
+                fieldError={errors.password}
               />
-              {errors.id && (
-                <div className="text-red-500">{errors.id.message}</div>
-              )}
-              <Input
-                label="パスワード"
-                type="password"
-                variant="outlined"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("password")}
+              <PasswordForm
+                label={"パスワード(確認)"}
+                createRegister={register}
+                createRegisterName={"passwordConfirmation"}
+                fieldError={errors.passwordConfirmation}
               />
-              {errors.password && (
-                <div className="text-red-500">{errors.password.message}</div>
-              )}
-
-              <Input
-                label="パスワード（確認）"
-                type="password"
-                variant="outlined"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("passwordConfirmation")}
-              />
-              {errors.passwordConfirmation && (
-                <div className="text-red-500 max-w">
-                  {errors.passwordConfirmation.message}
-                </div>
-              )}
             </div>
             <Button
               type="submit"

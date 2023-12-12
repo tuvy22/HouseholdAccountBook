@@ -19,7 +19,8 @@ type UserUsecase interface {
 	GetGroupAllUser(groupID uint, firstUserID string) ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
 	CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error)
-	UpdateUser(user entity.UserUpdate) (entity.UserResponse, entity.UserSession, error)
+	UpdateUser(loginUserId string, userId string, userUpdate entity.UserUpdate) (entity.UserResponse, entity.UserSession, error)
+	ChangePassword(loginUserId string, userId string, passwordChange entity.PasswordChange) error
 	DeleteUser(id string) error
 	ChangeGroup(userId string, inviteGroupID uint) error
 }
@@ -39,19 +40,29 @@ func NewUserUsecase(repo repository.UserRepository, groupRepo repository.GroupRe
 
 func (u *userUsecaseImpl) Authenticate(creds entity.Credentials) (entity.UserResponse, entity.UserSession, error) {
 
+	user, err := u.authenticate(creds, customerrors.ErrInvalidLogin)
+	if err != nil {
+		return u.convertToUserResponse(user), u.convertToUserSession(user), customerrors.NewCustomError(customerrors.ErrInvalidLogin)
+	}
+
+	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
+}
+
+func (u *userUsecaseImpl) authenticate(creds entity.Credentials, checkPasswordErrCode customerrors.ErrorCode) (entity.User, error) {
+
 	user := entity.User{}
 
 	err := u.repo.GetUser(creds.UserID, &user)
 	if err != nil {
-		return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrInvalidLogin)
+		return entity.User{}, customerrors.NewCustomError(customerrors.ErrInvalidLogin)
 	}
 
 	err = u.password.CheckPassword(user.Password, creds.Password)
 	if err != nil {
-		return entity.UserResponse{}, entity.UserSession{}, customerrors.NewCustomError(customerrors.ErrInvalidLogin)
+		return entity.User{}, customerrors.NewCustomError(checkPasswordErrCode)
 	}
 
-	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
+	return user, nil
 }
 
 func (u *userUsecaseImpl) GetAllUser() ([]entity.UserResponse, error) {
@@ -147,14 +158,18 @@ func (u *userUsecaseImpl) CreateUser(userCreate entity.UserCreate, inviteGroupID
 
 	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
 }
-func (u *userUsecaseImpl) UpdateUser(userUpdate entity.UserUpdate) (entity.UserResponse, entity.UserSession, error) {
+func (u *userUsecaseImpl) UpdateUser(loginUserId string, userId string, userUpdate entity.UserUpdate) (entity.UserResponse, entity.UserSession, error) {
 	err := u.userValidator.UserUpdateValidate(userUpdate)
+	if err != nil {
+		return entity.UserResponse{}, entity.UserSession{}, err
+	}
+	err = u.checkUserID(loginUserId, userId)
 	if err != nil {
 		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	user := entity.User{}
-	err = u.repo.GetUser(userUpdate.ID, &user)
+	err = u.repo.GetUser(userId, &user)
 	if err != nil {
 		return entity.UserResponse{}, entity.UserSession{}, err
 	}
@@ -167,6 +182,43 @@ func (u *userUsecaseImpl) UpdateUser(userUpdate entity.UserUpdate) (entity.UserR
 	}
 
 	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
+}
+func (u *userUsecaseImpl) ChangePassword(loginUserId string, userID string, passwordChange entity.PasswordChange) error {
+
+	err := u.userValidator.PasswordChangeValidate(passwordChange)
+	if err != nil {
+		return err
+	}
+
+	err = u.checkUserID(loginUserId, userID)
+	if err != nil {
+		return err
+	}
+
+	credentials := entity.Credentials{
+		UserID:   userID,
+		Password: passwordChange.PrePassword,
+	}
+	user, err := u.authenticate(credentials, customerrors.ErrPrePasswordCredentials)
+	if err != nil {
+		return err
+	}
+
+	//パスワードハッシュ化
+	hashPassword, err := u.password.HashPassword(passwordChange.Password)
+	if err != nil {
+		return err
+	}
+
+	//更新値の設定
+	user.Password = hashPassword
+
+	err = u.repo.UpdateUser(&user)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *userUsecaseImpl) DeleteUser(id string) error {
@@ -236,6 +288,12 @@ func (u *userUsecaseImpl) checkRegisteredUserID(userID string) error {
 	}
 	return nil
 
+}
+func (u *userUsecaseImpl) checkUserID(loginUserId, userId string) error {
+	if loginUserId != userId {
+		return customerrors.NewCustomError(customerrors.ErrBadRequest)
+	}
+	return nil
 }
 
 func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) error {

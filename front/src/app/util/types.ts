@@ -55,8 +55,12 @@ export interface UserCreate {
   name: string;
 }
 
+export interface PasswordChange {
+  prePassword: string;
+  password: string;
+}
+
 export interface UserUpdate {
-  id: string;
   name: string;
 }
 

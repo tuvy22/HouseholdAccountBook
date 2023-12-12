@@ -14,7 +14,7 @@ export default function NameForm({
   updateRegister?: UseFormRegister<UserUpdateSchema>;
 }) {
   return (
-    <>
+    <div className="w-full">
       <Input
         label="ニックネーム"
         type="text"
@@ -25,6 +25,6 @@ export default function NameForm({
         {...(updateRegister && { ...updateRegister("name") })}
       />
       {errors.name && <div className="text-red-500">{errors.name.message}</div>}
-    </>
+    </div>
   );
 }

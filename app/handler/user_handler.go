@@ -21,6 +21,7 @@ type UserHandler interface {
 
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
+	ChangePassword(c *gin.Context)
 	DeleteUser(c *gin.Context)
 }
 
@@ -165,15 +166,20 @@ func (h *userHandlerImpl) CreateUser(c *gin.Context) {
 }
 func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 
+	// ログインデータ取得
+	loginUser, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
 	user, err := h.bindUserUpdate(c)
 	if err != nil {
 		errorResponder(c, err)
 		return
 	}
 
-	user.ID = c.Param("id")
-
-	userResponse, userSession, err := h.usecase.UpdateUser(user)
+	userResponse, userSession, err := h.usecase.UpdateUser(loginUser.ID, c.Param("id"), user)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -189,6 +195,29 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, userResponse)
+}
+
+func (h *userHandlerImpl) ChangePassword(c *gin.Context) {
+
+	// ログインデータ取得
+	loginUser, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	passwordChange, err := h.bindPasswordChange(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	err = h.usecase.ChangePassword(loginUser.ID, c.Param("id"), passwordChange)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+	c.Status(http.StatusOK)
 }
 
 func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
@@ -229,6 +258,13 @@ func (h *userHandlerImpl) bindInviteToken(c *gin.Context) (entity.InviteToken, e
 		return inviteToken, err
 	}
 	return inviteToken, nil
+}
+func (h *userHandlerImpl) bindPasswordChange(c *gin.Context) (entity.PasswordChange, error) {
+	passwordChange := entity.PasswordChange{}
+	if err := c.ShouldBindJSON(&passwordChange); err != nil {
+		return passwordChange, err
+	}
+	return passwordChange, nil
 }
 
 func (h *userHandlerImpl) deleteInviteCookie(c *gin.Context) {

@@ -9,6 +9,7 @@ import {
   InitialAmount,
   InviteToken,
   UserUpdate,
+  PasswordChange,
 } from "@/app/util/types";
 import axios from "axios";
 import { apiHandleError } from "./apiHandleError";
@@ -129,13 +130,33 @@ export const postUser = async (user: UserCreate) => {
     throw new Error(apiHandleError(error));
   }
 };
-export const updateUser = async (user: UserUpdate) => {
+export const updateUser = async (userID: string, user: UserUpdate) => {
   try {
-    const response = await axios.put(`/api/private/user/${user.id}`, user, {
+    const response = await axios.put(`/api/private/user/${userID}`, user, {
       headers: {
         "Content-Type": "application/json",
       },
     });
+    const result: User = response.data;
+    return result;
+  } catch (error) {
+    throw new Error(apiHandleError(error));
+  }
+};
+export const passwordChange = async (
+  userID: string,
+  passwordChange: PasswordChange
+) => {
+  try {
+    const response = await axios.put(
+      `/api/private/user/password/${userID}`,
+      passwordChange,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const result: User = response.data;
     return result;
   } catch (error) {

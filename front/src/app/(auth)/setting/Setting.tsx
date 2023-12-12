@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { Category } from "./Category";
 import { SideDrawer } from "@/app/components/SideDrawer";
 import { Typography } from "@/app/materialTailwindExports";
+import { PasswordChange } from "./PasswordChange";
 
 export const SETTING_OPEN = {
   USER_NAME: "userName",
@@ -37,8 +38,13 @@ export function Setting() {
 
       case SETTING_OPEN.PASSWORD_CHANGE:
         return (
-          <RightPage>
-            <Typography>comming soon</Typography>
+          <RightPage
+            title="パスワード変更"
+            message={
+              "変更前のパスワードと併せて新しいパスワードを入力してください。"
+            }
+          >
+            <PasswordChange />
           </RightPage>
         );
       case SETTING_OPEN.OUT_GROUP:

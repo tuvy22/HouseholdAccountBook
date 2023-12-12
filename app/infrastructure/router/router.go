@@ -58,6 +58,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, groupHandler 
 	authorized.GET("/user", userHandler.GetLoginUser)
 	authorized.DELETE("/user/:id", userHandler.DeleteUser)
 	authorized.PUT("/user/:id", userHandler.UpdateUser)
+	authorized.PUT("/user/password/:id", userHandler.ChangePassword)
 	authorized.GET("/user/group-all", userHandler.GetGroupAllUser)
 	authorized.GET("/user-invite-url", groupHandler.GetUserInviteUrl)
 

@@ -17,8 +17,11 @@ type UserCreate struct {
 }
 
 type UserUpdate struct {
-	ID   string `json:"id" validate:"required,min=5,max=10,alphanum"`
 	Name string `json:"name" validate:"required,max=10"`
+}
+type PasswordChange struct {
+	PrePassword string `json:"prePassword"`
+	Password    string `json:"password" validate:"required,min=8,max=50,password"`
 }
 
 type UserResponse struct {

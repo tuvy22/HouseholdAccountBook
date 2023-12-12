@@ -13,6 +13,8 @@ export function apiHandleError(error: unknown): string {
           return "カテゴリーを全て削除することは出来ません。";
         case "bill_user_expense_un_match":
           return "立替額の合計が支出の金額と一致しません。一致するように入力してください。";
+        case "pre_password_credentials":
+          return "変更前のパスワードが間違っているため、更新できませんでした。";
         case "invalid_credentials":
           return "認証に失敗しました。";
         case "invalid_login":
