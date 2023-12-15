@@ -21,7 +21,7 @@ const Header = () => {
   const handleLogout = async (e: React.FormEvent) => {
     try {
       await authDel();
-      router.push("/login", { scroll: false });
+      router.push("/login");
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -50,7 +50,7 @@ const Header = () => {
           </Typography>
         </Link>
         <Link
-          href="/liquidation"
+          href="/liquidation/search"
           className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
         >
           <AccountBalanceWalletIcon />

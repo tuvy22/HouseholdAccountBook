@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { deleteIncomeAndExpense } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
 import { useRouter } from "next/navigation";
-import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import Delete from "@mui/icons-material/Delete";
 import { Spinner } from "@/app/materialTailwindExports";
 import { addError, useAlert } from "../context/AlertProvider";
@@ -63,7 +63,7 @@ export default function IncomeAndExpenseDeleteIcon({
         <Spinner />
       )}
       {deletedIncomeAndExpense && (
-        <IncomeAndExpenseConfirmDialog
+        <ConfirmDialog
           open={openDeleteDialog}
           handleOpen={() => setOpenDeleteDialog(!openDeleteDialog)}
           handleOk={handleDelete}

@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { deleteLiquidation } from "@/app/util/apiClient";
 import { useUser } from "@/app/context/UserProvider";
 import { useRouter } from "next/navigation";
-import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import { Spinner } from "@/app/materialTailwindExports";
 import ClearIcon from "@mui/icons-material/Clear";
 import { addError, useAlert } from "../context/AlertProvider";
@@ -59,7 +59,7 @@ export default function LiquidationDeleteIcon({
       )}
 
       {deletedLiquidation && (
-        <IncomeAndExpenseConfirmDialog
+        <ConfirmDialog
           open={openDeleteDialog}
           handleOpen={() => setOpenDeleteDialog(!openDeleteDialog)}
           handleOk={handleDelete}

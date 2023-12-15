@@ -11,15 +11,17 @@ import { Category } from "./Category";
 import { SideDrawer } from "@/app/components/SideDrawer";
 import { Typography } from "@/app/materialTailwindExports";
 import { PasswordChange } from "./PasswordChange";
+import { UserGroupOut } from "./UserGroupOut";
+import { UserDelete } from "./UserDelete";
 
 export const SETTING_OPEN = {
-  USER_NAME: "userName",
-  INIT_AMOUNT: "initAmount",
+  USER_NAME_Update: "userNameUpdate",
+  INIT_AMOUNT_CHANGE: "initAmountChange",
   PASSWORD_CHANGE: "passwordChange",
-  OUT_GROUP: "outGroup",
-  OUT_SERVICE: "outService",
+  GROUP_OUT: "groupOut",
+  USER_DELETE: "userDelete",
   GROUP_USER_INVITATION: "groupUserInvitation",
-  CATEGORY: "category",
+  CATEGORY_CHANGE: "categoryChange",
 };
 
 export function Setting() {
@@ -29,9 +31,12 @@ export function Setting() {
 
   const renderSetting = () => {
     switch (openSetting) {
-      case SETTING_OPEN.USER_NAME:
+      case SETTING_OPEN.USER_NAME_Update:
         return (
-          <RightPage title="ニックネーム変更">
+          <RightPage
+            title="ニックネーム変更"
+            message={"現在のニックネームを変更出来ます。"}
+          >
             <UserName />
           </RightPage>
         );
@@ -47,16 +52,30 @@ export function Setting() {
             <PasswordChange />
           </RightPage>
         );
-      case SETTING_OPEN.OUT_GROUP:
+      case SETTING_OPEN.GROUP_OUT:
         return (
-          <RightPage>
-            <Typography>comming soon</Typography>
+          <RightPage
+            title="グループからの脱退"
+            message={[
+              "現在所属しているグループから脱退します。",
+              <br key="br-key" />,
+              "※一人だけのグループから脱退することは出来ません。",
+            ]}
+          >
+            <UserGroupOut />
           </RightPage>
         );
-      case SETTING_OPEN.OUT_SERVICE:
+      case SETTING_OPEN.USER_DELETE:
         return (
-          <RightPage>
-            <Typography>comming soon</Typography>
+          <RightPage
+            title="退会"
+            message={[
+              "本システムから退会してアカウントを削除します。",
+              <br key="br-key" />,
+              "※収入・支出情報も全て削除され、取り消すことは出来ませんのでご注意ください。",
+            ]}
+          >
+            <UserDelete />
           </RightPage>
         );
       case SETTING_OPEN.GROUP_USER_INVITATION:
@@ -72,13 +91,18 @@ export function Setting() {
             <UserInvite />
           </RightPage>
         );
-      case SETTING_OPEN.INIT_AMOUNT:
+      case SETTING_OPEN.INIT_AMOUNT_CHANGE:
         return (
-          <RightPage title="初期残高設定">
+          <RightPage
+            title="初期残高設定"
+            message={
+              "初期残高設定を変更出来ます。変更するとダッシュボードの初期額が変更されます。"
+            }
+          >
             <InitialAmount />
           </RightPage>
         );
-      case SETTING_OPEN.CATEGORY:
+      case SETTING_OPEN.CATEGORY_CHANGE:
         return (
           <RightPage
             title="カテゴリー変更"

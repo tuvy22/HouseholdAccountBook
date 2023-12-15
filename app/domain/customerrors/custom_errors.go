@@ -13,6 +13,8 @@ const (
 	ErrBillUserExpenseUnMatch ErrorCode = "bill_user_expense_un_match"
 	//変更前のパスワードでの認証が成功しない
 	ErrPrePasswordCredentials ErrorCode = "pre_password_credentials"
+	//未精算データがあり退会できない
+	ErrUnLiquidationNoUserDelete ErrorCode = "un_liquidation_no_user_delete"
 	//認証失敗
 	ErrInvalidCredentials ErrorCode = "invalid_credentials"
 	//ログイン失敗

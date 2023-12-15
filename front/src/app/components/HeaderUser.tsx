@@ -21,7 +21,7 @@ const HeaderUser = () => {
     <div className="">
       こんにちは&nbsp;
       {user.user.name !== null ? (
-        <Link href={`/setting?open=${SETTING_OPEN.USER_NAME}`}>
+        <Link href={`/setting?open=${SETTING_OPEN.USER_NAME_Update}`}>
           <Typography variant="lead" className="font-semibold inline-block">
             {user.user.name}
           </Typography>

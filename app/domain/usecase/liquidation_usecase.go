@@ -134,7 +134,10 @@ func (u *liquidationUsecaseImpl) checkBillingUserID(liquidationBillingUserIds []
 	billingUserIDs := make(map[uint]bool)
 	for _, ieData := range ieDatas {
 		for _, buData := range ieData.BillingUsers {
-			billingUserIDs[buData.ID] = true
+			//未成線のみ許容
+			if buData.LiquidationID == 0 {
+				billingUserIDs[buData.ID] = true
+			}
 		}
 	}
 

@@ -22,6 +22,7 @@ import { useUser } from "@/app/context/UserProvider";
 import { addError, useAlert } from "@/app/context/AlertProvider";
 import { useLiquidationSearchForm } from "@/app/context/LiquidationSearchFormProvider";
 import { LiquidationSearchForm } from "@/app/context/LiquidationSearchFormContext";
+import Link from "next/link";
 
 const LiquidationSearch = () => {
   const liquidationSearchForm = useLiquidationSearchForm();
@@ -88,17 +89,25 @@ const LiquidationSearch = () => {
 
   return (
     <>
+      <div className="flex justify-between">
+        <Typography
+          variant="h3"
+          color="gray"
+          className="text-center md:text-left"
+        >
+          清算対象検索
+        </Typography>
+        <div className="flex items-end">
+          <Link
+            href={"/liquidation/result"}
+            className="text-blue-600 underline hover:no-underline"
+          >
+            清算結果はこちらから
+          </Link>
+        </div>
+      </div>
       <form onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}>
         <div className="mx-auto max-w-2xl">
-          <div className="flex justify-between">
-            <Typography
-              variant="h3"
-              color="gray"
-              className="text-center md:text-left"
-            >
-              清算対象検索
-            </Typography>
-          </div>
           <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row mt-6">
             <div className="flex flex-col flex-grow">
               <Input

@@ -17,7 +17,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { auth, deleteInviteToken } from "../../util/apiClient";
 import Link from "next/link";
-import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 
 interface IFormInput {
   id: string;
@@ -71,23 +71,7 @@ export function Login({ isInvite }: { isInvite: boolean }) {
 
   return (
     <>
-      <Link
-        href="/user-register"
-        scroll={false}
-        className="fixed top-20 md:top-2 right-1 md:right-4 z-50"
-      >
-        <Button
-          type="submit"
-          variant="outlined"
-          color="green"
-          size="lg"
-          className="rounded-full"
-        >
-          アカウントをお持ちではない方はこちら
-        </Button>
-      </Link>
-
-      <Card className="max-w-sm w-full">
+      <Card className="max-w-sm w-full m-2">
         <CardBody>
           <Typography variant="h2" className="pt-5 text-xl text-center">
             ログイン
@@ -141,7 +125,7 @@ export function Login({ isInvite }: { isInvite: boolean }) {
           )}
         </CardBody>
       </Card>
-      <IncomeAndExpenseConfirmDialog
+      <ConfirmDialog
         open={openDialog}
         handleOpen={() => setOpenDialog(!openDialog)}
         handleCancel={handleInviteCancel}

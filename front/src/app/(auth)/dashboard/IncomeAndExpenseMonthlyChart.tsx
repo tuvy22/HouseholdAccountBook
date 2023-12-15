@@ -110,7 +110,7 @@ export const IncomeAndExpenseMonthlyChart = ({
       </div>
       <div className="flex justify-end mt-5 md:mt-0">
         <Link
-          href={`/setting?open=${SETTING_OPEN.INIT_AMOUNT}`}
+          href={`/setting?open=${SETTING_OPEN.INIT_AMOUNT_CHANGE}`}
           className="text-blue-600 underline hover:no-underline"
         >
           初期残高設定はこちらから

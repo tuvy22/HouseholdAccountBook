@@ -77,20 +77,20 @@ func (u *incomeAndExpenseUsecaseImpl) GetAllIncomeAndExpenseMaxPage(groupID uint
 }
 
 func (u *incomeAndExpenseUsecaseImpl) GetIncomeAndExpenseLiquidations(fromDate time.Time, toDate time.Time, loginUserID string, billingUserID string, groupID uint) ([]entity.IncomeAndExpenseResponse, error) {
-	myResult := []entity.IncomeAndExpense{}
-	targetResult := []entity.IncomeAndExpense{}
+	myRegisterResult := []entity.IncomeAndExpense{}
+	targetRegisterResult := []entity.IncomeAndExpense{}
 
-	err := u.repo.GetIncomeAndExpenseLiquidations(&myResult, fromDate, toDate, loginUserID, billingUserID)
+	err := u.repo.GetIncomeAndExpenseLiquidations(&myRegisterResult, fromDate, toDate, []string{loginUserID}, []string{billingUserID}, false)
 	if err != nil {
-		return u.convertToIncomeAndExpenseResponse(myResult, groupID), err
+		return u.convertToIncomeAndExpenseResponse(myRegisterResult, groupID), err
 	}
 
-	err = u.repo.GetIncomeAndExpenseLiquidations(&targetResult, fromDate, toDate, billingUserID, loginUserID)
+	err = u.repo.GetIncomeAndExpenseLiquidations(&targetRegisterResult, fromDate, toDate, []string{billingUserID}, []string{loginUserID}, false)
 	if err != nil {
-		return u.convertToIncomeAndExpenseResponse(targetResult, groupID), err
+		return u.convertToIncomeAndExpenseResponse(targetRegisterResult, groupID), err
 
 	}
-	result := append(myResult, targetResult...)
+	result := append(myRegisterResult, targetRegisterResult...)
 
 	// 結果をソートする
 	sort.Slice(result, func(i, j int) bool {

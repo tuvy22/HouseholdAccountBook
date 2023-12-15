@@ -19,7 +19,7 @@ import {
   UserCreateSchema,
   userCreateSchema,
 } from "../../components/UserSchema";
-import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import UserIDForm from "@/app/components/UserIDForm";
 import PasswordForm from "@/app/components/PasswordForm";
 
@@ -79,22 +79,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
 
   return (
     <>
-      <Link
-        href="/login"
-        scroll={false}
-        className="fixed top-20 md:top-2 right-1 md:right-4 z-50"
-      >
-        <Button
-          type="submit"
-          variant="outlined"
-          color="green"
-          size="lg"
-          className="rounded-full"
-        >
-          アカウントをお持ちの方はこちら
-        </Button>
-      </Link>
-      <Card className="max-w-sm w-full">
+      <Card className="max-w-sm w-full m-2">
         <CardBody>
           <Typography
             variant="h2"
@@ -140,7 +125,7 @@ export const Register = ({ isInvite }: { isInvite: boolean }) => {
           )}
         </CardBody>
       </Card>
-      <IncomeAndExpenseConfirmDialog
+      <ConfirmDialog
         open={openDialog}
         handleOpen={() => setOpenDialog(!openDialog)}
         handleCancel={handleCancel}

@@ -2,13 +2,14 @@ import { Liquidation } from "@/app/util/types";
 import { Button, Card, Typography } from "@/app/materialTailwindExports";
 import { toDateString } from "@/app/util/util";
 import { getLiquidations } from "@/app/util/apiServer";
-import Link from "next/link";
-import LiquidationFlow from "./LiquidationFlow";
+import LiquidationFlow from "../LiquidationFlow";
 import LiquidationDeleteIcon from "@/app/components/LiquidationDeleteIcon";
 import TableThTypography from "@/app/components/table/TableThTypography";
 import TableTd from "@/app/components/table/TableTd";
 import TableTypography from "@/app/components/table/TableTypography";
 import React from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const LiquidationResultList = async () => {
   const fetchData = await getLiquidations();
@@ -26,14 +27,14 @@ export const LiquidationResultList = async () => {
           </Typography>
         </div>
         <div className="mt-6 md:mt-0">
-          <Link href="/liquidation/search">
+          <Link href={"/liquidation/search"}>
             <Button
-              variant="gradient"
-              color="green"
+              variant="text"
+              color="red"
               size="lg"
-              className="w-full md:w-32"
+              className=" w-full md:w-28 row-span-3"
             >
-              {"清算追加"}
+              {"戻る"}
             </Button>
           </Link>
         </div>

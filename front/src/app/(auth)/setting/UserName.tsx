@@ -33,7 +33,7 @@ export function UserName() {
     };
 
     try {
-      const updatedUser = await updateUser(user.user.id, userUpdate);
+      const updatedUser = await updateUser(userUpdate);
       user.setUser(updatedUser);
       //結果アラート
       addSuccess("更新が成功しました。", alert);

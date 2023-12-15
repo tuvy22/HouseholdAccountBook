@@ -58,7 +58,7 @@ func main() {
 	categoryHandler := handler.NewCategoryHandler(categoryUsecase)
 
 	password := password.NewPassWord()
-	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, categoryRepo, password, originalConfig, userValidator)
+	userUsecase := usecase.NewUserUsecase(userRepo, groupRepo, categoryRepo, incomeAndExpenseRepo, liquidationRepo, password, originalConfig, userValidator)
 	userHandler := handler.NewUserHandler(userUsecase)
 
 	groupUsecase := usecase.NewGroupUsecase(groupRepo, originalConfig, groupValidator)

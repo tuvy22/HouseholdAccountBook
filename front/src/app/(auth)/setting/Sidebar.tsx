@@ -74,7 +74,9 @@ export function Sidebar({
           </ListItem>
           <AccordionBody className="py-1">
             <List className="pl-2">
-              <ListItem onClick={() => handleOpenMenu(SETTING_OPEN.USER_NAME)}>
+              <ListItem
+                onClick={() => handleOpenMenu(SETTING_OPEN.USER_NAME_Update)}
+              >
                 <ListItemPrefix>
                   <BadgeIcon />
                 </ListItemPrefix>
@@ -92,7 +94,7 @@ export function Sidebar({
                   パスワード変更
                 </Typography>
               </ListItem>
-              <ListItem onClick={() => handleOpenMenu(SETTING_OPEN.OUT_GROUP)}>
+              <ListItem onClick={() => handleOpenMenu(SETTING_OPEN.GROUP_OUT)}>
                 <ListItemPrefix>
                   <PersonRemoveIcon />
                 </ListItemPrefix>
@@ -101,7 +103,7 @@ export function Sidebar({
                 </Typography>
               </ListItem>
               <ListItem
-                onClick={() => handleOpenMenu(SETTING_OPEN.OUT_SERVICE)}
+                onClick={() => handleOpenMenu(SETTING_OPEN.USER_DELETE)}
               >
                 <ListItemPrefix>
                   <PersonOffIcon />
@@ -148,7 +150,7 @@ export function Sidebar({
                 </Typography>
               </ListItem>
               <ListItem
-                onClick={() => handleOpenMenu(SETTING_OPEN.INIT_AMOUNT)}
+                onClick={() => handleOpenMenu(SETTING_OPEN.INIT_AMOUNT_CHANGE)}
               >
                 <ListItemPrefix>
                   <CurrencyYenIcon />
@@ -157,7 +159,9 @@ export function Sidebar({
                   初期残高設定
                 </Typography>
               </ListItem>
-              <ListItem onClick={() => handleOpenMenu(SETTING_OPEN.CATEGORY)}>
+              <ListItem
+                onClick={() => handleOpenMenu(SETTING_OPEN.CATEGORY_CHANGE)}
+              >
                 <ListItemPrefix>
                   <CategoryIcon />
                 </ListItemPrefix>

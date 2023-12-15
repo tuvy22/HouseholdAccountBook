@@ -15,6 +15,8 @@ export function apiHandleError(error: unknown): string {
           return "立替額の合計が支出の金額と一致しません。一致するように入力してください。";
         case "pre_password_credentials":
           return "変更前のパスワードが間違っているため、更新できませんでした。";
+        case "un_liquidation_no_user_delete":
+          return "未精算データが残っているため退会できません。精算画面より残っている全ての精算を完了させてください。";
         case "invalid_credentials":
           return "認証に失敗しました。";
         case "invalid_login":

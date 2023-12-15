@@ -10,10 +10,11 @@ import (
 type IncomeAndExpenseRepository interface {
 	GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string, offset, limit int) error
 	GetAllIncomeAndExpenseCount(count *int64, registerUserIDs []string) error
-	GetIncomeAndExpenseLiquidations(incomeAndExpenses *[]entity.IncomeAndExpense, fromDate time.Time, toDate time.Time, registerUserID string, billingUserID string) error
+	GetIncomeAndExpenseLiquidations(incomeAndExpenses *[]entity.IncomeAndExpense, fromDate time.Time, toDate time.Time, registerUserID []string, billingUserID []string, isGetLiquidationZeroOnly bool) error
 	GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error
 	CreateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
 	UpdateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error
+	UpdateIncomeAndExpenseUserID(oldUserID string, newUserID string) error
 	DeleteIncomeAndExpense(id uint) error
 
 	GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal, registerUserIDs []string) error
@@ -55,12 +56,12 @@ func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpenseCount(count *int6
 	return nil
 }
 
-func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeAndExpenses *[]entity.IncomeAndExpense, fromDate time.Time, toDate time.Time, registerUserID string, billingUserID string) error {
+func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeAndExpenses *[]entity.IncomeAndExpense, fromDate time.Time, toDate time.Time, registerUserID []string, billingUserID []string, isGetLiquidationZeroOnly bool) error {
 
 	query := r.DB.Model(&entity.IncomeAndExpense{}).
 		Joins("JOIN income_and_expense_billing_users ON income_and_expenses.id = income_and_expense_billing_users.income_and_expense_id").
-		Where("income_and_expenses.register_user_id = ?", registerUserID).
-		Where("income_and_expense_billing_users.user_id = ?", billingUserID).
+		Where("income_and_expenses.register_user_id IN ?", registerUserID).
+		Where("income_and_expense_billing_users.user_id IN ?", billingUserID).
 		Where("income_and_expense_billing_users.liquidation_id = ?", 0)
 
 	// 日付範囲の条件を適用
@@ -80,11 +81,12 @@ func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeA
 
 	// それぞれのIncomeAndExpenseに対して、条件に一致するBillingUsersを取得
 	for i, _ := range *incomeAndExpenses {
-		err := r.DB.Model(&entity.IncomeAndExpenseBillingUser{}).
-			Where("income_and_expense_id = ?", (*incomeAndExpenses)[i].ID).
-			Find(&(*incomeAndExpenses)[i].BillingUsers).Error
 
-		if err != nil {
+		buQuery := r.DB.Model(&entity.IncomeAndExpenseBillingUser{}).Where("income_and_expense_id = ?", (*incomeAndExpenses)[i].ID)
+		if isGetLiquidationZeroOnly {
+			buQuery = buQuery.Where("liquidation_id = ?", 0)
+		}
+		if err := buQuery.Find(&(*incomeAndExpenses)[i].BillingUsers).Error; err != nil {
 			return err
 		}
 	}
@@ -129,6 +131,22 @@ func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpense(incomeAndExpense
 			tx.Rollback()
 			return err
 		}
+	}
+
+	// トランザクションのコミット
+	return tx.Commit().Error
+}
+func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpenseUserID(oldUserID string, newUserID string) error {
+	// トランザクションの開始
+	tx := r.DB.Begin()
+
+	err := tx.Model(&entity.IncomeAndExpense{}).Where("register_user_id = ?", oldUserID).Update("register_user_id", newUserID).Error
+	if err != nil {
+		return err
+	}
+	err = tx.Model(&entity.IncomeAndExpenseBillingUser{}).Where("user_id = ?", oldUserID).Update("user_id", newUserID).Error
+	if err != nil {
+		return err
 	}
 
 	// トランザクションのコミット

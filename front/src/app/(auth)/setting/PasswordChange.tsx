@@ -6,7 +6,6 @@ import {
   PasswordChangeSchema,
   passwordChangeSchema,
 } from "@/app/components/UserSchema";
-import { useUser } from "@/app/context/UserProvider";
 import { addError, addSuccess, useAlert } from "@/app/context/AlertProvider";
 import SubmitButtonForm from "@/app/components/SubmitButtonForm";
 import PasswordForm from "@/app/components/PasswordForm";
@@ -14,7 +13,6 @@ import { PasswordChange } from "@/app/util/types";
 import { passwordChange } from "@/app/util/apiClient";
 
 export function PasswordChange() {
-  const user = useUser();
   const alert = useAlert();
 
   const {
@@ -37,7 +35,7 @@ export function PasswordChange() {
     };
 
     try {
-      await passwordChange(user.user.id, passwordChangeData);
+      await passwordChange(passwordChangeData);
       //結果アラート
       addSuccess("更新が成功しました。", alert);
     } catch (error) {

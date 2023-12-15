@@ -40,7 +40,7 @@ export function MdHeaderMenu({
           </Link>
         </MenuItem>
         <MenuItem>
-          <Link href="/liquidation" className="flex justify-start gap-3">
+          <Link href="/liquidation/search" className="flex justify-start gap-3">
             <AccountBalanceWalletIcon />
             <Typography variant="h2" className="text-xl">
               清算

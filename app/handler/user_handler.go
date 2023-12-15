@@ -22,6 +22,7 @@ type UserHandler interface {
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	ChangePassword(c *gin.Context)
+	OutGroup(c *gin.Context)
 	DeleteUser(c *gin.Context)
 }
 
@@ -179,7 +180,7 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	userResponse, userSession, err := h.usecase.UpdateUser(loginUser.ID, c.Param("id"), user)
+	userResponse, userSession, err := h.usecase.UpdateUser(loginUser.ID, user)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -212,7 +213,24 @@ func (h *userHandlerImpl) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.ChangePassword(loginUser.ID, c.Param("id"), passwordChange)
+	err = h.usecase.ChangePassword(loginUser.ID, passwordChange)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+func (h *userHandlerImpl) OutGroup(c *gin.Context) {
+
+	// ログインデータ取得
+	loginUser, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	err = h.usecase.OutGroup(loginUser.ID, loginUser.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -222,7 +240,14 @@ func (h *userHandlerImpl) ChangePassword(c *gin.Context) {
 
 func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
 
-	err := h.usecase.DeleteUser(c.Param("id"))
+	// ログインデータ取得
+	loginUser, err := GetLoginUser(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	err = h.usecase.DeleteUser(loginUser.ID)
 	if err != nil {
 		errorResponder(c, err)
 		return

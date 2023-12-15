@@ -8,10 +8,11 @@ import { Button, Card, Typography } from "@/app/materialTailwindExports";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
 
-import { IncomeAndExpenseConfirmDialog } from "@/app/components/IncomeAndExpenseConfirmDialog";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import { postLiquidation } from "@/app/util/apiClient";
 import { addError, addSuccess, useAlert } from "@/app/context/AlertProvider";
 import LiquidationFlow from "../LiquidationFlow";
+import Link from "next/link";
 
 export interface CheckedItems {
   [key: number]: boolean;
@@ -189,17 +190,16 @@ export const LiquidationSearchResult = ({
           </Typography>
         </div>
         <div>
-          <Button
-            variant="text"
-            color="red"
-            onClick={() => {
-              router.back();
-            }}
-            size="lg"
-            className=" w-full md:w-28 row-span-3"
-          >
-            {"戻る"}
-          </Button>
+          <Link href={"/liquidation/search"}>
+            <Button
+              variant="text"
+              color="red"
+              size="lg"
+              className=" w-full md:w-28 row-span-3"
+            >
+              {"戻る"}
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -241,7 +241,7 @@ export const LiquidationSearchResult = ({
           </div>
         </Card>
       )}
-      <IncomeAndExpenseConfirmDialog
+      <ConfirmDialog
         open={openDialog}
         handleOpen={() => setOpenDialog(!openDialog)}
         handleOk={handleLiquidation}
@@ -249,7 +249,6 @@ export const LiquidationSearchResult = ({
         message="清算金額を実際にやり取りした後に清算ボタンを押してください。"
         cancelBtnName="キャンセル"
         okBtnName="清算"
-        isOkBtnFocus={true}
       />
     </>
   );

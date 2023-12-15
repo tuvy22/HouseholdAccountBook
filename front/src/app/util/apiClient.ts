@@ -130,9 +130,9 @@ export const postUser = async (user: UserCreate) => {
     throw new Error(apiHandleError(error));
   }
 };
-export const updateUser = async (userID: string, user: UserUpdate) => {
+export const updateUser = async (user: UserUpdate) => {
   try {
-    const response = await axios.put(`/api/private/user/${userID}`, user, {
+    const response = await axios.put("/api/private/user", user, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -143,13 +143,33 @@ export const updateUser = async (userID: string, user: UserUpdate) => {
     throw new Error(apiHandleError(error));
   }
 };
-export const passwordChange = async (
-  userID: string,
-  passwordChange: PasswordChange
-) => {
+export const userOutGroup = async () => {
+  try {
+    await axios.put("/api/private/user/out-group", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    throw new Error(apiHandleError(error));
+  }
+};
+export const deleteUser = async () => {
+  try {
+    await axios.delete("/api/private/user", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    throw new Error(apiHandleError(error));
+  }
+};
+
+export const passwordChange = async (passwordChange: PasswordChange) => {
   try {
     const response = await axios.put(
-      `/api/private/user/password/${userID}`,
+      "/api/private/user/password/",
       passwordChange,
       {
         headers: {

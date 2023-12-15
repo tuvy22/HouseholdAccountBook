@@ -11,6 +11,7 @@ type LiquidationRepository interface {
 	GetLiquidation(id uint, liquidation *entity.Liquidation) error
 	GetAllLiquidation(liquidations *[]entity.Liquidation, registerUserIDs []string) error
 	GetAllLiquidationBillingUserByID(incomeAndExpenseBillingUser *[]entity.IncomeAndExpenseBillingUser, billingUserID uint) error
+	UpdateLiquidationUserID(oldUserID string, newUserID string) error
 }
 
 type liquidationRepositoryImpl struct {
@@ -81,6 +82,19 @@ func (r *liquidationRepositoryImpl) GetAllLiquidation(liquidations *[]entity.Liq
 
 func (r *liquidationRepositoryImpl) GetAllLiquidationBillingUserByID(incomeAndExpenseBillingUser *[]entity.IncomeAndExpenseBillingUser, liquidationID uint) error {
 	if err := r.DB.Where("liquidation_id = ?", liquidationID).Order("id desc").Find(&incomeAndExpenseBillingUser).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *liquidationRepositoryImpl) UpdateLiquidationUserID(oldUserID string, newUserID string) error {
+
+	err := r.DB.Model(&entity.Liquidation{}).Where("register_user_id = ?", oldUserID).Update("register_user_id", newUserID).Error
+	if err != nil {
+		return err
+	}
+	err = r.DB.Model(&entity.Liquidation{}).Where("target_user_id = ?", oldUserID).Update("target_user_id", newUserID).Error
+	if err != nil {
 		return err
 	}
 	return nil
