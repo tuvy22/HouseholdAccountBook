@@ -5,11 +5,13 @@ import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import { useEffect, useState } from "react";
 import { Button } from "@/app/materialTailwindExports";
 import { getGroupAllUser, userOutGroup } from "@/app/util/apiClient";
+import { useUser } from "@/app/context/UserProvider";
 
 export function UserGroupOut() {
   const alert = useAlert();
   const [openDialog, setOpenDialog] = useState(false);
   const [allowGroupOut, setAllowGroupOut] = useState(false);
+  const user = useUser();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,11 +26,12 @@ export function UserGroupOut() {
       }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
   const onSubmit = async () => {
     try {
-      await userOutGroup();
+      const updatedUser = await userOutGroup();
+      user.setUser(updatedUser);
 
       //結果アラート
       addSuccess("グループから脱退しました。", alert);

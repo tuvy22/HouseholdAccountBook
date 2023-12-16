@@ -15,7 +15,9 @@ export default function PreAuthHeader({
     <>
       <header className="p-1 border-b border-green-500  bg-gray-50 flex justify-between items-center flex-wrap gap-2">
         <div>
-          <Logo />
+          <Link href="/">
+            <Logo />
+          </Link>
         </div>
         {isButtonDispay && (
           <div className="ml-auto">

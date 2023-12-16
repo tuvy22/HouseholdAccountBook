@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math/rand"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -17,14 +18,13 @@ import (
 
 type UserUsecase interface {
 	Authenticate(creds entity.Credentials) (entity.UserResponse, entity.UserSession, error)
-	GetAllUser() ([]entity.UserResponse, error)
 	GetGroupAllUser(groupID uint, firstUserID string) ([]entity.UserResponse, error)
 	GetUser(id string) (entity.UserResponse, error)
 	CreateUser(userCreate entity.UserCreate, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error)
 	UpdateUser(userId string, userUpdate entity.UserUpdate) (entity.UserResponse, entity.UserSession, error)
 	ChangePassword(userId string, passwordChange entity.PasswordChange) error
-	ChangeGroup(userId string, inviteGroupID uint) error
-	OutGroup(userId string, outGroupID uint) error
+	ChangeGroup(userId string, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error)
+	OutGroup(userId string, outGroupID uint) (entity.UserResponse, entity.UserSession, error)
 	DeleteUser(userID string) error
 }
 
@@ -68,17 +68,6 @@ func (u *userUsecaseImpl) authenticate(creds entity.Credentials, checkPasswordEr
 	}
 
 	return user, nil
-}
-
-func (u *userUsecaseImpl) GetAllUser() ([]entity.UserResponse, error) {
-	users := []entity.User{}
-
-	err := u.repo.GetAllUser(&users)
-	if err != nil {
-		return u.convertToUserResponses(users), err
-	}
-
-	return u.convertToUserResponses(users), nil
 }
 func (u *userUsecaseImpl) GetGroupAllUser(groupID uint, firstUserID string) ([]entity.UserResponse, error) {
 	users := []entity.User{}
@@ -334,12 +323,12 @@ func (u *userUsecaseImpl) checkUnLiquidation(userID string, groupUserIDs []strin
 	targetRegisterResult := []entity.IncomeAndExpense{}
 	var zeroTime time.Time
 
-	err := u.incomeAndExpenseRepo.GetIncomeAndExpenseLiquidations(&myRegisterResult, zeroTime, zeroTime, []string{userID}, groupOtherUserIDs, true)
+	err := u.incomeAndExpenseRepo.GetIncomeAndExpenseLiquidations(&myRegisterResult, zeroTime, zeroTime, []string{userID}, groupOtherUserIDs)
 	if err != nil {
 		return err
 	}
 
-	err = u.incomeAndExpenseRepo.GetIncomeAndExpenseLiquidations(&targetRegisterResult, zeroTime, zeroTime, groupOtherUserIDs, []string{userID}, true)
+	err = u.incomeAndExpenseRepo.GetIncomeAndExpenseLiquidations(&targetRegisterResult, zeroTime, zeroTime, groupOtherUserIDs, []string{userID})
 	if err != nil {
 		return err
 
@@ -354,17 +343,31 @@ func (u *userUsecaseImpl) checkUnLiquidation(userID string, groupUserIDs []strin
 
 }
 
-func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) error {
+func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) (entity.UserResponse, entity.UserSession, error) {
 
 	//更新前のユーザー取得
 	preUser := entity.User{}
 	err := u.repo.GetUser(userId, &preUser)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
+
+	//同じグループに入ろうとしてないかチェック
 	err = u.checkAlreadyInGroup(preUser.GroupID, inviteGroupID)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
+	}
+
+	//所属してるグループのユーザーID取得
+	groupUserIDs, err := u.getGroupUserIDs(preUser.GroupID)
+	if err != nil {
+		return entity.UserResponse{}, entity.UserSession{}, err
+	}
+
+	//二人以上のグループからの移動はエラー
+	err = u.checkGroupInMultiUser(groupUserIDs)
+	if err != nil {
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	//変更前のID保持
@@ -375,16 +378,24 @@ func (u *userUsecaseImpl) ChangeGroup(userId string, inviteGroupID uint) error {
 	//ユーザー情報更新
 	err = u.repo.UpdateUser(&preUser)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	//元いたグループにまだユーザーがいなければグループ削除
 	err = u.conditionalDeleteGroupAndCategory(preGroupID)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
-	return nil
+	//変更後のデータ取得
+	user := entity.User{}
+	err = u.repo.GetUser(userId, &user)
+	if err != nil {
+		return entity.UserResponse{}, entity.UserSession{}, err
+	}
+
+	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
+
 }
 func (u *userUsecaseImpl) conditionalDeleteGroupAndCategory(groupID uint) error {
 
@@ -420,37 +431,37 @@ func (u *userUsecaseImpl) checkAlreadyInGroup(preGroupID uint, inviteGroupID uin
 	return nil
 }
 
-func (u *userUsecaseImpl) OutGroup(userID string, outGroupID uint) error {
+func (u *userUsecaseImpl) OutGroup(userID string, outGroupID uint) (entity.UserResponse, entity.UserSession, error) {
 
 	//所属してるグループのユーザーID取得
 	groupUserIDs, err := u.getGroupUserIDs(outGroupID)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	//一人のグループでないか確認
-	err = u.checkGroupInMultiUser(groupUserIDs)
+	err = u.checkGroupInSingleUser(groupUserIDs)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	//未清算がないか確認
 	err = u.checkUnLiquidation(userID, groupUserIDs)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	//更新前のユーザー取得
 	preUser := entity.User{}
 	err = u.repo.GetUser(userID, &preUser)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	//グループ新規作成
 	groupId, err := u.createGroup()
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
 	//新規グループに移動
@@ -459,10 +470,17 @@ func (u *userUsecaseImpl) OutGroup(userID string, outGroupID uint) error {
 	//ユーザー情報更新
 	err = u.repo.UpdateUser(&preUser)
 	if err != nil {
-		return err
+		return entity.UserResponse{}, entity.UserSession{}, err
 	}
 
-	return nil
+	//変更後のデータ取得
+	user := entity.User{}
+	err = u.repo.GetUser(userID, &user)
+	if err != nil {
+		return entity.UserResponse{}, entity.UserSession{}, err
+	}
+
+	return u.convertToUserResponse(user), u.convertToUserSession(user), nil
 }
 
 func (u *userUsecaseImpl) DeleteUser(userID string) error {
@@ -492,22 +510,22 @@ func (u *userUsecaseImpl) DeleteUser(userID string) error {
 		return err
 	}
 
-	//グループ・カテゴリー削除
+	//グループ・カテゴリー削除(自分一人のグループなら)
 	err = u.conditionalDeleteGroupAndCategory(preUser.GroupID)
 	if err != nil {
 		return err
 	}
 
-	//ランダムのダミーユーザーを作成(退会ユーザーと置き換えることにより清算の整合性を保つ)
+	//同じIDを使われないようにダミーユーザーを作成
 	dummyUser := entity.User{}
-	dummyUser.ID = u.generateRandomString(10)
+	dummyUser.ID = userID
 	hashPassword, err := u.password.HashPassword(u.generateRandomString(32))
 	if err != nil {
 		return err
 	}
 	dummyUser.Password = hashPassword
-	dummyUser.Name = "退会済みユーザー"
-	dummyUser.GroupID = preUser.GroupID
+	dummyUser.Name = ""
+	dummyUser.GroupID = entity.GroupIDNone
 
 	err = u.repo.CreateUser(&dummyUser)
 	if err != nil {
@@ -515,43 +533,42 @@ func (u *userUsecaseImpl) DeleteUser(userID string) error {
 	}
 
 	//ID置き換え
-	err = u.incomeAndExpenseRepo.UpdateIncomeAndExpenseUserID(preUser.ID, dummyUser.ID)
-	if err != nil {
-		return err
-	}
-	err = u.liquidationRepo.UpdateLiquidationUserID(preUser.ID, dummyUser.ID)
-	if err != nil {
-		return err
-	}
+	// err = u.incomeAndExpenseRepo.UpdateIncomeAndExpenseUserID(preUser.ID, dummyUser.ID)
+	// if err != nil {
+	// 	return err
+	// }
+	// err = u.liquidationRepo.UpdateLiquidationUserID(preUser.ID, dummyUser.ID)
+	// if err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
 
-func (u *userUsecaseImpl) checkGroupInMultiUser(groupUserIDs []string) error {
+func (u *userUsecaseImpl) checkGroupInSingleUser(groupUserIDs []string) error {
 	if len(groupUserIDs) < 2 {
-		//複数ユーザー存在しないグループはエラー
-		return customerrors.NewCustomError(customerrors.ErrBadRequest)
+		//一人のグループはエラー
+		return customerrors.NewCustomError(customerrors.ErrSingleUserOutGroup)
+	}
+	return nil
+}
+
+func (u *userUsecaseImpl) checkGroupInMultiUser(groupUserIDs []string) error {
+	if len(groupUserIDs) > 1 {
+		//一人より多いグループはエラー
+		return customerrors.NewCustomError(customerrors.ErrMultiUserLiquidation)
 	}
 	return nil
 }
 
 func (u *userUsecaseImpl) moveToFirst(users []entity.User, targetID string) []entity.User {
-	targetIndex := -1
-	for i, user := range users {
-		if user.ID == targetID {
-			targetIndex = i
-			break
-		}
-	}
+	// sort.SliceStableを使用してIDが"5"の要素を先頭に移動
+	sort.SliceStable(users, func(i, j int) bool {
+		// i番目の要素が対象IDならtrueを返して先頭に移動
+		return users[i].ID == targetID
+	})
 
-	// IDが見つからない場合、またはすでに先頭にいる場合は、元の配列を返す
-	if targetIndex <= 0 {
-		return users
-	}
-
-	// 特定のIDを持つ要素を先頭に移動
-	// targetIndexが配列の途中にある場合のみ、処理を行う
-	return append([]entity.User{users[targetIndex]}, append(users[:targetIndex], users[targetIndex+1:]...)...)
+	return users
 }
 
 func (u *userUsecaseImpl) getInitCategory(groupID uint, isExpense bool) ([]entity.Category, error) {

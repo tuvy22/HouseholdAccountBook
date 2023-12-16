@@ -89,7 +89,7 @@ const LiquidationSearch = () => {
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex md:justify-between justify-center flex-col md:flex-row gap-4">
         <Typography
           variant="h3"
           color="gray"
@@ -97,7 +97,7 @@ const LiquidationSearch = () => {
         >
           清算対象検索
         </Typography>
-        <div className="flex items-end">
+        <div className="flex items-end justify-end">
           <Link
             href={"/liquidation/result"}
             className="text-blue-600 underline hover:no-underline"

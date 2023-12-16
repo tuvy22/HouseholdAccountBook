@@ -9,7 +9,7 @@ type LiquidationRepository interface {
 	CreateLiquidationAndUpdateBillingUser(liquidation *entity.Liquidation, updateBillingUserIDs []uint) error
 	DeleteLiquidationAndUpdateBillingUser(id uint, updateBillingUserIDs []uint) error
 	GetLiquidation(id uint, liquidation *entity.Liquidation) error
-	GetAllLiquidation(liquidations *[]entity.Liquidation, registerUserIDs []string) error
+	GetAllLiquidation(liquidations *[]entity.Liquidation, userIDs []string) error
 	GetAllLiquidationBillingUserByID(incomeAndExpenseBillingUser *[]entity.IncomeAndExpenseBillingUser, billingUserID uint) error
 	UpdateLiquidationUserID(oldUserID string, newUserID string) error
 }
@@ -73,8 +73,12 @@ func (r *liquidationRepositoryImpl) GetLiquidation(id uint, liquidation *entity.
 	return nil
 }
 
-func (r *liquidationRepositoryImpl) GetAllLiquidation(liquidations *[]entity.Liquidation, registerUserIDs []string) error {
-	if err := r.DB.Where("register_user_id IN ?", registerUserIDs).Order("Date desc, id desc").Find(&liquidations).Error; err != nil {
+func (r *liquidationRepositoryImpl) GetAllLiquidation(liquidations *[]entity.Liquidation, userIDs []string) error {
+	// サブクエリ
+	subQuery := r.DB.Model(&entity.IncomeAndExpenseBillingUser{}).Select("liquidation_id").Where("user_id IN ?", userIDs)
+
+	query := r.DB.Where("register_user_id IN ?", userIDs).Or("id IN (?)", subQuery)
+	if err := query.Order("Date desc, id desc").Find(&liquidations).Error; err != nil {
 		return err
 	}
 	return nil

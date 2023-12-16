@@ -15,7 +15,6 @@ type UserHandler interface {
 	Authenticate(c *gin.Context)
 	DeleteAuthenticate(c *gin.Context)
 
-	GetAllUser(c *gin.Context)
 	GetLoginUser(c *gin.Context)
 	GetGroupAllUser(c *gin.Context)
 
@@ -47,15 +46,6 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 		return
 	}
 
-	// セッションにデータを設定
-	session := sessions.Default(c)
-	session.Set("user", userSession)
-	err = session.Save()
-	if err != nil {
-		errorResponder(c, err)
-		return
-	}
-
 	inviteGroupID, err := GetInviteGroupID(c)
 	if err != nil {
 		errorResponder(c, err)
@@ -64,7 +54,7 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 
 	//招待された場合の処理
 	if inviteGroupID != entity.GroupIDNone {
-		err := h.usecase.ChangeGroup(user.ID, inviteGroupID)
+		_, userSession, err = h.usecase.ChangeGroup(user.ID, inviteGroupID)
 		if err != nil {
 
 			errorResponder(c, err)
@@ -74,10 +64,27 @@ func (h *userHandlerImpl) Authenticate(c *gin.Context) {
 		h.deleteInviteCookie(c)
 	}
 
+	// セッションにデータを設定
+	err = h.setSession(c, userSession)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
 	c.JSON(http.StatusOK, user)
 }
 
 func (h *userHandlerImpl) DeleteAuthenticate(c *gin.Context) {
+
+	err := h.deleteAuthenticate(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+func (h *userHandlerImpl) deleteAuthenticate(c *gin.Context) error {
 
 	session := sessions.Default(c)
 
@@ -85,25 +92,14 @@ func (h *userHandlerImpl) DeleteAuthenticate(c *gin.Context) {
 	session.Clear()
 	err := session.Save()
 	if err != nil {
-		errorResponder(c, err)
-		return
+		return err
+
 	}
 	// セッションクッキーを無効化
 	c.SetCookie(SessionIDCookie, "", -1, "/", "", true, true)
-
-	c.Status(http.StatusOK)
+	return nil
 }
 
-func (h *userHandlerImpl) GetAllUser(c *gin.Context) {
-
-	users, err := h.usecase.GetAllUser()
-	if err != nil {
-		errorResponder(c, err)
-		return
-	}
-
-	c.JSON(http.StatusOK, users)
-}
 func (h *userHandlerImpl) GetGroupAllUser(c *gin.Context) {
 	// ログインデータ取得
 	loginUser, err := GetLoginUser(c)
@@ -151,9 +147,7 @@ func (h *userHandlerImpl) CreateUser(c *gin.Context) {
 		return
 	}
 	// セッションにデータを設定
-	session := sessions.Default(c)
-	session.Set("user", userSession)
-	err = session.Save()
+	err = h.setSession(c, userSession)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -187,9 +181,7 @@ func (h *userHandlerImpl) UpdateUser(c *gin.Context) {
 	}
 
 	// セッションにデータを設定
-	session := sessions.Default(c)
-	session.Set("user", userSession)
-	err = session.Save()
+	err = h.setSession(c, userSession)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -230,12 +222,21 @@ func (h *userHandlerImpl) OutGroup(c *gin.Context) {
 		return
 	}
 
-	err = h.usecase.OutGroup(loginUser.ID, loginUser.GroupID)
+	//グループを抜ける
+	userResponse, userSession, err := h.usecase.OutGroup(loginUser.ID, loginUser.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return
 	}
-	c.Status(http.StatusOK)
+
+	// セッションにデータを設定
+	err = h.setSession(c, userSession)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, userResponse)
 }
 
 func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
@@ -252,7 +253,25 @@ func (h *userHandlerImpl) DeleteUser(c *gin.Context) {
 		errorResponder(c, err)
 		return
 	}
+
+	err = h.deleteAuthenticate(c)
+	if err != nil {
+		errorResponder(c, err)
+		return
+	}
+
 	c.Status(http.StatusOK)
+}
+
+func (h *userHandlerImpl) setSession(c *gin.Context, userSession entity.UserSession) error {
+	// セッションにデータを設定
+	session := sessions.Default(c)
+	session.Set("user", userSession)
+	err := session.Save()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (h *userHandlerImpl) bindUser(c *gin.Context) (entity.User, error) {

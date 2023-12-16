@@ -5,7 +5,7 @@ import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import { useState } from "react";
 import { Button } from "@/app/materialTailwindExports";
 import { useRouter } from "next/navigation";
-import { deleteUser } from "@/app/util/apiClient";
+import { authDel, deleteUser } from "@/app/util/apiClient";
 
 export function UserDelete() {
   const alert = useAlert();

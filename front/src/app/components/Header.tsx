@@ -32,10 +32,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white">
       <div className="flex-1 flex justify-between w-full">
-        <Link
-          href="/income-and-expense"
-          className="p-1 flex flex-col items-left"
-        >
+        <Link href="/income-and-expense">
           <Logo />
         </Link>
       </div>

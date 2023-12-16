@@ -15,6 +15,10 @@ const (
 	ErrPrePasswordCredentials ErrorCode = "pre_password_credentials"
 	//未精算データがあり退会できない
 	ErrUnLiquidationNoUserDelete ErrorCode = "un_liquidation_no_user_delete"
+	//一人のグループから脱退はできない
+	ErrSingleUserOutGroup ErrorCode = "single_user_out_group"
+	//二人以上のグループから移動はできない
+	ErrMultiUserLiquidation ErrorCode = "multi_user_liquidation"
 	//認証失敗
 	ErrInvalidCredentials ErrorCode = "invalid_credentials"
 	//ログイン失敗

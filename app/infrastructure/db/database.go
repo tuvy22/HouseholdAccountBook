@@ -41,6 +41,7 @@ func init() {
 	}
 	// ドロップ
 	//db.Migrator().DropTable(&entity.IncomeAndExpense{}, &entity.IncomeAndExpenseBillingUser{}, &entity.Liquidation{})
+	//db.Migrator().DropTable(&entity.IncomeAndExpense{}, &entity.User{}, &entity.Group{}, &entity.IncomeAndExpenseBillingUser{}, &entity.Liquidation{}, &entity.Category{})
 
 	// テーブルを自動マイグレーション
 	db.AutoMigrate(&entity.IncomeAndExpense{}, &entity.User{}, &entity.Group{}, &entity.IncomeAndExpenseBillingUser{}, &entity.Liquidation{}, &entity.Category{})

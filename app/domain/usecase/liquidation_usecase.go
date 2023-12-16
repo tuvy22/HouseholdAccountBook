@@ -9,7 +9,7 @@ import (
 
 type LiquidationUsecase interface {
 	CreateLiquidation(data entity.LiquidationCreate, userId string, groupId uint) error
-	GetAllLiquidation(groupID uint) ([]entity.LiquidationResponse, error)
+	GetAllLiquidation(userID string, groupID uint) ([]entity.LiquidationResponse, error)
 	DeleteLiquidation(liquidationID uint, userId string) error
 }
 
@@ -76,15 +76,10 @@ func (u *liquidationUsecaseImpl) DeleteLiquidation(liquidationID uint, userId st
 	return u.repo.DeleteLiquidationAndUpdateBillingUser(liquidationID, updateBillingUserIDs)
 }
 
-func (u *liquidationUsecaseImpl) GetAllLiquidation(groupID uint) ([]entity.LiquidationResponse, error) {
+func (u *liquidationUsecaseImpl) GetAllLiquidation(userID string, groupID uint) ([]entity.LiquidationResponse, error) {
 	liquidations := []entity.Liquidation{}
 
-	userIDs, err := u.getGroupUserIDs(groupID)
-	if err != nil {
-		return []entity.LiquidationResponse{}, err
-	}
-
-	err = u.repo.GetAllLiquidation(&liquidations, userIDs)
+	err := u.repo.GetAllLiquidation(&liquidations, []string{userID})
 	if err != nil {
 		return []entity.LiquidationResponse{}, err
 	}
@@ -95,6 +90,7 @@ func (u *liquidationUsecaseImpl) GetAllLiquidation(groupID uint) ([]entity.Liqui
 
 	results := u.convertToLiquidations(liquidations, userMap)
 
+	//IDに紐づくBillingUserの設定
 	for i := range results {
 		result := &results[i]
 
@@ -195,13 +191,25 @@ func (u *liquidationUsecaseImpl) convertToLiquidations(liquidations []entity.Liq
 
 	for _, liquidation := range liquidations {
 
+		registerUserName, ok := userMap[liquidation.RegisterUserID]
+		// 別のグループに移動したなど今は存在しないユーザーの場合の設定
+		if !ok {
+			registerUserName = "不明なユーザー"
+		}
+
+		targetUserName, ok := userMap[liquidation.TargetUserID]
+		// 別のグループに移動したなど今は存在しないユーザーの場合の設定
+		if !ok {
+			targetUserName = "不明なユーザー"
+		}
+
 		response := entity.LiquidationResponse{
 			ID:               liquidation.ID,
 			Date:             liquidation.Date,
 			RegisterUserID:   liquidation.RegisterUserID,
-			RegisterUserName: userMap[liquidation.RegisterUserID],
+			RegisterUserName: registerUserName,
 			TargetUserID:     liquidation.TargetUserID,
-			TargetUserName:   userMap[liquidation.TargetUserID],
+			TargetUserName:   targetUserName,
 		}
 		resultResponses = append(resultResponses, response)
 	}
@@ -215,11 +223,18 @@ func (u *liquidationUsecaseImpl) convertToBillingUsersResponse(billingUsers []en
 	resultResponses := make([]entity.IncomeAndExpenseBillingUserResponse, 0, len(billingUsers))
 
 	for _, billingUser := range billingUsers {
+
+		userName, ok := userMap[billingUser.UserID]
+		// 別のグループに移動したなど今は存在しないユーザーの場合の設定
+		if !ok {
+			userName = "不明なユーザー"
+		}
+
 		response := entity.IncomeAndExpenseBillingUserResponse{
 			ID:                 billingUser.ID,
 			IncomeAndExpenseID: billingUser.IncomeAndExpenseID,
 			UserID:             billingUser.UserID,
-			UserName:           userMap[billingUser.UserID],
+			UserName:           userName,
 			Amount:             billingUser.Amount,
 			LiquidationID:      billingUser.LiquidationID,
 		}

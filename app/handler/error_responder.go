@@ -28,6 +28,10 @@ func errorResponder(c *gin.Context, paramErr error) {
 			statusCode = http.StatusUnauthorized
 		case customerrors.ErrUnLiquidationNoUserDelete:
 			statusCode = http.StatusPreconditionFailed
+		case customerrors.ErrSingleUserOutGroup:
+			statusCode = http.StatusBadRequest
+		case customerrors.ErrMultiUserLiquidation:
+			statusCode = http.StatusPreconditionFailed
 		case customerrors.ErrInvalidCredentials:
 			statusCode = http.StatusUnauthorized
 		case customerrors.ErrInvalidLogin:

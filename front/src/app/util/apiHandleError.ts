@@ -17,6 +17,10 @@ export function apiHandleError(error: unknown): string {
           return "変更前のパスワードが間違っているため、更新できませんでした。";
         case "un_liquidation_no_user_delete":
           return "未精算データが残っているため退会できません。精算画面より残っている全ての精算を完了させてください。";
+        case "single_user_out_group":
+          return "自分一人だけのグループから脱退することは出来ません。";
+        case "multi_user_liquidation":
+          return "他のグループに入るには今のグループをまずは脱退してください。";
         case "invalid_credentials":
           return "認証に失敗しました。";
         case "invalid_login":

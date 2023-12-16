@@ -10,7 +10,7 @@ import (
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
 )
 
-const pageSize = 3
+const pageSize = 100
 
 type IncomeAndExpenseUsecase interface {
 	GetAllIncomeAndExpense(groupID uint, page int) ([]entity.IncomeAndExpenseResponse, error)
@@ -80,12 +80,12 @@ func (u *incomeAndExpenseUsecaseImpl) GetIncomeAndExpenseLiquidations(fromDate t
 	myRegisterResult := []entity.IncomeAndExpense{}
 	targetRegisterResult := []entity.IncomeAndExpense{}
 
-	err := u.repo.GetIncomeAndExpenseLiquidations(&myRegisterResult, fromDate, toDate, []string{loginUserID}, []string{billingUserID}, false)
+	err := u.repo.GetIncomeAndExpenseLiquidations(&myRegisterResult, fromDate, toDate, []string{loginUserID}, []string{billingUserID})
 	if err != nil {
 		return u.convertToIncomeAndExpenseResponse(myRegisterResult, groupID), err
 	}
 
-	err = u.repo.GetIncomeAndExpenseLiquidations(&targetRegisterResult, fromDate, toDate, []string{billingUserID}, []string{loginUserID}, false)
+	err = u.repo.GetIncomeAndExpenseLiquidations(&targetRegisterResult, fromDate, toDate, []string{billingUserID}, []string{loginUserID})
 	if err != nil {
 		return u.convertToIncomeAndExpenseResponse(targetRegisterResult, groupID), err
 
@@ -446,16 +446,27 @@ func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAn
 		billingUsers := []entity.IncomeAndExpenseBillingUserResponse{}
 
 		for _, billingUser := range incomeAndExpense.BillingUsers {
+			userName, ok := userMap[billingUser.UserID]
+			// 別のグループに移動したなど今は存在しないユーザーの場合の設定
+			if !ok {
+				userName = "不明なユーザー"
+			}
+
 			response := entity.IncomeAndExpenseBillingUserResponse{
 				ID:                 billingUser.ID,
 				IncomeAndExpenseID: billingUser.IncomeAndExpenseID,
 				UserID:             billingUser.UserID,
-				UserName:           userMap[billingUser.UserID],
+				UserName:           userName,
 				Amount:             billingUser.Amount,
 				LiquidationID:      billingUser.LiquidationID,
 			}
 			billingUsers = append(billingUsers, response)
 
+		}
+		userName, ok := userMap[incomeAndExpense.RegisterUserID]
+		// 別のグループに移動したなど今は存在しないユーザーの場合の設定
+		if !ok {
+			userName = "不明なユーザー"
 		}
 
 		response := entity.IncomeAndExpenseResponse{
@@ -465,7 +476,7 @@ func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAn
 			Memo:             incomeAndExpense.Memo,
 			Date:             incomeAndExpense.Date,
 			RegisterUserID:   incomeAndExpense.RegisterUserID,
-			RegisterUserName: userMap[incomeAndExpense.RegisterUserID],
+			RegisterUserName: userName,
 			BillingUsers:     billingUsers,
 		}
 		resultResponses = append(resultResponses, response)

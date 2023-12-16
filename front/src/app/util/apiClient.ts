@@ -145,11 +145,13 @@ export const updateUser = async (user: UserUpdate) => {
 };
 export const userOutGroup = async () => {
   try {
-    await axios.put("/api/private/user/out-group", {
+    const response = await axios.put("/api/private/user/out-group", {
       headers: {
         "Content-Type": "application/json",
       },
     });
+    const result: User = response.data;
+    return result;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }

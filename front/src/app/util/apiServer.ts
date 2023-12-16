@@ -145,25 +145,3 @@ export const getLiquidations = async () => {
     throw new Error(apiHandleError(error));
   }
 };
-export const getCategoryAllServer = async (expense: boolean) => {
-  const expenseURL = "http://localhost:8080/api/localhost/category/all/expense";
-  const incomeURL = "http://localhost:8080/api/localhost/category/all/income";
-
-  const url = expense ? expenseURL : incomeURL;
-
-  try {
-    const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
-
-    const response = await axios.get(url, {
-      headers: {
-        cache: "no-store",
-        Cookie: `${cookie?.name}=${cookie?.value};`,
-      },
-    });
-    const result: Category[] = response.data;
-    return result;
-  } catch (error) {
-    throw new Error(apiHandleError(error));
-  }
-};

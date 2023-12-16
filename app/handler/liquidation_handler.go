@@ -75,7 +75,7 @@ func (h *liquidationHandlerImpl) GetAllLiquidation(c *gin.Context) {
 		return
 	}
 
-	result, err := h.usecase.GetAllLiquidation(loginUser.GroupID)
+	result, err := h.usecase.GetAllLiquidation(loginUser.ID, loginUser.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return

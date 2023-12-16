@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Typography,
-} from "@/app/materialTailwindExports";
+import { Card, CardBody, Typography } from "@/app/materialTailwindExports";
 
 export default function RightPage({
   title = "",

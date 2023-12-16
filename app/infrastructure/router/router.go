@@ -40,15 +40,13 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, groupHandler 
 
 	localhost := r.Group("/api/localhost")
 	localhost.Use(middlewareHandler.LocalhostOnly())
-	localhost.GET("/user/all", userHandler.GetAllUser)
+
 	localhost.GET("/user/group-all", userHandler.GetGroupAllUser)
 	localhost.GET("/income-and-expense/all", incomeAndExpenseHandler.GetAllIncomeAndExpense)
 	localhost.GET("/income-and-expense/all/max-page", incomeAndExpenseHandler.GetAllIncomeAndExpenseMaxPage)
 	localhost.GET("/income-and-expense/monthly-total", incomeAndExpenseHandler.GetMonthlyTotal)
 	localhost.GET("/income-and-expense/liquidations", incomeAndExpenseHandler.GetIncomeAndExpenseLiquidations)
 	localhost.GET("/liquidation/all", liquidationHandler.GetAllLiquidation)
-	localhost.GET("/category/all/income", categoryHandler.GetAllIncomeCategory)
-	localhost.GET("/category/all/expense", categoryHandler.GetAllExpenseCategory)
 
 	authorized := r.Group("/api/private")
 	authorized.Use(middlewareHandler.CheckSessionId())
