@@ -5,7 +5,6 @@ import { Card } from "@/app/materialTailwindExports";
 import EditIcon from "../EditIcon";
 import IncomeAndExpenseDeleteIcon from "../IncomeAndExpenseDeleteIcon";
 import BillingPopover from "../BillingPopover";
-import { CheckedItems } from "../../(auth)/liquidation/search-result/LiquidationSearchResult";
 
 import TableThTypography from "./TableThTypography";
 import TableThCheckBox from "./TableThCheckBox";
@@ -15,6 +14,7 @@ import TableTdCheckbox from "./TableTdCheckbox";
 import TableTd from "./TableTd";
 import TableTdAmount from "./TableTdAmount";
 import React from "react";
+import { CheckedItems } from "@/app/(auth)/liquidation/search-result/LiquidationSearchResult";
 
 export const IncomeAndExpenseTable = ({
   tableData,

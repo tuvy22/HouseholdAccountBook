@@ -1,6 +1,6 @@
 "use client";
 
-import { IncomeAndExpense } from "@/app/util/types";
+import { IncomeAndExpense, IncomeAndExpenseUpdate } from "@/app/util/types";
 import ModeEdit from "@mui/icons-material/ModeEdit";
 import React, { useState } from "react";
 import { UpdateExpenseDialog } from "../(auth)/income-and-expense/UpdateExpenseDialog";
@@ -29,10 +29,13 @@ export default function EditIcon({
     setOpenUpdateDialog(true);
   };
 
-  const handleUpdate = async (updatedIncomeAndExpense: IncomeAndExpense) => {
+  const handleUpdate = async (
+    id: number,
+    updatedIncomeAndExpense: IncomeAndExpenseUpdate
+  ) => {
     if (updatedIncomeAndExpense) {
       try {
-        await putIncomeAndExpense(updatedIncomeAndExpense);
+        await putIncomeAndExpense(id, updatedIncomeAndExpense);
 
         setOpenUpdateDialog(false);
         setUpdatedIncomeAndExpense(null);
@@ -61,7 +64,7 @@ export default function EditIcon({
         <UpdateExpenseDialog
           open={openUpdateDialog}
           handleOpen={() => setOpenUpdateDialog(!openUpdateDialog)}
-          updatedIncomeAndExpense={updatedIncomeAndExpense}
+          incomeAndExpense={updatedIncomeAndExpense}
           handleUpdate={handleUpdate}
         />
       )}

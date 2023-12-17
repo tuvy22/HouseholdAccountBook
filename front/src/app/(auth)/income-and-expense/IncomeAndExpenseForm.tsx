@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserProvider";
 import { useState } from "react";
 import { postIncomeAndExpense } from "@/app/util/apiClient";
-import { IncomeAndExpense } from "@/app/util/types";
+import { IncomeAndExpenseCreate } from "@/app/util/types";
 import { addError, useAlert } from "@/app/context/AlertProvider";
 import { Spinner } from "@/app/materialTailwindExports";
 import { toDateObject } from "@/app/util/util";
@@ -31,15 +31,13 @@ export const IncomeAndExpenseForm = () => {
     setIsLoading(true);
     setTriggerReset((prev) => prev + 1);
 
-    const newIncomeAndExpense: IncomeAndExpense = {
-      id: 0,
+    const newIncomeAndExpense: IncomeAndExpenseCreate = {
       category: data.category,
       amount: isMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: toDateObject(data.date),
       registerUserID: loginUser.id,
       billingUsers: convertToBillingUsers(billingUsers, isMinus),
-      registerUserName: "",
     };
 
     try {

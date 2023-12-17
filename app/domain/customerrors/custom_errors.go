@@ -11,6 +11,8 @@ const (
 	ErrCategorysLenZero ErrorCode = "categorys_len_zero"
 	//ユーザー別の立替額が合計額と一致しない
 	ErrBillUserExpenseUnMatch ErrorCode = "bill_user_expense_un_match"
+	//清算済みのユーザーの支払い額は変更出来ません。
+	ErrBillUserLiquidationNotChange ErrorCode = "bill_user_liquidation_not_change"
 	//変更前のパスワードでの認証が成功しない
 	ErrPrePasswordCredentials ErrorCode = "pre_password_credentials"
 	//未精算データがあり退会できない

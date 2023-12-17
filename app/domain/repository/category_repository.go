@@ -44,7 +44,7 @@ func (r *categoryRepositoryImpl) CreateCategory(Category *entity.Category) error
 
 func (r *categoryRepositoryImpl) DeleteAllCategory(isExpense bool, groupID uint) error {
 
-	if err := r.DB.Where("is_expense = ?", isExpense).Where("group_id = ?", groupID).Delete(&entity.Category{}).Error; err != nil {
+	if err := r.DB.Unscoped().Where("is_expense = ?", isExpense).Where("group_id = ?", groupID).Delete(&entity.Category{}).Error; err != nil {
 		return err
 	}
 	return nil

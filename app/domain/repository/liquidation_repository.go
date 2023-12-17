@@ -47,7 +47,7 @@ func (r *liquidationRepositoryImpl) DeleteLiquidationAndUpdateBillingUser(id uin
 	// トランザクションを開始
 	tx := r.DB.Begin()
 
-	if err := tx.Where("id = ?", id).Delete(&entity.Liquidation{}).Error; err != nil {
+	if err := tx.Unscoped().Where("id = ?", id).Delete(&entity.Liquidation{}).Error; err != nil {
 		tx.Rollback()
 		return err
 	}

@@ -24,6 +24,8 @@ func errorResponder(c *gin.Context, paramErr error) {
 			statusCode = http.StatusBadRequest
 		case customerrors.ErrBillUserExpenseUnMatch:
 			statusCode = http.StatusBadRequest
+		case customerrors.ErrBillUserLiquidationNotChange:
+			statusCode = http.StatusBadRequest
 		case customerrors.ErrPrePasswordCredentials:
 			statusCode = http.StatusUnauthorized
 		case customerrors.ErrUnLiquidationNoUserDelete:

@@ -44,7 +44,7 @@ func (r *groupRepositoryImpl) UpdateGroup(Group *entity.Group) error {
 }
 func (r *groupRepositoryImpl) DeleteGroup(id uint) error {
 	// 論理削除
-	if err := r.DB.Where("id = ?", id).Delete(&entity.Group{}).Error; err != nil {
+	if err := r.DB.Unscoped().Where("id = ?", id).Delete(&entity.Group{}).Error; err != nil {
 		return err
 	}
 	return nil

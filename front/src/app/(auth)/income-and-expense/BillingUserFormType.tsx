@@ -17,7 +17,7 @@ export function convertUserToBillingUserForms(
 ): BillingUserFormType[] {
   const billingUserTemps: BillingUserFormType[] = [];
 
-  users.forEach((user: User) => {
+  users.forEach((user) => {
     const billingUserTmp: BillingUserFormType = {
       id: 0,
       userID: user.id,
@@ -39,10 +39,8 @@ export function convertBillingUserToBillingUserForms(
 ): BillingUserFormType[] {
   const billingUserTemps: BillingUserFormType[] = [];
 
-  users.forEach((user: User) => {
-    const hitBu = billingUser.find(
-      (bu: IncomeAndExpenseBillingUser) => user.id === bu.userID
-    );
+  users.forEach((user) => {
+    const hitBu = billingUser.find((bu) => user.id === bu.userID);
 
     const billingUserTmp: BillingUserFormType = {
       userID: hitBu ? hitBu.userID : user.id,
@@ -50,12 +48,31 @@ export function convertBillingUserToBillingUserForms(
       checked: hitBu ? true : false,
       disabled: hitBu?.liquidationID || 0 > 0 ? true : false,
       amount: hitBu ? (-hitBu.amount).toString() : "0",
-      amountLock: false,
+      amountLock: hitBu?.liquidationID || 0 > 0 ? true : false,
       id: hitBu ? hitBu.id : 0,
       liquidationID: hitBu ? hitBu.liquidationID : 0,
     };
     billingUserTemps.push(billingUserTmp);
   });
+
+  //今はグループにいないユーザーの項目追加
+  billingUser.forEach((bu) => {
+    const isOutGroupUser = !users.some((user) => user.id === bu.userID);
+    if (isOutGroupUser) {
+      const billingUserTmp: BillingUserFormType = {
+        userID: bu.userID,
+        name: bu.userName,
+        checked: true,
+        disabled: bu.liquidationID > 0 ? true : false,
+        amount: (-bu.amount).toString(),
+        amountLock: bu.liquidationID > 0 ? true : false,
+        id: bu.id,
+        liquidationID: bu.liquidationID,
+      };
+      billingUserTemps.push(billingUserTmp);
+    }
+  });
+
   return billingUserTemps;
 }
 
@@ -65,7 +82,7 @@ export function convertToBillingUsers(
 ): IncomeAndExpenseBillingUser[] {
   let result: IncomeAndExpenseBillingUser[] = [];
 
-  billingFormUsers.map((buForm: BillingUserFormType) => {
+  billingFormUsers.map((buForm) => {
     if (buForm.checked) {
       const newBillingUser: IncomeAndExpenseBillingUser = {
         incomeAndExpenseID: 0,

@@ -172,7 +172,7 @@ export function BillingUserForm({
 
   return (
     <>
-      {groupUsers.length > 1 ? (
+      {billingUsers.length > 1 ? (
         <>
           <Menu>
             <MenuHandler>

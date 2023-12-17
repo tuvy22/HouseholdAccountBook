@@ -17,8 +17,8 @@ type IncomeAndExpenseUsecase interface {
 	GetAllIncomeAndExpenseMaxPage(groupID uint) (int, error)
 	GetIncomeAndExpenseLiquidations(fromDate time.Time, toDate time.Time, loginUserID string, billingUserID string, groupID uint) ([]entity.IncomeAndExpenseResponse, error)
 
-	CreateIncomeAndExpense(data entity.IncomeAndExpense, userId string, groupID uint) error
-	UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string, groupID uint) error
+	CreateIncomeAndExpense(data entity.IncomeAndExpenseCreate, userId string, groupID uint) error
+	UpdateIncomeAndExpense(updateID uint, data entity.IncomeAndExpenseUpdate, userId string, groupID uint) error
 	DeleteIncomeAndExpense(id uint, userId string) error
 
 	GetMonthlyTotal(groupID uint) ([]entity.IncomeAndExpenseMonthlyTotal, error)
@@ -108,71 +108,87 @@ func (u *incomeAndExpenseUsecaseImpl) sortByDateDescIDDesc(a, b *entity.IncomeAn
 	return a.Date.After(b.Date) // 日付で降順
 }
 
-func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(data entity.IncomeAndExpense, userId string, groupID uint) error {
+func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(data entity.IncomeAndExpenseCreate, userId string, groupID uint) error {
 
-	err := u.incomeAndExpenseValidator.IncomeAndExpenseValidate(data)
+	//情報の統一化
+	if len(data.BillingUsers) == 0 {
+		//ユーザー別の情報がない場合は登録者の情報としてユーザー別を登録
+		bu := entity.IncomeAndExpenseBillingUser{
+			IncomeAndExpenseID: 0,
+			UserID:             data.RegisterUserID,
+			Amount:             data.Amount,
+			LiquidationID:      0,
+		}
+		data.BillingUsers = []entity.IncomeAndExpenseBillingUser{bu}
+	}
+	//金額0のデータは削除
+	data.BillingUsers = u.covertBillingUserNotZeroDelete(data.BillingUsers)
+
+	err := u.incomeAndExpenseValidator.IncomeAndExpenseCreateValidate(data)
 	if err != nil {
 		return err
 	}
-	err = u.checkRegisterUserID(data, userId)
+	err = u.checkRegisterUserID(data.RegisterUserID, userId)
 	if err != nil {
 		return err
 	}
-	u.checkBillingUserID(data, groupID)
+	u.checkBillingUserID(data.BillingUsers, groupID)
 	if err != nil {
 		return err
 	}
-	err = u.checkBillingUserAmount(data)
+	err = u.checkBillingUserAmount(data.BillingUsers)
 	if err != nil {
 		return err
 	}
 
-	err = u.checkBillingUserTotalAmount(data)
+	err = u.checkBillingUserTotalAmount(data.BillingUsers, data.Amount)
 	if err != nil {
 		return err
 	}
-	data.BillingUsers = u.covertBillingUserPlusDelete(data.BillingUsers)
 
-	return u.repo.CreateIncomeAndExpense(&data)
+	incomeAndExpense := entity.IncomeAndExpense{
+		Category:       data.Category,
+		Memo:           data.Memo,
+		Date:           data.Date,
+		RegisterUserID: data.RegisterUserID,
+		BillingUsers:   data.BillingUsers,
+	}
+
+	return u.repo.CreateIncomeAndExpense(&incomeAndExpense)
 }
-func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense entity.IncomeAndExpense, userId string, groupID uint) error {
+func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(updateID uint, data entity.IncomeAndExpenseUpdate, userId string, groupID uint) error {
 
-	err := u.incomeAndExpenseValidator.IncomeAndExpenseValidate(incomeAndExpense)
+	err := u.incomeAndExpenseValidator.IncomeAndExpenseUpdateValidate(data)
 	if err != nil {
 		return err
 	}
 
 	preIncomeAndExpense := entity.IncomeAndExpense{}
-	err = u.repo.GetIncomeAndExpense(incomeAndExpense.ID, &preIncomeAndExpense)
+	err = u.repo.GetIncomeAndExpense(updateID, &preIncomeAndExpense)
 	if err != nil {
 		return err
 	}
 
-	err = u.checkRegisterUserID(preIncomeAndExpense, userId)
+	err = u.checkRegisterUserID(preIncomeAndExpense.RegisterUserID, userId)
 	if err != nil {
 		return err
 	}
-	u.checkBillingUserID(incomeAndExpense, groupID)
-	if err != nil {
-		return err
-	}
-
-	err = u.checkBillingUserAmount(incomeAndExpense)
+	u.checkBillingUserID(data.BillingUsers, groupID)
 	if err != nil {
 		return err
 	}
 
-	err = u.checkBillingUserTotalAmount(incomeAndExpense)
+	err = u.checkBillingUserAmount(data.BillingUsers)
 	if err != nil {
 		return err
 	}
-	incomeAndExpense.BillingUsers = u.covertBillingUserPlusDelete(incomeAndExpense.BillingUsers)
+
+	data.BillingUsers = u.covertBillingUserNotZeroDelete(data.BillingUsers)
 
 	//更新値の設定
-	preIncomeAndExpense.Amount = incomeAndExpense.Amount
-	preIncomeAndExpense.Category = incomeAndExpense.Category
-	preIncomeAndExpense.Date = incomeAndExpense.Date
-	preIncomeAndExpense.Memo = incomeAndExpense.Memo
+	preIncomeAndExpense.Category = data.Category
+	preIncomeAndExpense.Date = data.Date
+	preIncomeAndExpense.Memo = data.Memo
 
 	preBuMap := make(map[uint]entity.IncomeAndExpenseBillingUser)
 	for _, preBu := range preIncomeAndExpense.BillingUsers {
@@ -180,7 +196,7 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense en
 	}
 
 	updateBu := []entity.IncomeAndExpenseBillingUser{}
-	for _, bu := range incomeAndExpense.BillingUsers {
+	for _, bu := range data.BillingUsers {
 
 		if preBu, exists := preBuMap[bu.ID]; exists {
 
@@ -195,11 +211,17 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(incomeAndExpense en
 			updateBu = append(updateBu, preBu)
 
 		} else {
-			//存在しないデータの更新
+			//存在しないデータの更新(追加)
 			updateBu = append(updateBu, bu)
 		}
 	}
+
 	preIncomeAndExpense.BillingUsers = updateBu
+
+	err = u.checkBillingUserTotalAmount(preIncomeAndExpense.BillingUsers, data.Amount)
+	if err != nil {
+		return err
+	}
 
 	return u.repo.UpdateIncomeAndExpense(&preIncomeAndExpense)
 }
@@ -210,7 +232,7 @@ func (u *incomeAndExpenseUsecaseImpl) DeleteIncomeAndExpense(id uint, userId str
 		return err
 	}
 
-	err = u.checkRegisterUserID(preIncomeAndExpense, userId)
+	err = u.checkRegisterUserID(preIncomeAndExpense.RegisterUserID, userId)
 	if err != nil {
 		return err
 	}
@@ -270,10 +292,10 @@ func (u *incomeAndExpenseUsecaseImpl) GetMonthlyCategory(yearMonth string, group
 
 	return monthlyCategorys, nil
 }
-func (u *incomeAndExpenseUsecaseImpl) covertBillingUserPlusDelete(data []entity.IncomeAndExpenseBillingUser) []entity.IncomeAndExpenseBillingUser {
+func (u *incomeAndExpenseUsecaseImpl) covertBillingUserNotZeroDelete(data []entity.IncomeAndExpenseBillingUser) []entity.IncomeAndExpenseBillingUser {
 	result := []entity.IncomeAndExpenseBillingUser{}
 	for _, billingUser := range data {
-		if billingUser.Amount < 0 {
+		if billingUser.Amount != 0 {
 			result = append(result, billingUser)
 		}
 	}
@@ -281,16 +303,16 @@ func (u *incomeAndExpenseUsecaseImpl) covertBillingUserPlusDelete(data []entity.
 	return result
 }
 
-func (u *incomeAndExpenseUsecaseImpl) checkRegisterUserID(incomeAndExpense entity.IncomeAndExpense, userId string) error {
-	if incomeAndExpense.RegisterUserID != userId {
+func (u *incomeAndExpenseUsecaseImpl) checkRegisterUserID(registerUserID string, userId string) error {
+	if registerUserID != userId {
 		return customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
 	return nil
 }
 
-func (u *incomeAndExpenseUsecaseImpl) checkBillingUserAmount(data entity.IncomeAndExpense) error {
+func (u *incomeAndExpenseUsecaseImpl) checkBillingUserAmount(data []entity.IncomeAndExpenseBillingUser) error {
 
-	for _, billingUser := range data.BillingUsers {
+	for _, billingUser := range data {
 		if billingUser.Amount > 0 {
 			return customerrors.NewCustomError(customerrors.ErrBadRequest)
 		}
@@ -299,33 +321,33 @@ func (u *incomeAndExpenseUsecaseImpl) checkBillingUserAmount(data entity.IncomeA
 	return nil
 }
 
-func (u *incomeAndExpenseUsecaseImpl) checkBillingUserTotalAmount(data entity.IncomeAndExpense) error {
-	if data.Amount >= 0 {
+func (u *incomeAndExpenseUsecaseImpl) checkBillingUserTotalAmount(data []entity.IncomeAndExpenseBillingUser, totalAmount int) error {
+	if totalAmount >= 0 {
 		//収入はチェック対象外
 		return nil
 	}
 
-	if len(data.BillingUsers) == 0 {
+	if len(data) == 0 {
 		return customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
 
 	total := 0
-	for _, billingUser := range data.BillingUsers {
+	for _, billingUser := range data {
 		total += billingUser.Amount
 	}
 	//ユーザーへの請求が合計金額と一致するか確認
-	if total != data.Amount {
+	if total != totalAmount {
 		return customerrors.NewCustomError(customerrors.ErrBillUserExpenseUnMatch)
 	}
 
 	return nil
 }
-func (u *incomeAndExpenseUsecaseImpl) checkBillingUserID(data entity.IncomeAndExpense, groupID uint) error {
+func (u *incomeAndExpenseUsecaseImpl) checkBillingUserID(data []entity.IncomeAndExpenseBillingUser, groupID uint) error {
 	groupUserIDs, err := u.getGroupUserIDs(groupID)
 	if err != nil {
 		return err
 	}
-	for _, billingUser := range data.BillingUsers {
+	for _, billingUser := range data {
 		hit := false
 		for _, groupUserID := range groupUserIDs {
 			if billingUser.UserID == groupUserID {
@@ -366,7 +388,7 @@ func (u *incomeAndExpenseUsecaseImpl) checkBillingUserDelete(data entity.IncomeA
 func (u *incomeAndExpenseUsecaseImpl) checkLiquidationAmountChange(amount int, preBu entity.IncomeAndExpenseBillingUser) error {
 	if preBu.LiquidationID != entity.NoneLiquidationID && amount != preBu.Amount {
 		//精算済みの金額変更はエラー
-		return customerrors.NewCustomError(customerrors.ErrBadRequest)
+		return customerrors.NewCustomError(customerrors.ErrBillUserLiquidationNotChange)
 	}
 	return nil
 }
@@ -444,6 +466,7 @@ func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAn
 
 	for _, incomeAndExpense := range incomeAndExpenses {
 		billingUsers := []entity.IncomeAndExpenseBillingUserResponse{}
+		toalAmount := 0
 
 		for _, billingUser := range incomeAndExpense.BillingUsers {
 			userName, ok := userMap[billingUser.UserID]
@@ -461,6 +484,7 @@ func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAn
 				LiquidationID:      billingUser.LiquidationID,
 			}
 			billingUsers = append(billingUsers, response)
+			toalAmount = toalAmount + billingUser.Amount
 
 		}
 		userName, ok := userMap[incomeAndExpense.RegisterUserID]
@@ -472,7 +496,7 @@ func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAn
 		response := entity.IncomeAndExpenseResponse{
 			ID:               incomeAndExpense.ID,
 			Category:         incomeAndExpense.Category,
-			Amount:           incomeAndExpense.Amount,
+			Amount:           toalAmount,
 			Memo:             incomeAndExpense.Memo,
 			Date:             incomeAndExpense.Date,
 			RegisterUserID:   incomeAndExpense.RegisterUserID,

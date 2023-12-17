@@ -13,6 +13,8 @@ export function apiHandleError(error: unknown): string {
           return "カテゴリーを全て削除することは出来ません。";
         case "bill_user_expense_un_match":
           return "立替額の合計が支出の金額と一致しません。一致するように入力してください。";
+        case "bill_user_liquidation_not_change":
+          return "清算済みのユーザーの支払額は変更出来ません。";
         case "pre_password_credentials":
           return "変更前のパスワードが間違っているため、更新できませんでした。";
         case "un_liquidation_no_user_delete":

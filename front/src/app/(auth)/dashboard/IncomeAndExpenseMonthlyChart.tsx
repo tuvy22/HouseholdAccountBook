@@ -15,6 +15,7 @@ import { CategoricalChartState } from "recharts/types/chart/generateCategoricalC
 import { Typography } from "@/app/materialTailwindExports";
 import { useEffect, useState } from "react";
 import {
+  formatNumberStringToYen,
   getNextYearMonth,
   getPreviousYearMonth,
   toYearMonthString,
@@ -133,7 +134,12 @@ export const IncomeAndExpenseMonthlyChart = ({
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="yearMonth" dy={15} />
-              <YAxis tickFormatter={(value) => `${value}円`} dx={-10} />
+              <YAxis
+                tickFormatter={(value) =>
+                  formatNumberStringToYen((+value).toString())
+                }
+                dx={-10}
+              />
 
               <Tooltip />
               <Legend

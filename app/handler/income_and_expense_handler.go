@@ -130,7 +130,7 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Con
 }
 
 func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
-	data, err := h.bindIncomeAndExpenseWithBillingUser(c)
+	data, err := h.bindIncomeAndExpenseCreate(c)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -153,7 +153,7 @@ func (h *incomeAndExpenseHandlerImpl) CreateIncomeAndExpense(c *gin.Context) {
 }
 func (h *incomeAndExpenseHandlerImpl) UpdateIncomeAndExpense(c *gin.Context) {
 
-	incomeAndExpense, err := h.bindIncomeAndExpense(c)
+	incomeAndExpense, err := h.bindIncomeAndExpenseUpdate(c)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -166,13 +166,13 @@ func (h *incomeAndExpenseHandlerImpl) UpdateIncomeAndExpense(c *gin.Context) {
 		return
 	}
 
-	incomeAndExpense.ID, err = h.getID(c)
+	updateID, err := h.getID(c)
 	if err != nil {
 		errorResponder(c, err)
 		return
 	}
 
-	err = h.usecase.UpdateIncomeAndExpense(incomeAndExpense, loginUser.ID, loginUser.GroupID)
+	err = h.usecase.UpdateIncomeAndExpense(updateID, incomeAndExpense, loginUser.ID, loginUser.GroupID)
 	if err != nil {
 		errorResponder(c, err)
 		return
@@ -242,22 +242,21 @@ func (h *incomeAndExpenseHandlerImpl) GetMonthlyCategory(c *gin.Context) {
 	c.JSON(http.StatusOK, monthlyCategorys)
 
 }
-func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpense(c *gin.Context) (entity.IncomeAndExpense, error) {
-	incomeAndExpense := entity.IncomeAndExpense{}
-	if err := c.ShouldBindJSON(&incomeAndExpense); err != nil {
-		return incomeAndExpense, err
+func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpenseCreate(c *gin.Context) (entity.IncomeAndExpenseCreate, error) {
+	result := entity.IncomeAndExpenseCreate{}
+	if err := c.BindJSON(&result); err != nil {
+		return result, err
 	}
 
-	return incomeAndExpense, nil
+	return result, nil
 }
-
-func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpenseWithBillingUser(c *gin.Context) (entity.IncomeAndExpense, error) {
-	incomeAndExpense := entity.IncomeAndExpense{}
-	if err := c.BindJSON(&incomeAndExpense); err != nil {
-		return incomeAndExpense, err
+func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpenseUpdate(c *gin.Context) (entity.IncomeAndExpenseUpdate, error) {
+	result := entity.IncomeAndExpenseUpdate{}
+	if err := c.BindJSON(&result); err != nil {
+		return result, err
 	}
 
-	return incomeAndExpense, nil
+	return result, nil
 }
 
 func (h *incomeAndExpenseHandlerImpl) getID(c *gin.Context) (uint, error) {

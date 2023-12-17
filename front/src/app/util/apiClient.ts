@@ -10,6 +10,8 @@ import {
   InviteToken,
   UserUpdate,
   PasswordChange,
+  IncomeAndExpenseCreate,
+  IncomeAndExpenseUpdate,
 } from "@/app/util/types";
 import axios from "axios";
 import { apiHandleError } from "./apiHandleError";
@@ -79,7 +81,7 @@ export const getGroupAllUser = async () => {
   }
 };
 
-export const postIncomeAndExpense = async (data: IncomeAndExpense) => {
+export const postIncomeAndExpense = async (data: IncomeAndExpenseCreate) => {
   try {
     const response = await axios.post("/api/private/income-and-expense", data, {
       headers: {
@@ -92,11 +94,12 @@ export const postIncomeAndExpense = async (data: IncomeAndExpense) => {
 };
 
 export const putIncomeAndExpense = async (
-  incomeAndExpense: IncomeAndExpense
+  id: number,
+  incomeAndExpense: IncomeAndExpenseUpdate
 ) => {
   try {
     const response = await axios.put(
-      `/api/private/income-and-expense/${incomeAndExpense.id}`,
+      `/api/private/income-and-expense/${id}`,
       incomeAndExpense,
       {
         headers: {

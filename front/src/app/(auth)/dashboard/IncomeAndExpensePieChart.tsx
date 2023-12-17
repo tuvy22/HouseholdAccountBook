@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { getIncomeAndExpenseMonthlyCategory } from "@/app/util/apiClient";
 import { Typography } from "@/app/materialTailwindExports";
 import { addError, useAlert } from "@/app/context/AlertProvider";
+import { formatNumberStringToYen } from "@/app/util/util";
 
 export const IncomeAndExpensePieChart = ({
   yearMonth,
@@ -98,10 +99,12 @@ export const IncomeAndExpensePieChart = ({
             isMinus ? "text-red-500" : "text-blue-500"
           }`}
         >
-          {`${isMinus ? "-" : ""}${totalCategoryAmount}円`}
+          {`${isMinus ? "-" : ""}${formatNumberStringToYen(
+            totalCategoryAmount.toString()
+          )}`}
         </div>
       </div>
-      <ResponsiveContainer height={370}>
+      <ResponsiveContainer height={350}>
         {data.length > 0 ? (
           <PieChart>
             <Pie
@@ -127,7 +130,11 @@ export const IncomeAndExpensePieChart = ({
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number) => `${isMinus ? "-" : ""}${value}円`}
+              formatter={(value: number) =>
+                `${isMinus ? "-" : ""}${formatNumberStringToYen(
+                  value.toString()
+                )}`
+              }
             />
             <Legend />
           </PieChart>

@@ -8,7 +8,11 @@ import {
   DialogHeader,
   DialogBody,
 } from "@/app/materialTailwindExports";
-import { Category, IncomeAndExpense } from "../../util/types";
+import {
+  Category,
+  IncomeAndExpense,
+  IncomeAndExpenseUpdate,
+} from "../../util/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IncomeExpenseSchema,
@@ -33,14 +37,17 @@ import { addError, useAlert } from "@/app/context/AlertProvider";
 type Props = {
   open: boolean;
   handleOpen: () => void;
-  updatedIncomeAndExpense: IncomeAndExpense;
-  handleUpdate: (incomeAndExpense: IncomeAndExpense) => void;
+  incomeAndExpense: IncomeAndExpense;
+  handleUpdate: (
+    id: number,
+    incomeAndExpenseUpdate: IncomeAndExpenseUpdate
+  ) => void;
 };
 
 export const UpdateExpenseDialog: React.FC<Props> = ({
   open,
   handleOpen,
-  updatedIncomeAndExpense,
+  incomeAndExpense: updatedIncomeAndExpense,
   handleUpdate,
 }) => {
   const isDialogMinus = isMinus(updatedIncomeAndExpense.amount);
@@ -94,17 +101,14 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
   }, []);
 
   const onSubmit = (data: IncomeExpenseSchema) => {
-    const newIncomeAndExpense: IncomeAndExpense = {
-      id: updatedIncomeAndExpense.id,
+    const newIncomeAndExpense: IncomeAndExpenseUpdate = {
       category: data.category,
       amount: isDialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
       date: toDateObject(data.date),
-      registerUserID: updatedIncomeAndExpense.registerUserID,
       billingUsers: convertToBillingUsers(billingUsers, isDialogMinus),
-      registerUserName: "",
     };
-    handleUpdate(newIncomeAndExpense);
+    handleUpdate(updatedIncomeAndExpense.id, newIncomeAndExpense);
     handleOpen();
   };
 

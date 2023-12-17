@@ -50,3 +50,11 @@ export function getPreviousYearMonth(yearMonth: string) {
 export function getNextYearMonth(yearMonth: string) {
   return shiftYear(yearMonth, 1);
 }
+
+export function formatNumberStringToYen(numberString: string) {
+  // 3桁ごとにカンマを挿入
+  const formattedString = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  // 末尾に「円」を追加
+  return formattedString + "円";
+}

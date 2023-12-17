@@ -17,8 +17,8 @@ type IncomeAndExpenseRepository interface {
 	UpdateIncomeAndExpenseUserID(oldUserID string, newUserID string) error
 	DeleteIncomeAndExpense(id uint) error
 
-	GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal, registerUserIDs []string) error
-	GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, registerUserIDs []string, isMinus bool) error
+	GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal, userIDs []string) error
+	GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, userIDs []string, isMinus bool) error
 }
 
 type incomeAndExpenseRepositoryImpl struct {
@@ -29,10 +29,14 @@ func NewIncomeAndExpenseRepository(db *gorm.DB) IncomeAndExpenseRepository {
 	return &incomeAndExpenseRepositoryImpl{DB: db}
 }
 
-func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, registerUserIDs []string, offset, limit int) error {
+func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpenses *[]entity.IncomeAndExpense, groupUserIDs []string, offset, limit int) error {
+	// サブクエリ
+	subQuery := r.DB.Model(&entity.IncomeAndExpenseBillingUser{}).Select("income_and_expense_id").Where("user_id IN ?", groupUserIDs)
+
 	query := r.DB.Preload("BillingUsers").
-		Where("register_user_id IN ?", registerUserIDs).
 		Order("Date desc, id desc")
+
+	query = query.Where("id IN (?)", subQuery)
 
 	// OffsetとLimitを条件に基づいて適用
 	if offset > 0 {
@@ -49,7 +53,7 @@ func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpense
 	return nil
 }
 func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpenseCount(count *int64, registerUserIDs []string) error {
-	err := r.DB.Preload("BillingUsers").Model(&entity.IncomeAndExpense{}).Where("register_user_id IN ?", registerUserIDs).Count(count).Error
+	err := r.DB.Model(&entity.IncomeAndExpense{}).Where("register_user_id IN ?", registerUserIDs).Count(count).Error
 	if err != nil {
 		return err
 	}
@@ -117,7 +121,7 @@ func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpense(incomeAndExpense
 		return err
 	}
 	//一旦全削除
-	if err := tx.Where("income_and_expense_id = ?", incomeAndExpense.ID).Delete(&entity.IncomeAndExpenseBillingUser{}).Error; err != nil {
+	if err := tx.Unscoped().Where("income_and_expense_id = ?", incomeAndExpense.ID).Delete(&entity.IncomeAndExpenseBillingUser{}).Error; err != nil {
 		return err
 	}
 
@@ -151,15 +155,21 @@ func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpenseUserID(oldUserID 
 }
 
 func (r *incomeAndExpenseRepositoryImpl) DeleteIncomeAndExpense(id uint) error {
+	// トランザクションの開始
+	tx := r.DB.Begin()
 
-	if err := r.DB.Where("id = ?", id).Delete(&entity.IncomeAndExpense{}).Error; err != nil {
+	if err := tx.Unscoped().Where("income_and_expense_id = ?", id).Delete(&entity.IncomeAndExpenseBillingUser{}).Error; err != nil {
 		return err
 	}
-	return nil
+	if err := tx.Unscoped().Where("id = ?", id).Delete(&entity.IncomeAndExpense{}).Error; err != nil {
+		return err
+	}
+	// トランザクションのコミット
+	return tx.Commit().Error
 }
 
 // 月ごとの合計
-func (r *incomeAndExpenseRepositoryImpl) GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal, registerUserIDs []string) error {
+func (r *incomeAndExpenseRepositoryImpl) GetMonthlyTotal(monthlyTotals *[]entity.IncomeAndExpenseMonthlyTotal, userIDs []string) error {
 	sql := `
 	SELECT 
 		t1.year_month,
@@ -167,23 +177,25 @@ func (r *incomeAndExpenseRepositoryImpl) GetMonthlyTotal(monthlyTotals *[]entity
 	FROM
 		(SELECT 
 			DATE_FORMAT(date, '%Y-%m') as 'year_month',
-			SUM(amount) as 'monthTotalAmount'
-		FROM income_and_expenses
-		WHERE register_user_id IN ?
+			SUM(iebu.amount) as 'monthTotalAmount'
+		FROM income_and_expenses ie
+		JOIN income_and_expense_billing_users iebu ON ie.id = iebu.income_and_expense_id
+		WHERE user_id IN ?
 		GROUP BY DATE_FORMAT(date, '%Y-%m')) t1
 	JOIN 
 		(SELECT 
 			DATE_FORMAT(date, '%Y-%m') as 'year_month',
-			SUM(amount) as 'monthTotalAmount'
-		FROM income_and_expenses
-		WHERE register_user_id IN ?
+			SUM(iebu.amount) as 'monthTotalAmount'
+		FROM income_and_expenses ie
+		JOIN income_and_expense_billing_users iebu ON ie.id = iebu.income_and_expense_id
+		WHERE user_id IN ?
 		GROUP BY DATE_FORMAT(date, '%Y-%m')) t2
 	ON t1.year_month >= t2.year_month
 	GROUP BY t1.year_month
 	ORDER BY t1.year_month;
 	`
 
-	if err := r.DB.Raw(sql, registerUserIDs, registerUserIDs).Scan(&monthlyTotals).Error; err != nil {
+	if err := r.DB.Raw(sql, userIDs, userIDs).Scan(&monthlyTotals).Error; err != nil {
 		return err
 	}
 
@@ -191,18 +203,19 @@ func (r *incomeAndExpenseRepositoryImpl) GetMonthlyTotal(monthlyTotals *[]entity
 }
 
 // 月ごとのカテゴリー別の集計
-func (r *incomeAndExpenseRepositoryImpl) GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, registerUserIDs []string, isMinus bool) error {
+func (r *incomeAndExpenseRepositoryImpl) GetMonthlyCategory(monthlyCategorys *[]entity.IncomeAndExpenseMonthlyCategory, yearMonth string, userIDs []string, isMinus bool) error {
 
-	queryBuilder := r.DB.Table("income_and_expenses").
-		Select(`DATE_FORMAT(date, '%Y-%m') as 'year_month', category, ABS(SUM(amount)) as 'category_amount'`).
-		Where("DATE_FORMAT(date, '%Y-%m') = ? AND register_user_id IN ?", yearMonth, registerUserIDs).
-		Group("DATE_FORMAT(date, '%Y-%m'), category").
-		Order("category_amount desc, category desc")
+	queryBuilder := r.DB.Table("income_and_expenses ie").
+		Select(`DATE_FORMAT(ie.date, '%Y-%m') as 'year_month', ie.category, ABS(SUM(iebu.amount)) as 'category_amount'`).
+		Joins("JOIN income_and_expense_billing_users iebu ON ie.id = iebu.income_and_expense_id").
+		Where("DATE_FORMAT(ie.date, '%Y-%m') = ? AND iebu.user_id IN ?", yearMonth, userIDs).
+		Group("DATE_FORMAT(ie.date, '%Y-%m'), ie.category").
+		Order("category_amount desc, ie.category desc")
 
 	if isMinus {
-		queryBuilder = queryBuilder.Where("amount < ?", 0)
+		queryBuilder = queryBuilder.Where("iebu.amount < ?", 0)
 	} else {
-		queryBuilder = queryBuilder.Where("amount >= ?", 0)
+		queryBuilder = queryBuilder.Where("iebu.amount >= ?", 0)
 	}
 	if err := queryBuilder.Find(&monthlyCategorys).Error; err != nil {
 		return err

@@ -1,5 +1,5 @@
 import { Typography } from "@/app/materialTailwindExports";
-import { isMinus } from "@/app/util/util";
+import { formatNumberStringToYen, isMinus } from "@/app/util/util";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
@@ -34,7 +34,9 @@ export default function LiquidationFlow({
         </Typography>
         <div className="col-span-3">
           <Typography variant="small">
-            {`${isMinus(amount) ? -amount : amount}円`}
+            {isMinus(amount)
+              ? formatNumberStringToYen((-amount).toString())
+              : formatNumberStringToYen(amount.toString())}
           </Typography>
         </div>
       </div>

@@ -27,7 +27,7 @@ export function MdHeaderMenu({
       <MenuHandler>
         <MenuIcon fontSize="large" />
       </MenuHandler>
-      <MenuList>
+      <MenuList className="w-full max-w-xs">
         <MenuItem className="border-b">
           <HeaderUser />
         </MenuItem>

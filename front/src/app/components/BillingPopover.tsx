@@ -9,6 +9,7 @@ import {
 import GroupIcon from "@mui/icons-material/Group";
 import Person from "@mui/icons-material/Person";
 import { IncomeAndExpense } from "@/app/util/types";
+import { formatNumberStringToYen } from "../util/util";
 
 const TABLE_INFO_BULLING = [
   { header: "支払", addClassName: "" },
@@ -76,7 +77,9 @@ export default function BillingPopover({
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">
                           <Typography variant="small" className="text-red-500">
-                            {`${billingUser.amount}円`}
+                            {formatNumberStringToYen(
+                              billingUser.amount.toString()
+                            )}
                           </Typography>
                         </td>
                         <td className="p-2 md:p-4 border-b border-blue-gray-50">

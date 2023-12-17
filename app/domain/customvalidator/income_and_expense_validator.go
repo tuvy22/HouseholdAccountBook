@@ -7,7 +7,8 @@ import (
 )
 
 type IncomeAndExpenseValidator interface {
-	IncomeAndExpenseValidate(incomeAndExpense entity.IncomeAndExpense) error
+	IncomeAndExpenseCreateValidate(incomeAndExpenseCreate entity.IncomeAndExpenseCreate) error
+	IncomeAndExpenseUpdateValidate(incomeAndExpenseUpdate entity.IncomeAndExpenseUpdate) error
 }
 
 type incomeAndExpenseValidatorImpl struct {
@@ -19,29 +20,45 @@ func NewIncomeAndExpenseValidator(dataValidate *validator.Validate) IncomeAndExp
 
 }
 
-func (v *incomeAndExpenseValidatorImpl) IncomeAndExpenseValidate(incomeAndExpense entity.IncomeAndExpense) error {
+func (v *incomeAndExpenseValidatorImpl) IncomeAndExpenseCreateValidate(incomeAndExpenseCreate entity.IncomeAndExpenseCreate) error {
 
-	valvalidate := entity.IncomeAndExpenseValidate{
-		Category: incomeAndExpense.Category,
-		Amount:   incomeAndExpense.Amount,
-		Memo:     incomeAndExpense.Memo,
-		Date:     incomeAndExpense.Date,
-	}
-
-	err := v.dataValidate.Struct(valvalidate)
+	err := v.dataValidate.Struct(incomeAndExpenseCreate)
 	if err != nil {
 		return customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
-	for _, bu := range incomeAndExpense.BillingUsers {
+	err = v.billingUsersValidate(incomeAndExpenseCreate.BillingUsers)
+	if err != nil {
+		return customerrors.NewCustomError(customerrors.ErrBadRequest)
+	}
+
+	return nil
+
+}
+func (v *incomeAndExpenseValidatorImpl) IncomeAndExpenseUpdateValidate(incomeAndExpenseUpdate entity.IncomeAndExpenseUpdate) error {
+
+	err := v.dataValidate.Struct(incomeAndExpenseUpdate)
+	if err != nil {
+		return customerrors.NewCustomError(customerrors.ErrBadRequest)
+	}
+	err = v.billingUsersValidate(incomeAndExpenseUpdate.BillingUsers)
+	if err != nil {
+		return customerrors.NewCustomError(customerrors.ErrBadRequest)
+	}
+
+	return nil
+}
+
+func (v *incomeAndExpenseValidatorImpl) billingUsersValidate(billingUsers []entity.IncomeAndExpenseBillingUser) error {
+
+	for _, bu := range billingUsers {
 		valvalidateBu := entity.IncomeAndExpenseBillingUserValidate{
 			Amount: bu.Amount,
 		}
 		err := v.dataValidate.Struct(valvalidateBu)
 		if err != nil {
-			return customerrors.NewCustomError(customerrors.ErrBadRequest)
+			return err
 		}
 	}
 
 	return nil
-
 }

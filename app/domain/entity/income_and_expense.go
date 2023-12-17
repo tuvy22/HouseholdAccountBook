@@ -9,18 +9,26 @@ import (
 type IncomeAndExpense struct {
 	gorm.Model
 	Category       string    `gorm:"column:category"`
-	Amount         int       `gorm:"column:amount"`
 	Memo           string    `gorm:"column:memo"`
 	Date           time.Time `gorm:"column:date;type:date"`
 	RegisterUserID string    `gorm:"column:register_user_id"`
 	BillingUsers   []IncomeAndExpenseBillingUser
 }
+type IncomeAndExpenseCreate struct {
+	Category       string    `json:"category" validate:"required"`
+	Amount         int       `json:"amount" validate:"gte=-99999999,lte=99999999"`
+	Memo           string    `json:"memo" validate:"max=50"`
+	Date           time.Time `json:"date" validate:"required"`
+	RegisterUserID string    `json:"registerUserID"`
+	BillingUsers   []IncomeAndExpenseBillingUser
+}
 
-type IncomeAndExpenseValidate struct {
-	Category string    `validate:"required"`
-	Amount   int       `validate:"gte=-99999999,lte=99999999"`
-	Memo     string    `validate:"max=50"`
-	Date     time.Time `validate:"required"`
+type IncomeAndExpenseUpdate struct {
+	Category     string    `json:"category" validate:"required"`
+	Amount       int       `json:"amount" validate:"gte=-99999999,lte=99999999"`
+	Memo         string    `json:"memo" validate:"max=50"`
+	Date         time.Time `json:"date" validate:"required"`
+	BillingUsers []IncomeAndExpenseBillingUser
 }
 
 type IncomeAndExpenseResponse struct {
