@@ -18,5 +18,5 @@ func NewResponsedOKHandler() ResponsedOKHandler {
 }
 
 func (h *responsedOKHandlerImpl) ResponsedOK(c *gin.Context) {
-	c.JSON(http.StatusOK, "")
+	c.Status(http.StatusOK)
 }

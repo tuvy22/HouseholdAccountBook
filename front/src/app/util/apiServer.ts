@@ -17,7 +17,7 @@ export const getIncomeAndExpense = async (page: string) => {
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
     const response = await axios.get(
-      "http://localhost:8080/api/localhost/income-and-expense/all",
+      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all`,
       {
         headers: {
           cache: "no-store",
@@ -40,7 +40,7 @@ export const getIncomeAndExpenseMaxPage = async () => {
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
     const response = await axios.get(
-      "http://localhost:8080/api/localhost/income-and-expense/all/max-page",
+      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all/max-page`,
       {
         headers: {
           cache: "no-store",
@@ -60,7 +60,7 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
     const response = await axios.get(
-      "http://localhost:8080/api/localhost/income-and-expense/monthly-total",
+      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/monthly-total`,
       {
         headers: {
           cache: "no-store",
@@ -81,7 +81,7 @@ export const getGroupAllUser = async () => {
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
     const response = await axios.get(
-      "http://localhost:8080/api/localhost/user/group-all",
+      `http://${process.env.APP_HOST}:8080/api/localhost/user/group-all`,
       {
         headers: {
           cache: "no-store",
@@ -105,7 +105,7 @@ export const getIncomeAndExpenseLiquidations = async (
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
     const response = await axios.get(
-      "http://localhost:8080/api/localhost/income-and-expense/liquidations",
+      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/liquidations`,
       {
         headers: {
           cache: "no-store",
@@ -131,7 +131,7 @@ export const getLiquidations = async () => {
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
     const response = await axios.get(
-      "http://localhost:8080/api/localhost/liquidation/all",
+      `http://${process.env.APP_HOST}:8080/api/localhost/liquidation/all`,
       {
         headers: {
           cache: "no-store",

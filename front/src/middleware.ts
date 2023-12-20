@@ -6,7 +6,6 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.match("/((?!login|user-register|user-invite).*)")
   ) {
     const sessionId = request.cookies.get(SESSION_ID_COOKIE);
-
     if (!sessionId) {
       //セッションIDが存在しない場合、ログインページに
       return NextResponse.redirect(new URL("/login", request.url));
@@ -22,7 +21,7 @@ export async function middleware(request: NextRequest) {
     };
     try {
       const response = await fetch(
-        `http://localhost:8080/api/private/check-auth`,
+        `http://${process.env.APP_HOST}:8080/api/private/check-auth`,
         options
       );
       if (response.status !== 200) {

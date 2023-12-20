@@ -1,4 +1,5 @@
-version: '3'
+version: '3.1'
+
 services:
   db:
     container_name: db
@@ -17,11 +18,13 @@ services:
     container_name: app
     build:
       context: ./app
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
-      - /app:/app/go/src
+      - ./app:/go/src
+    tty: true
     ports:
-      - 8080:8080
+      - "8080:8080"
+      - "2345:2345" 
     depends_on:
       - db
 
@@ -29,24 +32,19 @@ services:
     container_name: front
     build:
       context: ./front
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
-      - /front/src/app:/app/app
-      - /front/public:/app/public
+      - ./front/src:/app/src
     ports:
-      - '80:3000'
-    depends_on:
-      - app
-  # web:
-  #   container_name: nginx
-  #   build:
-  #     context: ./web
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - front
+      - '3000:3000'
 
+  local:
+    container_name: local
+    build:
+      context: ./local
+      dockerfile: Dockerfile
+    ports:
+      - 443:443
 
 volumes:
   db_data:

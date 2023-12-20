@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -33,10 +34,12 @@ func (h *middlewareHandlerImpl) LocalhostOnly() gin.HandlerFunc {
 		// リクエストのIPアドレスを取得
 		ip := c.ClientIP()
 
-		// IPアドレスがlocalhost (127.0.0.1) または ::1 (IPv6のlocalhost) でない場合、アクセスを拒否
-		if !strings.HasPrefix(ip, "127.0.0.1") && !strings.HasPrefix(ip, "::1") {
-			errorResponder(c, customerrors.NewCustomError(customerrors.ErrInvalidCredentials))
-			return
+		// IPアドレスがlocalhost (127.0.0.1) でない場合、アクセスを拒否
+		if !strings.HasPrefix(ip, "127.0.0.1") {
+			if os.Getenv("ENV") != "development" {
+				errorResponder(c, customerrors.NewCustomError(customerrors.ErrInvalidCredentials))
+				return
+			}
 		}
 
 		c.Next()

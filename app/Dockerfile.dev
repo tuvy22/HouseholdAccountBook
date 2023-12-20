@@ -1,0 +1,15 @@
+# ベースとなるイメージを指定
+FROM golang:1.21.3-alpine3.17
+
+WORKDIR /go/src
+COPY . .
+
+RUN apk upgrade --update && apk --no-cache add git
+
+# delve と Air をインストール
+RUN go install github.com/go-delve/delve/cmd/dlv@latest && \
+    go install github.com/cosmtrek/air@latest
+
+# Air を起動
+CMD ["air", "-c", ".air.toml"]
+

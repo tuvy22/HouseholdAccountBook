@@ -1,32 +1,13 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Next.js: debug full stack",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "cd front; npm run dev",
-      "serverReadyAction": {
-        "pattern": "- Local:.+(https?://.+)",
-        "uriFormat": "%s",
-        "action": "debugWithChrome"
-      }
-    },
-    // {
-    //   "name": "Go: debug server-side",
-    //   "type": "node-terminal",
-    //   "request": "launch",
-    //   "command": "cd app; go run main.go"
-    // }
-    {
-      "name": "Go: debug server-side",
-      // "type": "godlvdap",
-      "type": "go",
-      "request": "launch",
-      "mode": "auto",
-      "program": "${workspaceFolder}/app/main.go",
-      "env": {},
-      "args": []
-  }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Remote",
+            "type": "go",
+            "request": "attach",
+            "mode": "remote",
+            "port": 2345,
+            "host": "127.0.0.1",
+        }
+    ]
 }
