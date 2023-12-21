@@ -98,7 +98,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     };
 
     fetchCategory();
-  }, []);
+  }, [alert, isDialogMinus]);
 
   const onSubmit = (data: IncomeExpenseSchema) => {
     const newIncomeAndExpense: IncomeAndExpenseUpdate = {

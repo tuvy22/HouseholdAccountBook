@@ -64,7 +64,7 @@ export const IncomeForm = ({
     };
 
     fetchCategory();
-  }, []);
+  }, [alert]);
 
   return (
     <>

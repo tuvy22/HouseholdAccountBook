@@ -26,7 +26,7 @@ export function UserGroupOut() {
       }
     };
     fetchData();
-  }, [user]);
+  }, [alert, user]);
 
   const onSubmit = async () => {
     try {

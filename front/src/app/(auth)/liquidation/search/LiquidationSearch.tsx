@@ -80,7 +80,7 @@ const LiquidationSearch = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [alert]);
 
   //検索条件(精算対象)の復元
   useEffect(() => {

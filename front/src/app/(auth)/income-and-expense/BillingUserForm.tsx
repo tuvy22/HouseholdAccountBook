@@ -52,7 +52,7 @@ export function BillingUserForm({
       }
     };
     fetchData();
-  }, []);
+  }, [alert]);
 
   useEffect(() => {
     if (isUpdate) {

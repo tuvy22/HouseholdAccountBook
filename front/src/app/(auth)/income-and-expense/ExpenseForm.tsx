@@ -77,7 +77,7 @@ export const ExpenseForm = ({
     };
 
     fetchCategory();
-  }, []);
+  }, [alert]);
 
   return (
     <>
