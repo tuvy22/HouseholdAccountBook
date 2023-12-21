@@ -7,9 +7,9 @@ export const metadata: Metadata = {
 
 const Page = async () => (
   <>
-    <Dashboard
+    {/* <Dashboard
       incomeAndExpenseMonthlyTotal={await getIncomeAndExpenseMonthlyTotal()}
-    />
+    /> */}
   </>
 );
 
