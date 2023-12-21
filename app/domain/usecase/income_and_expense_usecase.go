@@ -110,19 +110,8 @@ func (u *incomeAndExpenseUsecaseImpl) sortByDateDescIDDesc(a, b *entity.IncomeAn
 
 func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(data entity.IncomeAndExpenseCreate, userId string, groupID uint) error {
 
-	//情報の統一化
-	if len(data.BillingUsers) == 0 {
-		//ユーザー別の情報がない場合は登録者の情報としてユーザー別を登録
-		bu := entity.IncomeAndExpenseBillingUser{
-			IncomeAndExpenseID: 0,
-			UserID:             data.RegisterUserID,
-			Amount:             data.Amount,
-			LiquidationID:      0,
-		}
-		data.BillingUsers = []entity.IncomeAndExpenseBillingUser{bu}
-	}
-	//金額0のデータは削除
-	data.BillingUsers = u.covertBillingUserNotZeroDelete(data.BillingUsers)
+	//入力されるユーザーごとの金額データをチェック前に統一化
+	data.BillingUsers = u.covertInputBillUserData(data.BillingUsers, data.RegisterUserID, data.Amount)
 
 	err := u.incomeAndExpenseValidator.IncomeAndExpenseCreateValidate(data)
 	if err != nil {
@@ -132,11 +121,7 @@ func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(data entity.IncomeA
 	if err != nil {
 		return err
 	}
-	u.checkBillingUserID(data.BillingUsers, groupID)
-	if err != nil {
-		return err
-	}
-	err = u.checkBillingUserAmount(data.BillingUsers)
+	err = u.checkBillingUserID(data.BillingUsers, groupID)
 	if err != nil {
 		return err
 	}
@@ -158,6 +143,9 @@ func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(data entity.IncomeA
 }
 func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(updateID uint, data entity.IncomeAndExpenseUpdate, userId string, groupID uint) error {
 
+	//入力されるユーザーごとの金額データをチェック前に統一化
+	data.BillingUsers = u.covertInputBillUserData(data.BillingUsers, userId, data.Amount)
+
 	err := u.incomeAndExpenseValidator.IncomeAndExpenseUpdateValidate(data)
 	if err != nil {
 		return err
@@ -173,17 +161,10 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(updateID uint, data
 	if err != nil {
 		return err
 	}
-	u.checkBillingUserID(data.BillingUsers, groupID)
+	err = u.checkBillingUserID(data.BillingUsers, groupID)
 	if err != nil {
 		return err
 	}
-
-	err = u.checkBillingUserAmount(data.BillingUsers)
-	if err != nil {
-		return err
-	}
-
-	data.BillingUsers = u.covertBillingUserNotZeroDelete(data.BillingUsers)
 
 	//更新値の設定
 	preIncomeAndExpense.Category = data.Category
@@ -292,14 +273,26 @@ func (u *incomeAndExpenseUsecaseImpl) GetMonthlyCategory(yearMonth string, group
 
 	return monthlyCategorys, nil
 }
-func (u *incomeAndExpenseUsecaseImpl) covertBillingUserNotZeroDelete(data []entity.IncomeAndExpenseBillingUser) []entity.IncomeAndExpenseBillingUser {
+
+func (u *incomeAndExpenseUsecaseImpl) covertInputBillUserData(input []entity.IncomeAndExpenseBillingUser, registerUserID string, totalAmount int) []entity.IncomeAndExpenseBillingUser {
+	//金額0のデータは削除
 	result := []entity.IncomeAndExpenseBillingUser{}
-	for _, billingUser := range data {
+	for _, billingUser := range input {
 		if billingUser.Amount != 0 {
 			result = append(result, billingUser)
 		}
 	}
 
+	if len(result) == 0 {
+		//ユーザー別の情報がない場合は登録者の情報としてユーザー別を登録
+		bu := entity.IncomeAndExpenseBillingUser{
+			IncomeAndExpenseID: 0,
+			UserID:             registerUserID,
+			Amount:             totalAmount,
+			LiquidationID:      0,
+		}
+		result = []entity.IncomeAndExpenseBillingUser{bu}
+	}
 	return result
 }
 
@@ -307,17 +300,6 @@ func (u *incomeAndExpenseUsecaseImpl) checkRegisterUserID(registerUserID string,
 	if registerUserID != userId {
 		return customerrors.NewCustomError(customerrors.ErrBadRequest)
 	}
-	return nil
-}
-
-func (u *incomeAndExpenseUsecaseImpl) checkBillingUserAmount(data []entity.IncomeAndExpenseBillingUser) error {
-
-	for _, billingUser := range data {
-		if billingUser.Amount > 0 {
-			return customerrors.NewCustomError(customerrors.ErrBadRequest)
-		}
-	}
-
 	return nil
 }
 

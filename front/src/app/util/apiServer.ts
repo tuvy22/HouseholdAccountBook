@@ -72,7 +72,7 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
     const result: IncomeAndExpenseMonthlyTotal[] = response.data;
     return result;
   } catch (error) {
-    throw error;
+    throw new Error(apiHandleError(error));
   }
 };
 export const getGroupAllUser = async () => {

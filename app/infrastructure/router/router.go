@@ -32,6 +32,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, groupHandler 
 
 	public := r.Group("/api/public")
 	public.Use(middlewareHandler.CheckInviteToken())
+	public.GET("/health", responsedOKHandler.ResponsedOK)
 	public.POST("/auth", userHandler.Authenticate)
 	public.POST("/user", userHandler.CreateUser)
 	publicSetInviteCookie := r.Group("/api/public")
