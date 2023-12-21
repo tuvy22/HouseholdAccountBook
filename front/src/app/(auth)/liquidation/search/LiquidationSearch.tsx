@@ -23,6 +23,7 @@ import { addError, useAlert } from "@/app/context/AlertProvider";
 import { useLiquidationSearchForm } from "@/app/context/LiquidationSearchFormProvider";
 import { LiquidationSearchForm } from "@/app/context/LiquidationSearchFormContext";
 import Link from "next/link";
+import UnavailablePage from "../UnavailablePage";
 
 const LiquidationSearch = () => {
   const liquidationSearchForm = useLiquidationSearchForm();
@@ -89,97 +90,105 @@ const LiquidationSearch = () => {
 
   return (
     <>
-      <div className="flex md:justify-between justify-center flex-col md:flex-row gap-4">
-        <Typography
-          variant="h3"
-          color="gray"
-          className="text-center md:text-left"
-        >
-          清算対象検索
-        </Typography>
-        <div className="flex items-end justify-end">
-          <Link
-            href={"/liquidation/result"}
-            className="text-blue-600 underline hover:no-underline"
-          >
-            清算結果はこちらから
-          </Link>
-        </div>
-      </div>
-      <form onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}>
-        <div className="mx-auto max-w-2xl">
-          <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row mt-6">
-            <div className="flex flex-col flex-grow">
-              <Input
-                label="開始期間 (必須)"
-                type="date"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("fromDate")}
-              />
+      {groupData.length > 1 ? (
+        <>
+          <div className="flex md:justify-between justify-center flex-col md:flex-row gap-4">
+            <Typography
+              variant="h3"
+              color="gray"
+              className="text-center md:text-left"
+            >
+              清算対象検索
+            </Typography>
+            <div className="flex items-end justify-end">
+              <Link
+                href={"/liquidation/result"}
+                className="text-blue-600 underline hover:no-underline"
+              >
+                清算結果はこちらから
+              </Link>
             </div>
-            <div className="flex justify-center items-center origin-center rotate-90 md:rotate-0">
-              〜
-            </div>
-            <div className="flex flex-col flex-grow">
-              <Input
-                label="終了期間 (必須)"
-                type="date"
-                size="lg"
-                crossOrigin={undefined}
-                {...register("toDate")}
-              />
-            </div>
-            <div className="flex flex-col justify-end">
-              <Menu>
-                <MenuHandler>
-                  <Button
-                    variant="outlined"
-                    color="red"
-                    className="h-11 w-full md:w-28"
-                  >
-                    清算相手
-                  </Button>
-                </MenuHandler>
-                <MenuList>
-                  {groupData.map(
-                    (groupUser, index: number) =>
-                      groupUser.id != loginUser.id && (
-                        <MenuItem
-                          key={index}
-                          onClick={() => setSelectedUserID(groupUser.id)}
-                          className={`py-2 my-1 ${
-                            selectedUserID === groupUser.id ? "bg-gray-200" : ""
-                          }`}
-                        >
-                          <label className="flex cursor-pointer items-center gap-2 p-2">
-                            {groupUser.name}
-                          </label>
-                        </MenuItem>
-                      )
-                  )}
-                </MenuList>
-              </Menu>
-            </div>
-            {errors.fromDate && (
-              <div className="text-red-500 text-left w-full">
-                {errors.fromDate.message}
-              </div>
-            )}
-            {errors.toDate && (
-              <div className="text-red-500  text-left w-full">
-                {errors.toDate.message}
-              </div>
-            )}
-            {selectedUserError && (
-              <div className="text-red-500  text-left w-full">
-                {selectedUserError}
-              </div>
-            )}
           </div>
-        </div>
-        <SubmitButtonForm buttonName={"検索"} buttonColor={"green"} />
-      </form>
+          <form onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}>
+            <div className="mx-auto max-w-2xl">
+              <div className="flex flex-col flex-wrap justify-center gap-3 md:flex-row mt-6">
+                <div className="flex flex-col flex-grow">
+                  <Input
+                    label="開始期間 (必須)"
+                    type="date"
+                    size="lg"
+                    crossOrigin={undefined}
+                    {...register("fromDate")}
+                  />
+                </div>
+                <div className="flex justify-center items-center origin-center rotate-90 md:rotate-0">
+                  〜
+                </div>
+                <div className="flex flex-col flex-grow">
+                  <Input
+                    label="終了期間 (必須)"
+                    type="date"
+                    size="lg"
+                    crossOrigin={undefined}
+                    {...register("toDate")}
+                  />
+                </div>
+                <div className="flex flex-col justify-end">
+                  <Menu>
+                    <MenuHandler>
+                      <Button
+                        variant="outlined"
+                        color="red"
+                        className="h-11 w-full md:w-28"
+                      >
+                        清算相手
+                      </Button>
+                    </MenuHandler>
+                    <MenuList>
+                      {groupData.map(
+                        (groupUser, index: number) =>
+                          groupUser.id != loginUser.id && (
+                            <MenuItem
+                              key={index}
+                              onClick={() => setSelectedUserID(groupUser.id)}
+                              className={`py-2 my-1 ${
+                                selectedUserID === groupUser.id
+                                  ? "bg-gray-200"
+                                  : ""
+                              }`}
+                            >
+                              <label className="flex cursor-pointer items-center gap-2 p-2">
+                                {groupUser.name}
+                              </label>
+                            </MenuItem>
+                          )
+                      )}
+                    </MenuList>
+                  </Menu>
+                </div>
+                {errors.fromDate && (
+                  <div className="text-red-500 text-left w-full">
+                    {errors.fromDate.message}
+                  </div>
+                )}
+                {errors.toDate && (
+                  <div className="text-red-500  text-left w-full">
+                    {errors.toDate.message}
+                  </div>
+                )}
+                {selectedUserError && (
+                  <div className="text-red-500  text-left w-full">
+                    {selectedUserError}
+                  </div>
+                )}
+              </div>
+            </div>
+            <SubmitButtonForm buttonName={"検索"} buttonColor={"green"} />
+          </form>
+        </>
+      ) : (
+        <UnavailablePage />
+      )}
     </>
   );
 };
