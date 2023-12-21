@@ -38,14 +38,20 @@
 
   MariaDB,nginx,Docker,AWS(ECS+Fargate)
 
-## インストール方法
+## 環境構築（vscode）
 
 ```bash
 git clone https://github.com/tuvy22/HouseholdAccountBook.git
-cd yourprojectname
-npm install
-npm start
+cd HouseholdAccountBook/local
+
+開発用の自己署名SSL証明書を生成します。この証明書はローカルでのHTTPS接続に使用されます。
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt
+
+cd ../
+docker-compose up
 ```
+
+docker-compose 実行後、vscode でデバック実行する必要があります。
 
 ## 実行環境 URL
 
