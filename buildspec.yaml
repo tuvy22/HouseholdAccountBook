@@ -3,7 +3,7 @@ version: 0.2
 batch:
   build-graph:
     - identifier: build_app
-      buildspec: buildspec_app.yaml
+      buildspec: ./buildspec_app.yaml
     - identifier: build_front
       buildspec: buildspec_front.yaml
       depends-on:
