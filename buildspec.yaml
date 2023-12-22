@@ -32,3 +32,10 @@ build-graph:
       buildspec: buildspec_web.yml
       depends-on:
         - build_front
+
+artifacts:
+  files:
+    - app/imageDetail.json
+    - front/imageDetail.json
+    - web/imageDetail.json
+    - appspec.yaml
