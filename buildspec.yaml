@@ -3,7 +3,7 @@ version: 0.2
 batch:
   build-graph:
     - identifier: build_app
-      buildspec: ./buildspec_app.yaml
+      buildspec: buildspec_app.yaml
     - identifier: build_front
       buildspec: buildspec_front.yaml
       depends-on:
@@ -12,6 +12,18 @@ batch:
       buildspec: buildspec_web.yaml
       depends-on:
         - build_front
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-1.amazonaws.com
+
+  build:
+    commands:
+      - docker build -t housebook_app app/.
+      - docker tag housebook_app:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/housebook_app:latest
+  post_build:
+    commands:
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/housebook_app:latest
 
 artifacts:
   files:
