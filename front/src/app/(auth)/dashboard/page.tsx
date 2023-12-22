@@ -1,15 +1,15 @@
 import { getIncomeAndExpenseMonthlyTotal } from "@/app/util/apiServer";
 import Dashboard from "./Dashboard";
 import { Metadata } from "next";
-import DashboardServer from "./DashboardServer";
 export const metadata: Metadata = {
   title: "ダッシュボード",
 };
 
-const Page = async () => (
-  <>
-    <DashboardServer />
-  </>
-);
+const Page = async () => {
+  const incomeAndExpenseMonthlyTotal = await getIncomeAndExpenseMonthlyTotal();
+  return (
+    <Dashboard incomeAndExpenseMonthlyTotal={incomeAndExpenseMonthlyTotal} />
+  );
+};
 
 export default Page;

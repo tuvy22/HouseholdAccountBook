@@ -1,0 +1,10 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - docker build -t housebook_front front/.
+      - docker tag housebook_front:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/housebook_front:latest
+  post_build:
+    commands:
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/housebook_front:latest

@@ -3,30 +3,17 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com
+      - $(aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com)
 
-  build:
-    commands:
-      # - docker build -t housebook_db db/.
-      # - docker tag housebook_db:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_db:latest
-      - docker build -t housebook_app app/.
-      - docker tag housebook_app:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_app:latest
-      - docker build -t housebook_front front/.
-      - docker tag housebook_front:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front:latest
-      - docker build -t housebook_web web/.
-      - docker tag housebook_web:latest 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest
-
-  post_build:
-    commands:
-      # - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_db:latest
-      - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_app:latest
-      - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_front:latest
-      - docker push 289525298288.dkr.ecr.ap-northeast-1.amazonaws.com/housebook_web:latest
-
-artifacts:
-  files:
-    # - db/imageDetail.json
-    - app/imageDetail.json
-    - front/imageDetail.json
-    - web/imageDetail.json
-    - appspec.yaml
+build-graph:
+  phases:
+    - identifier: build_app
+      buildspec: buildspec_app.yml
+    - identifier: build_front
+      buildspec: buildspec_front.yml
+      depends-on:
+        - build_app
+    - identifier: build_web
+      buildspec: buildspec_web.yml
+      depends-on:
+        - build_front

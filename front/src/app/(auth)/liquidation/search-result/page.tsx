@@ -1,14 +1,9 @@
-import {
-  getIncomeAndExpenseLiquidations,
-  getIncomeAndExpenseMonthlyTotal,
-} from "@/app/util/apiServer";
+import { getIncomeAndExpenseLiquidations } from "@/app/util/apiServer";
 
 import { Metadata } from "next";
-import LiquidationSearch from "../search/LiquidationSearch";
 import { LiquidationSearchResult } from "./LiquidationSearchResult";
-import { useParams } from "next/navigation";
 export const metadata: Metadata = {
-  title: "清算対象選択",
+  title: "清算検索結果一覧",
 };
 
 export default async function Page({

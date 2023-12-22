@@ -6,7 +6,10 @@ import Footer from "./components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "えふSaku",
+  title: {
+    default: "えふSaku",
+    template: "%s | えふSaku",
+  },
   description:
     "家計簿WEBサイトのえふSakuです。ユーザー間での精算（割り勘）機能があり、お金のやり取りを簡単に管理できます。",
 };

@@ -60,7 +60,7 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
     const response = await axios.get(
-      `http://localhost:8080/api/localhost/income-and-expense/monthly-total`,
+      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/monthly-total`,
       {
         headers: {
           cache: "no-store",
@@ -72,7 +72,7 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
     const result: IncomeAndExpenseMonthlyTotal[] = response.data;
     return result;
   } catch (error) {
-    throw error;
+    throw new Error(apiHandleError(error));
   }
 };
 export const getGroupAllUser = async () => {
