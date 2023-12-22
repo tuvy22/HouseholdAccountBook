@@ -14,6 +14,4 @@ phases:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/housebook_app:latest
 
 artifacts:
-  files:
-    - app_artifact_file
   name: build_app
