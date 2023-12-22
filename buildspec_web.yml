@@ -12,3 +12,7 @@ phases:
   post_build:
     commands:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/housebook_web:latest
+artifacts:
+  files:
+    - web_artifact_file
+  name: build_web
