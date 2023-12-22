@@ -1,22 +1,18 @@
 version: 0.2
 
 batch:
-  fast-fail: false
   build-graph:
     - identifier: build_app
-      buildspec: buildspec_app.yml
+      buildspec: buildspec_app.yaml
     - identifier: build_front
-      buildspec: buildspec_front.yml
+      buildspec: buildspec_front.yaml
       depends-on:
         - build_app
     - identifier: build_web
-      buildspec: buildspec_web.yml
+      buildspec: buildspec_web.yaml
       depends-on:
         - build_front
 
 artifacts:
   files:
-    # - app/imageDetail.json
-    # - front/imageDetail.json
-    # - web/imageDetail.json
     - appspec.yaml
