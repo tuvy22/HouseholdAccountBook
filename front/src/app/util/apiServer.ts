@@ -16,7 +16,7 @@ export const getIncomeAndExpense = async (page: string) => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    if (cookie) {
+    if (cookie?.name.length || 0 > 0) {
       const response = await axios.get(
         `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all`,
         {
@@ -42,7 +42,7 @@ export const getIncomeAndExpenseMaxPage = async () => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    if (cookie) {
+    if (cookie?.name.length || 0 > 0) {
       const response = await axios.get(
         `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all/max-page`,
         {
@@ -66,7 +66,7 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    if (cookie) {
+    if (cookie?.name.length || 0 > 0) {
       const response = await axios.get(
         `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/monthly-total`,
         {
@@ -90,7 +90,8 @@ export const getGroupAllUser = async () => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    if (cookie) {
+    if (cookie?.name.length || 0 > 0) {
+      console.log(cookie);
       const response = await axios.get(
         `http://${process.env.APP_HOST}:8080/api/localhost/user/group-all`,
         {
@@ -117,7 +118,7 @@ export const getIncomeAndExpenseLiquidations = async (
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    if (cookie) {
+    if (cookie?.name.length || 0 > 0) {
       const response = await axios.get(
         `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/liquidations`,
         {
@@ -146,7 +147,7 @@ export const getLiquidations = async () => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    if (cookie) {
+    if (cookie?.name.length || 0 > 0) {
       const response = await axios.get(
         `http://${process.env.APP_HOST}:8080/api/localhost/liquidation/all`,
         {
