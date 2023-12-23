@@ -18,10 +18,12 @@ export default async function Page({
   );
   return (
     <>
-      <LiquidationSearchResult
-        liquidations={liquidations}
-        targetUserId={searchParams["target-user"]}
-      />
+      {liquidations && liquidations.length > 0 && (
+        <LiquidationSearchResult
+          liquidations={liquidations}
+          targetUserId={searchParams["target-user"]}
+        />
+      )}
     </>
   );
 }

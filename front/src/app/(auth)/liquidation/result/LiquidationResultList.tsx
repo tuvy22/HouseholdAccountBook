@@ -40,7 +40,7 @@ export const LiquidationResultList = async () => {
         </div>
       </div>
 
-      {fetchData.length > 0 ? (
+      {fetchData && fetchData.length > 0 ? (
         <Card className="mt-3">
           <table className="text-left">
             {/* デスクトップ表示 */}

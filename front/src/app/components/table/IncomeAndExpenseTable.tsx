@@ -26,7 +26,7 @@ export const IncomeAndExpenseTable = ({
   allCheckBox = true,
   handleAllCheckBoxChange = () => {},
 }: {
-  tableData: IncomeAndExpense[];
+  tableData: IncomeAndExpense[] | undefined;
   isLiquidation?: boolean;
   loginUserId?: string;
   targetUserId?: string;
@@ -38,7 +38,7 @@ export const IncomeAndExpenseTable = ({
   let previousDate: Date;
   return (
     <>
-      {tableData.length > 0 ? (
+      {tableData && tableData.length > 0 ? (
         <Card className="my-3">
           <table className="text-left">
             {isLiquidation ? (

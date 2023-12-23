@@ -16,20 +16,23 @@ export const getIncomeAndExpense = async (page: string) => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await axios.get(
-      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all`,
-      {
-        headers: {
-          cache: "no-store",
-          Cookie: `${cookie?.name}=${cookie?.value};`,
-        },
-        params: {
-          page: page,
-        },
-      }
-    );
-    const result: IncomeAndExpense[] = response.data;
-    return result;
+    if (cookie) {
+      const response = await axios.get(
+        `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all`,
+        {
+          headers: {
+            cache: "no-store",
+            Cookie: `${cookie?.name}=${cookie?.value};`,
+          },
+          params: {
+            page: page,
+          },
+        }
+      );
+      const result: IncomeAndExpense[] = response.data;
+      return result;
+    }
+    return undefined;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }
@@ -39,17 +42,20 @@ export const getIncomeAndExpenseMaxPage = async () => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await axios.get(
-      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all/max-page`,
-      {
-        headers: {
-          cache: "no-store",
-          Cookie: `${cookie?.name}=${cookie?.value};`,
-        },
-      }
-    );
-    const maxPage: number = response.data;
-    return maxPage;
+    if (cookie) {
+      const response = await axios.get(
+        `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all/max-page`,
+        {
+          headers: {
+            cache: "no-store",
+            Cookie: `${cookie?.name}=${cookie?.value};`,
+          },
+        }
+      );
+      const maxPage: number = response.data;
+      return maxPage;
+    }
+    return 0;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }
@@ -59,18 +65,22 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
   try {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
-    const response = await axios.get(
-      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/monthly-total`,
-      {
-        headers: {
-          cache: "no-store",
-          Cookie: `${cookie?.name}=${cookie?.value};`,
-        },
-      }
-    );
 
-    const result: IncomeAndExpenseMonthlyTotal[] = response.data;
-    return result;
+    if (cookie) {
+      const response = await axios.get(
+        `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/monthly-total`,
+        {
+          headers: {
+            cache: "no-store",
+            Cookie: `${cookie?.name}=${cookie?.value};`,
+          },
+        }
+      );
+
+      const result: IncomeAndExpenseMonthlyTotal[] = response.data;
+      return result;
+    }
+    return undefined;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }
@@ -107,22 +117,25 @@ export const getIncomeAndExpenseLiquidations = async (
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await axios.get(
-      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/liquidations`,
-      {
-        headers: {
-          cache: "no-store",
-          Cookie: `${cookie?.name}=${cookie?.value};`,
-        },
-        params: {
-          fromDate: fromDate,
-          toDate: toDate,
-          targetUserId: targetUserId,
-        },
-      }
-    );
-    const result: IncomeAndExpense[] = response.data;
-    return result;
+    if (cookie) {
+      const response = await axios.get(
+        `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/liquidations`,
+        {
+          headers: {
+            cache: "no-store",
+            Cookie: `${cookie?.name}=${cookie?.value};`,
+          },
+          params: {
+            fromDate: fromDate,
+            toDate: toDate,
+            targetUserId: targetUserId,
+          },
+        }
+      );
+      const result: IncomeAndExpense[] = response.data;
+      return result;
+    }
+    return undefined;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }
@@ -133,17 +146,20 @@ export const getLiquidations = async () => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await axios.get(
-      `http://${process.env.APP_HOST}:8080/api/localhost/liquidation/all`,
-      {
-        headers: {
-          cache: "no-store",
-          Cookie: `${cookie?.name}=${cookie?.value};`,
-        },
-      }
-    );
-    const result: Liquidation[] = response.data;
-    return result;
+    if (cookie) {
+      const response = await axios.get(
+        `http://${process.env.APP_HOST}:8080/api/localhost/liquidation/all`,
+        {
+          headers: {
+            cache: "no-store",
+            Cookie: `${cookie?.name}=${cookie?.value};`,
+          },
+        }
+      );
+      const result: Liquidation[] = response.data;
+      return result;
+    }
+    return undefined;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }
