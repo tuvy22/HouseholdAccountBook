@@ -11,7 +11,7 @@ import {
 import { apiHandleError } from "./apiHandleError";
 
 export const getIncomeAndExpense = async (page: string) => {
-  if (process.env.BUILD == "build") {
+  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
     return undefined;
   }
 
@@ -38,7 +38,7 @@ export const getIncomeAndExpense = async (page: string) => {
   }
 };
 export const getIncomeAndExpenseMaxPage = async () => {
-  if (process.env.BUILD == "build") {
+  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
     return 0;
   }
 
@@ -64,8 +64,8 @@ export const getIncomeAndExpenseMaxPage = async () => {
 
 export const getIncomeAndExpenseMonthlyTotal = async () => {
   console.log("SSG");
-  console.log(process.env.BUILD);
-  if (process.env.BUILD === "build") {
+  console.log(process.env.APP_HOST);
+  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
     return undefined;
   }
 
@@ -89,7 +89,7 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
   }
 };
 export const getGroupAllUser = async () => {
-  if (process.env.BUILD == "build") {
+  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
     return undefined;
   }
 
@@ -116,7 +116,7 @@ export const getIncomeAndExpenseLiquidations = async (
   toDate: string,
   targetUserId: string
 ) => {
-  if (process.env.BUILD == "build") {
+  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
     return undefined;
   }
 
@@ -146,7 +146,7 @@ export const getIncomeAndExpenseLiquidations = async (
 };
 
 export const getLiquidations = async () => {
-  if (process.env.BUILD == "build") {
+  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
     return undefined;
   }
 
