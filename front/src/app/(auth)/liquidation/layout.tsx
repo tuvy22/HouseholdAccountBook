@@ -11,7 +11,7 @@ export default async function Layout({
   return (
     <>
       <LiquidationSearchFormProvider>
-        {groupUsers.length > 1 ? children : <UnavailablePage />}
+        {groupUsers?.length || 0 > 1 ? children : <UnavailablePage />}
         {children}
       </LiquidationSearchFormProvider>
     </>

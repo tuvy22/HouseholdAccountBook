@@ -93,7 +93,7 @@ export const getGroupAllUser = async () => {
       const result: User[] = response.data;
       return result;
     }
-    return {};
+    return undefined;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }
