@@ -63,7 +63,9 @@ export const getIncomeAndExpenseMaxPage = async () => {
 };
 
 export const getIncomeAndExpenseMonthlyTotal = async () => {
-  if (process.env.BUILD == "build") {
+  console.log("SSG");
+  console.log(process.env.BUILD);
+  if (process.env.BUILD === "build") {
     return undefined;
   }
 
@@ -83,7 +85,7 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
     const result: IncomeAndExpenseMonthlyTotal[] = response.data;
     return result;
   } catch (error) {
-    throw new Error(apiHandleError(error));
+    throw error;
   }
 };
 export const getGroupAllUser = async () => {
@@ -94,10 +96,8 @@ export const getGroupAllUser = async () => {
   try {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
-
-    console.log(cookie);
     const response = await axios.get(
-      `http://${process.env.APP_HOST}/api/localhost/user/group-all`,
+      `http://${process.env.APP_HOST}:8080/api/localhost/user/group-all`,
       {
         headers: {
           cache: "no-store",
