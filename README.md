@@ -51,7 +51,7 @@ cd ../
 docker-compose up
 ```
 
-docker-compose 実行後、vscode でデバック実行する必要があります。
+※docker-compose 実行後、vscode で go(gin)をデバック実行する必要があります。
 
 ## 実行環境 URL
 

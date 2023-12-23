@@ -80,17 +80,20 @@ export const getGroupAllUser = async () => {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await axios.get(
-      `http://${process.env.APP_HOST}:8080/api/localhost/user/group-all`,
-      {
-        headers: {
-          cache: "no-store",
-          Cookie: `${cookie?.name}=${cookie?.value};`,
-        },
-      }
-    );
-    const result: User[] = response.data;
-    return result;
+    if (cookie) {
+      const response = await axios.get(
+        `http://${process.env.APP_HOST}:8080/api/localhost/user/group-all`,
+        {
+          headers: {
+            cache: "no-store",
+            Cookie: `${cookie?.name}=${cookie?.value};`,
+          },
+        }
+      );
+      const result: User[] = response.data;
+      return result;
+    }
+    return undefined;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }

@@ -12,6 +12,3 @@ phases:
   post_build:
     commands:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/housebook_app:latest
-
-artifacts:
-  name: build_app
