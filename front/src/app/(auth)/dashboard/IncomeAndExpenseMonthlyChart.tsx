@@ -129,19 +129,25 @@ export const IncomeAndExpenseMonthlyChart = ({
           {data.length > 0 ? (
             <LineChart
               data={data}
-              margin={{ top: 0, right: 0, left: 53, bottom: 10 }}
+              margin={{ top: 0, right: 10, left: 30, bottom: 10 }}
               onClick={handlePointClick}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="yearMonth" dy={15} />
+              <XAxis dataKey="yearMonth" dy={15} tick={{ fontSize: 12 }} />
               <YAxis
                 tickFormatter={(value) =>
                   formatNumberStringToYen((+value).toString())
                 }
                 dx={-10}
+                tick={{ fontSize: 12 }}
               />
 
-              <Tooltip />
+              <Tooltip
+                formatter={(value, name) => [
+                  formatNumberStringToYen((+value).toString()),
+                  name,
+                ]}
+              />
               <Legend
                 verticalAlign="top"
                 align="right"
