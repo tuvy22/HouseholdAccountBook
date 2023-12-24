@@ -16,7 +16,6 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { auth, deleteInviteToken } from "../../util/apiClient";
-import Link from "next/link";
 import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 
 interface IFormInput {
