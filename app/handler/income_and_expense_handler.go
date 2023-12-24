@@ -90,18 +90,11 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Con
 
 	// 日付のフォーマットを定義する
 	layout := "2006-01-02"
-	// 日本のタイムゾーンを取得
-	jst, err := time.LoadLocation("Asia/Tokyo")
-	if err != nil {
-		customerrors := customerrors.NewCustomError(customerrors.ErrBadRequest)
-		errorResponder(c, customerrors)
-		return
-	}
 
 	// fromDateのパース
 	var fromDate time.Time
 	if fromDateStr != "" {
-		fromDate, err = time.ParseInLocation(layout, fromDateStr, jst)
+		fromDate, err = time.Parse(layout, fromDateStr)
 		if err != nil {
 			customerrors := customerrors.NewCustomError(customerrors.ErrBadRequest)
 			errorResponder(c, customerrors)
@@ -112,7 +105,7 @@ func (h *incomeAndExpenseHandlerImpl) GetIncomeAndExpenseLiquidations(c *gin.Con
 	// toDateのパース
 	var toDate time.Time
 	if toDateStr != "" {
-		toDate, err = time.ParseInLocation(layout, toDateStr, jst)
+		toDate, err = time.Parse(layout, toDateStr)
 		if err != nil {
 			customerrors := customerrors.NewCustomError(customerrors.ErrBadRequest)
 			errorResponder(c, customerrors)

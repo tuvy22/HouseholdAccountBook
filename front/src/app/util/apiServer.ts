@@ -2,60 +2,48 @@ import axios from "axios";
 
 import { cookies } from "next/headers";
 import { SESSION_ID_COOKIE } from "./constants";
-import {
-  IncomeAndExpense,
-  IncomeAndExpenseMonthlyTotal,
-  Liquidation,
-  User,
-} from "./types";
 import { apiHandleError } from "./apiHandleError";
 
 export const getIncomeAndExpense = async (page: string) => {
-  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
+  if (!page) {
     return undefined;
   }
 
   try {
     const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
+    const sessionId = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await axios.get(
-      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all`,
+    const response = await fetch(
+      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all?page=${page}`,
       {
         headers: {
-          cache: "no-store",
-          Cookie: `${cookie?.name}=${cookie?.value};`,
+          Cookie: `${sessionId?.name}=${sessionId?.value};`,
         },
-        params: {
-          page: page,
-        },
+        cache: "no-store",
       }
     );
-    const result: IncomeAndExpense[] = response.data;
+    const result = await response.json();
     return result;
   } catch (error) {
-    throw new Error(apiHandleError(error));
+    throw error;
   }
 };
-export const getIncomeAndExpenseMaxPage = async () => {
-  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
-    return 0;
-  }
 
+export const getIncomeAndExpenseMaxPage = async () => {
   try {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await axios.get(
+    const response = await fetch(
       `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all/max-page`,
       {
         headers: {
-          cache: "no-store",
           Cookie: `${cookie?.name}=${cookie?.value};`,
         },
+        cache: "no-store",
       }
     );
-    const maxPage: number = response.data;
+    const maxPage = response.json();
     return maxPage;
   } catch (error) {
     throw new Error(apiHandleError(error));
@@ -63,52 +51,48 @@ export const getIncomeAndExpenseMaxPage = async () => {
 };
 
 export const getIncomeAndExpenseMonthlyTotal = async () => {
-  console.log("SSG");
-  console.log(process.env.APP_HOST);
-  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
-    return undefined;
-  }
-
   try {
     const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
-    const response = await axios.get(
+    const sessionId = cookieStore.get(SESSION_ID_COOKIE);
+
+    const cookie = `${sessionId?.name}=${sessionId?.value}`;
+
+    const options: RequestInit = {
+      headers: {
+        cookie,
+      },
+      cache: "no-store",
+    };
+
+    const response = await fetch(
       `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/monthly-total`,
-      {
-        headers: {
-          cache: "no-store",
-          Cookie: `${cookie?.name}=${cookie?.value};`,
-        },
-      }
+      options
     );
 
-    const result: IncomeAndExpenseMonthlyTotal[] = response.data;
+    const result = await response.json();
     return result;
   } catch (error) {
-    throw error;
+    throw new Error(apiHandleError(error));
   }
 };
-export const getGroupAllUser = async () => {
-  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
-    return undefined;
-  }
 
+export const getGroupAllUser = async () => {
   try {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
-    const response = await axios.get(
+    const response = await fetch(
       `http://${process.env.APP_HOST}:8080/api/localhost/user/group-all`,
       {
         headers: {
-          cache: "no-store",
           Cookie: `${cookie?.name}=${cookie?.value};`,
         },
+        cache: "no-store",
       }
     );
-    const result: User[] = response.data;
+    const result = response.json();
     return result;
   } catch (error) {
-    throw error;
+    throw new Error(apiHandleError(error));
   }
 };
 export const getIncomeAndExpenseLiquidations = async (
@@ -116,29 +100,21 @@ export const getIncomeAndExpenseLiquidations = async (
   toDate: string,
   targetUserId: string
 ) => {
-  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
-    return undefined;
-  }
-
   try {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await axios.get(
-      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/liquidations`,
+    const response = await fetch(
+      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/liquidations?fromDate=${fromDate}&toDate=${toDate}&targetUserId=${targetUserId}`,
       {
         headers: {
-          cache: "no-store",
           Cookie: `${cookie?.name}=${cookie?.value};`,
         },
-        params: {
-          fromDate: fromDate,
-          toDate: toDate,
-          targetUserId: targetUserId,
-        },
+        cache: "no-store",
       }
     );
-    const result: IncomeAndExpense[] = response.data;
+
+    const result = await response.json();
     return result;
   } catch (error) {
     throw new Error(apiHandleError(error));
@@ -146,23 +122,24 @@ export const getIncomeAndExpenseLiquidations = async (
 };
 
 export const getLiquidations = async () => {
-  if (!process.env.APP_HOST || process.env.APP_HOST.length == 0) {
-    return undefined;
-  }
-
   try {
     const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
-    const response = await axios.get(
+    const sessionId = cookieStore.get(SESSION_ID_COOKIE);
+
+    const cookie = `${sessionId?.name}=${sessionId?.value}`;
+
+    const options: RequestInit = {
+      headers: {
+        cookie,
+      },
+      cache: "no-store",
+    };
+
+    const response = await fetch(
       `http://${process.env.APP_HOST}:8080/api/localhost/liquidation/all`,
-      {
-        headers: {
-          cache: "no-store",
-          Cookie: `${cookie?.name}=${cookie?.value};`,
-        },
-      }
+      options
     );
-    const result: Liquidation[] = response.data;
+    const result = response.json();
     return result;
   } catch (error) {
     throw new Error(apiHandleError(error));

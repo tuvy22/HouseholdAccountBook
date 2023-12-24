@@ -71,6 +71,7 @@ func NewRouter(cfg config.Config, userHandler handler.UserHandler, groupHandler 
 	authorized.GET("/income-and-expense/monthly-category", incomeAndExpenseHandler.GetMonthlyCategory)
 
 	authorized.POST("/liquidation", liquidationHandler.CreateLiquidation)
+	authorized.GET("/liquidation/all", liquidationHandler.GetAllLiquidation)
 	authorized.DELETE("/liquidation/:id", liquidationHandler.DeleteLiquidation)
 
 	authorized.GET("/category/all/income", categoryHandler.GetAllIncomeCategory)

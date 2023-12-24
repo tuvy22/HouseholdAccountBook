@@ -12,6 +12,8 @@ import {
   PasswordChange,
   IncomeAndExpenseCreate,
   IncomeAndExpenseUpdate,
+  IncomeAndExpenseMonthlyTotal,
+  Liquidation,
 } from "@/app/util/types";
 import axios from "axios";
 import { apiHandleError } from "./apiHandleError";
@@ -115,6 +117,18 @@ export const putIncomeAndExpense = async (
 export const deleteIncomeAndExpense = async (id: number) => {
   try {
     await axios.delete(`/api/private/income-and-expense/${id}`);
+  } catch (error) {
+    throw new Error(apiHandleError(error));
+  }
+};
+
+export const getAllLiquidation = async () => {
+  try {
+    const response = await axios.get("/api/private/liquidation/all");
+
+    const result: Liquidation[] = response.data;
+
+    return result;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }

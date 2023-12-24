@@ -102,6 +102,7 @@ const LiquidationSearch = () => {
           <Link
             href={"/liquidation/result"}
             className="text-blue-600 underline hover:no-underline"
+            prefetch={false}
           >
             清算結果はこちらから
           </Link>

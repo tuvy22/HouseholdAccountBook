@@ -129,7 +129,7 @@ export const IncomeAndExpenseMonthlyChart = ({
           {data.length > 0 ? (
             <LineChart
               data={data}
-              margin={{ top: 0, right: 10, left: 40, bottom: 10 }}
+              margin={{ top: 0, right: 0, left: 53, bottom: 10 }}
               onClick={handlePointClick}
             >
               <CartesianGrid strokeDasharray="3 3" />

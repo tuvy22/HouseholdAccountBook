@@ -1,18 +1,35 @@
+"use client";
+
 import { Liquidation } from "@/app/util/types";
 import { Button, Card, Typography } from "@/app/materialTailwindExports";
 import { toDateString } from "@/app/util/util";
-import { getLiquidations } from "@/app/util/apiServer";
 import LiquidationFlow from "../LiquidationFlow";
 import LiquidationDeleteIcon from "@/app/components/LiquidationDeleteIcon";
 import TableThTypography from "@/app/components/table/TableThTypography";
 import TableTd from "@/app/components/table/TableTd";
 import TableTypography from "@/app/components/table/TableTypography";
-import React from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { getAllLiquidation } from "@/app/util/apiClient";
+import { addError, useAlert } from "@/app/context/AlertProvider";
 
 export const LiquidationResultList = async () => {
-  const fetchData = await getLiquidations();
+  const [liquidationData, setLiquidationData] = useState<Liquidation[]>([]);
+
+  const alert = useAlert();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLiquidationData(await getAllLiquidation());
+      } catch (error) {
+        if (error instanceof Error) {
+          addError(error.message, alert);
+        }
+      }
+    };
+    fetchData();
+  }, [alert]);
 
   return (
     <>
@@ -40,7 +57,7 @@ export const LiquidationResultList = async () => {
         </div>
       </div>
 
-      {fetchData && fetchData.length > 0 ? (
+      {liquidationData && liquidationData.length > 0 ? (
         <Card className="mt-3">
           <table className="text-left">
             {/* デスクトップ表示 */}
@@ -65,7 +82,7 @@ export const LiquidationResultList = async () => {
               </tr>
             </thead>
             <tbody>
-              {fetchData.map((liquidation: Liquidation, index) => {
+              {liquidationData.map((liquidation: Liquidation, index) => {
                 // billingUsersのamount合計を計算
                 const totalAmount = liquidation.billingUsers.reduce(
                   (sum, user) =>

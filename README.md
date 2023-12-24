@@ -36,7 +36,7 @@
 
 - **その他**:
 
-  MariaDB,nginx,Docker,AWS(ECS+Fargate)
+  MariaDB,nginx,Docker,JWT
 
 ## 環境構築（vscode）
 
@@ -56,3 +56,5 @@ docker-compose up
 ## 実行環境 URL
 
 https://tuvy31322.com
+
+※AWS(ECS+Fargate)で動作しています。
