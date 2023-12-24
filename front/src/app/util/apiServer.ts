@@ -2,6 +2,12 @@ import axios from "axios";
 
 import { cookies } from "next/headers";
 import { SESSION_ID_COOKIE } from "./constants";
+import {
+  IncomeAndExpense,
+  IncomeAndExpenseMonthlyTotal,
+  Liquidation,
+  User,
+} from "./types";
 import { apiHandleError } from "./apiHandleError";
 
 export const getIncomeAndExpense = async (page: string) => {
@@ -11,39 +17,41 @@ export const getIncomeAndExpense = async (page: string) => {
 
   try {
     const cookieStore = cookies();
-    const sessionId = cookieStore.get(SESSION_ID_COOKIE);
+    const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await fetch(
-      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all?page=${page}`,
+    const response = await axios.get(
+      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all`,
       {
         headers: {
-          Cookie: `${sessionId?.name}=${sessionId?.value};`,
+          cache: "no-store",
+          Cookie: `${cookie?.name}=${cookie?.value};`,
         },
-        cache: "no-store",
+        params: {
+          page: page,
+        },
       }
     );
-    const result = await response.json();
+    const result: IncomeAndExpense[] = response.data;
     return result;
   } catch (error) {
-    throw error;
+    throw new Error(apiHandleError(error));
   }
 };
-
 export const getIncomeAndExpenseMaxPage = async () => {
   try {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await fetch(
+    const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all/max-page`,
       {
         headers: {
+          cache: "no-store",
           Cookie: `${cookie?.name}=${cookie?.value};`,
         },
-        cache: "no-store",
       }
     );
-    const maxPage = response.json();
+    const maxPage: number = response.data;
     return maxPage;
   } catch (error) {
     throw new Error(apiHandleError(error));
@@ -53,43 +61,37 @@ export const getIncomeAndExpenseMaxPage = async () => {
 export const getIncomeAndExpenseMonthlyTotal = async () => {
   try {
     const cookieStore = cookies();
-    const sessionId = cookieStore.get(SESSION_ID_COOKIE);
-
-    const cookie = `${sessionId?.name}=${sessionId?.value}`;
-
-    const options: RequestInit = {
-      headers: {
-        cookie,
-      },
-      cache: "no-store",
-    };
-
-    const response = await fetch(
+    const cookie = cookieStore.get(SESSION_ID_COOKIE);
+    const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/monthly-total`,
-      options
+      {
+        headers: {
+          cache: "no-store",
+          Cookie: `${cookie?.name}=${cookie?.value};`,
+        },
+      }
     );
 
-    const result = await response.json();
+    const result: IncomeAndExpenseMonthlyTotal[] = response.data;
     return result;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }
 };
-
 export const getGroupAllUser = async () => {
   try {
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
-    const response = await fetch(
+    const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/user/group-all`,
       {
         headers: {
+          cache: "no-store",
           Cookie: `${cookie?.name}=${cookie?.value};`,
         },
-        cache: "no-store",
       }
     );
-    const result = response.json();
+    const result: User[] = response.data;
     return result;
   } catch (error) {
     throw new Error(apiHandleError(error));
@@ -104,17 +106,21 @@ export const getIncomeAndExpenseLiquidations = async (
     const cookieStore = cookies();
     const cookie = cookieStore.get(SESSION_ID_COOKIE);
 
-    const response = await fetch(
-      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/liquidations?fromDate=${fromDate}&toDate=${toDate}&targetUserId=${targetUserId}`,
+    const response = await axios.get(
+      `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/liquidations`,
       {
         headers: {
+          cache: "no-store",
           Cookie: `${cookie?.name}=${cookie?.value};`,
         },
-        cache: "no-store",
+        params: {
+          fromDate: fromDate,
+          toDate: toDate,
+          targetUserId: targetUserId,
+        },
       }
     );
-
-    const result = await response.json();
+    const result: IncomeAndExpense[] = response.data;
     return result;
   } catch (error) {
     throw new Error(apiHandleError(error));
@@ -124,22 +130,17 @@ export const getIncomeAndExpenseLiquidations = async (
 export const getLiquidations = async () => {
   try {
     const cookieStore = cookies();
-    const sessionId = cookieStore.get(SESSION_ID_COOKIE);
-
-    const cookie = `${sessionId?.name}=${sessionId?.value}`;
-
-    const options: RequestInit = {
-      headers: {
-        cookie,
-      },
-      cache: "no-store",
-    };
-
-    const response = await fetch(
+    const cookie = cookieStore.get(SESSION_ID_COOKIE);
+    const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/liquidation/all`,
-      options
+      {
+        headers: {
+          cache: "no-store",
+          Cookie: `${cookie?.name}=${cookie?.value};`,
+        },
+      }
     );
-    const result = response.json();
+    const result: Liquidation[] = response.data;
     return result;
   } catch (error) {
     throw new Error(apiHandleError(error));

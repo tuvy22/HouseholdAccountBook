@@ -308,7 +308,6 @@ export const getCategoryAllClient = async (isExpense: boolean) => {
 
     return result;
   } catch (error) {
-    console.log(error);
     throw new Error(apiHandleError(error));
   }
 };
