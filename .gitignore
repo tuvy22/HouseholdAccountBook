@@ -7,3 +7,5 @@
 
 /local/*.key
 /local/*.crt
+
+*/.DS_Store
