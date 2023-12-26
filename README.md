@@ -38,23 +38,54 @@
 
   MariaDB,nginx,Docker,JWT
 
-## 環境構築（vscode）
+## 開発環境構築（vscode）
+
+### リポジトリのクローン
+
+GitHub からリポジトリをクローンします。
 
 ```bash
 git clone https://github.com/tuvy22/HouseholdAccountBook.git
+```
+
+### SSL 証明書の生成
+
+開発用の自己署名 SSL 証明書を生成します。この証明書はローカルでの HTTPS 接続に使用されます
+
+```bash
 cd HouseholdAccountBook/local
-
-開発用の自己署名SSL証明書を生成します。この証明書はローカルでのHTTPS接続に使用されます。
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt
-
 cd ../
+```
+
+### Docker Compose の実行
+
+Docker Compose で起動します。
+
+```bash
 docker-compose up
 ```
 
 ※docker-compose 実行後、vscode で go(gin)をデバック実行する必要があります。
 
-## 実行環境 URL
+### 開発環境接続 URL
+
+https://localhost/
+
+### フロントエンドの依存関係のインストール
+
+開発環境での Docker 実行に影響はありませんが、フロントエンドの依存関係をインストールする必要がある場合は、以下を実行してください。
+
+```bash
+cd front
+npm install
+cd ../
+```
+
+## 本番実行環境 URL
 
 https://f-saku.com/
 
-※AWS(ECS+Fargate)で動作しています。
+・AWS(ECS+Fargate)で動作しています。
+
+・アカウント登録は自由にして問題ありません。
