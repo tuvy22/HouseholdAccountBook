@@ -28,7 +28,7 @@
 
 - **フロントエンド**:
 
-  Next.js13,TypeScript,TailwindCSS,react-hook-form,Zod,MUI,recharts
+  Next.js13,TypeScript,TailwindCSS,MaterialTailwind,react-hook-form,Zod,recharts
 
 - **バックエンド**:
 
