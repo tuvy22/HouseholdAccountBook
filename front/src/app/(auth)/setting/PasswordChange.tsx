@@ -53,26 +53,28 @@ export function PasswordChange() {
   return (
     <form
       onSubmit={(e) => handleSubmit((data) => onSubmit(data))(e)}
-      className="w-full max-w-sm flex flex-col items-center justify-center gap-4"
+      className="w-full max-w-sm mx-auto"
     >
-      <PasswordForm
-        label={"パスワード（変更前）"}
-        passwordChangeRegister={register}
-        passwordChangeRegisterName={"prePassword"}
-        fieldError={errors.prePassword}
-      />
-      <PasswordForm
-        label={"パスワード（変更後）"}
-        passwordChangeRegister={register}
-        passwordChangeRegisterName={"password"}
-        fieldError={errors.password}
-      />
-      <PasswordForm
-        label={"パスワード（確認）"}
-        passwordChangeRegister={register}
-        passwordChangeRegisterName={"passwordConfirmation"}
-        fieldError={errors.passwordConfirmation}
-      />
+      <div className="flex flex-col gap-4">
+        <PasswordForm
+          label={"パスワード（変更前）"}
+          passwordChangeRegister={register}
+          passwordChangeRegisterName={"prePassword"}
+          fieldError={errors.prePassword}
+        />
+        <PasswordForm
+          label={"パスワード（変更後）"}
+          passwordChangeRegister={register}
+          passwordChangeRegisterName={"password"}
+          fieldError={errors.password}
+        />
+        <PasswordForm
+          label={"パスワード（確認）"}
+          passwordChangeRegister={register}
+          passwordChangeRegisterName={"passwordConfirmation"}
+          fieldError={errors.passwordConfirmation}
+        />
+      </div>
 
       <SubmitButtonForm buttonName={"変更"} buttonColor={"green"} />
     </form>
