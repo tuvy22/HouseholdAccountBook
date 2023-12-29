@@ -1,17 +1,24 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Drawer, Button } from "../materialTailwindExports";
 import ViewSidebarIcon from "@mui/icons-material/ViewSidebar";
 
-export function SideDrawer({ children }: { children: React.ReactNode }) {
+export function SideDrawer({
+  children,
+  openSetting,
+}: {
+  children: React.ReactNode;
+  openSetting: string;
+}) {
   const [open, setOpen] = useState(false);
 
-  const openDrawer = () => setOpen(true);
-  const closeDrawer = () => setOpen(false);
+  useEffect(() => {
+    setOpen((prev) => !prev);
+  }, [openSetting]);
 
   return (
     <>
       <Button
-        onClick={openDrawer}
+        onClick={() => setOpen(true)}
         variant="filled"
         color="green"
         size="lg"
@@ -27,11 +34,11 @@ export function SideDrawer({ children }: { children: React.ReactNode }) {
           className={`fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm z-40 ${
             open ? "block" : "hidden"
           }`}
-          onClick={closeDrawer}
+          onClick={() => setOpen(false)}
         />
 
         {/* Drawerコンポーネント */}
-        <Drawer open={open} onClose={closeDrawer} overlay={false}>
+        <Drawer open={open} onClose={() => setOpen(false)} overlay={false}>
           {children}
         </Drawer>
       </div>
