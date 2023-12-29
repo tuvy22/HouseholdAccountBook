@@ -132,16 +132,15 @@ export function Setting() {
 
   return (
     <>
-      <div className="md:hidden flex justify-start mb-3">
-        <SideDrawer>
+      <div className="md:hidden block">
+        <SideDrawer openSetting={openSetting}>
           <Sidebar setOpenSetting={setOpenSetting} />
         </SideDrawer>
+        <div className="flex-1">{renderSetting()}</div>
       </div>
 
-      <div className="flex-1 flex items-stretch gap-4">
-        <div className="hidden md:flex ">
-          <Sidebar setOpenSetting={setOpenSetting} />
-        </div>
+      <div className="hidden md:flex flex-1 items-stretch gap-4">
+        <Sidebar setOpenSetting={setOpenSetting} />
         <div className="flex-1">{renderSetting()}</div>
       </div>
     </>
