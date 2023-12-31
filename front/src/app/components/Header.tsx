@@ -39,7 +39,7 @@ const Header = () => {
       <nav className="hidden md:flex flex-[2] items-center justify-between">
         <Link
           href="/income-and-expense?page=1"
-          className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
+          className="py-5 flex-1 flex justify-center items-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
         >
           <MenuBookIcon />
           <Typography variant="h2" className="text-xl">
@@ -48,7 +48,7 @@ const Header = () => {
         </Link>
         <Link
           href="/liquidation/search"
-          className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
+          className="py-5 flex-1 flex justify-center items-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
           prefetch={false}
         >
           <AccountBalanceWalletIcon />
@@ -58,7 +58,7 @@ const Header = () => {
         </Link>
         <Link
           href="/dashboard"
-          className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
+          className="py-5 flex-1 flex justify-center items-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
           prefetch={false}
         >
           <LineAxisIcon />
@@ -69,7 +69,7 @@ const Header = () => {
 
         <Link
           href="/setting"
-          className="py-5 flex-1 flex justify-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
+          className="py-5 flex-1 flex justify-center items-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
         >
           <BuildIcon />
           <Typography variant="h2" className="text-xl">
