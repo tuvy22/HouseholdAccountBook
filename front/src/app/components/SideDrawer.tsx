@@ -12,7 +12,7 @@ export function SideDrawer({
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setOpen((prev) => !prev);
+    setOpen(false);
   }, [openSetting]);
 
   return (
