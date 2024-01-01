@@ -43,7 +43,7 @@ export function Sidebar({
   };
   return (
     <Card
-      className="w-full max-w-sm p-2 md:p-4 md:shadow-xl md:shadow-blue-gray-900/5"
+      className="w-full lg:max-w-sm max-w-xs p-2 md:p-4 md:shadow-xl md:shadow-blue-gray-900/5"
       shadow={false}
     >
       <div className="mb-2 p-4">
