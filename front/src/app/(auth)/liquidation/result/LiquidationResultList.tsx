@@ -1,5 +1,3 @@
-"use client";
-
 import { Liquidation } from "@/app/util/types";
 import { Button, Card, Typography } from "@/app/materialTailwindExports";
 import { toDateString } from "@/app/util/util";

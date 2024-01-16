@@ -1,5 +1,4 @@
 import axios from "axios";
-
 import { cookies } from "next/headers";
 import { SESSION_ID_COOKIE } from "./constants";
 import {
@@ -11,9 +10,6 @@ import {
 import { apiHandleError } from "./apiHandleError";
 
 export const getIncomeAndExpense = async (page: string) => {
-  if (!page) {
-    return undefined;
-  }
   const cookieStore = cookies();
   const cookie = cookieStore.get(SESSION_ID_COOKIE);
   try {
