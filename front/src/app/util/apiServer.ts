@@ -14,11 +14,9 @@ export const getIncomeAndExpense = async (page: string) => {
   if (!page) {
     return undefined;
   }
-
+  const cookieStore = cookies();
+  const cookie = cookieStore.get(SESSION_ID_COOKIE);
   try {
-    const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
-
     const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all`,
       {
@@ -38,10 +36,9 @@ export const getIncomeAndExpense = async (page: string) => {
   }
 };
 export const getIncomeAndExpenseMaxPage = async () => {
+  const cookieStore = cookies();
+  const cookie = cookieStore.get(SESSION_ID_COOKIE);
   try {
-    const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
-
     const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/all/max-page`,
       {
@@ -59,9 +56,9 @@ export const getIncomeAndExpenseMaxPage = async () => {
 };
 
 export const getIncomeAndExpenseMonthlyTotal = async () => {
+  const cookieStore = cookies();
+  const cookie = cookieStore.get(SESSION_ID_COOKIE);
   try {
-    const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
     const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/monthly-total`,
       {
@@ -79,9 +76,9 @@ export const getIncomeAndExpenseMonthlyTotal = async () => {
   }
 };
 export const getGroupAllUser = async () => {
+  const cookieStore = cookies();
+  const cookie = cookieStore.get(SESSION_ID_COOKIE);
   try {
-    const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
     const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/user/group-all`,
       {
@@ -102,10 +99,9 @@ export const getIncomeAndExpenseLiquidations = async (
   toDate: string,
   targetUserId: string
 ) => {
+  const cookieStore = cookies();
+  const cookie = cookieStore.get(SESSION_ID_COOKIE);
   try {
-    const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
-
     const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/income-and-expense/liquidations`,
       {
@@ -128,9 +124,9 @@ export const getIncomeAndExpenseLiquidations = async (
 };
 
 export const getLiquidations = async () => {
+  const cookieStore = cookies();
+  const cookie = cookieStore.get(SESSION_ID_COOKIE);
   try {
-    const cookieStore = cookies();
-    const cookie = cookieStore.get(SESSION_ID_COOKIE);
     const response = await axios.get(
       `http://${process.env.APP_HOST}:8080/api/localhost/liquidation/all`,
       {

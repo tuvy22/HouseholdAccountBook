@@ -32,10 +32,7 @@ export function MdHeaderMenu({
           <HeaderUser />
         </MenuItem>
         <MenuItem>
-          <Link
-            href="/income-and-expense?page=1"
-            className="flex justify-start gap-3"
-          >
+          <Link href="/income-and-expense" className="flex justify-start gap-3">
             <MenuBookIcon />
             <Typography variant="h2" className="text-xl">
               入力
@@ -43,11 +40,7 @@ export function MdHeaderMenu({
           </Link>
         </MenuItem>
         <MenuItem>
-          <Link
-            href="/liquidation/search"
-            className="flex justify-start gap-3"
-            prefetch={false}
-          >
+          <Link href="/liquidation/search" className="flex justify-start gap-3">
             <AccountBalanceWalletIcon />
             <Typography variant="h2" className="text-xl">
               清算
@@ -55,11 +48,7 @@ export function MdHeaderMenu({
           </Link>
         </MenuItem>
         <MenuItem>
-          <Link
-            href="/dashboard"
-            className="flex justify-start gap-3"
-            prefetch={false}
-          >
+          <Link href="/dashboard" className="flex justify-start gap-3">
             <LineAxisIcon />
             <Typography variant="h2" className="text-xl">
               ダッシュボード
