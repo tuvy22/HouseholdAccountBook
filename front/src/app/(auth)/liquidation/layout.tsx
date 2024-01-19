@@ -7,9 +7,12 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
+  const groupUsers = await getGroupAllUser();
   return (
     <>
-      <LiquidationSearchFormProvider>{children}</LiquidationSearchFormProvider>
+      <LiquidationSearchFormProvider>
+        {groupUsers && groupUsers.length > 1 ? children : <UnavailablePage />}
+      </LiquidationSearchFormProvider>
     </>
   );
 }

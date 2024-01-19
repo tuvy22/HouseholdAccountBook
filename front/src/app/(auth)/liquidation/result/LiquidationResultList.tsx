@@ -1,5 +1,3 @@
-"use client";
-
 import { Liquidation } from "@/app/util/types";
 import { Button, Card, Typography } from "@/app/materialTailwindExports";
 import { toDateString } from "@/app/util/util";
@@ -8,29 +6,12 @@ import LiquidationDeleteIcon from "@/app/components/LiquidationDeleteIcon";
 import TableThTypography from "@/app/components/table/TableThTypography";
 import TableTd from "@/app/components/table/TableTd";
 import TableTypography from "@/app/components/table/TableTypography";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { getAllLiquidation } from "@/app/util/apiClient";
-import { addError, useAlert } from "@/app/context/AlertProvider";
+import { getLiquidations } from "@/app/util/apiServer";
 
 export const LiquidationResultList = async () => {
-  const [liquidationData, setLiquidationData] = useState<Liquidation[]>([]);
-
-  const alert = useAlert();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLiquidationData(await getAllLiquidation());
-      } catch (error) {
-        if (error instanceof Error) {
-          addError(error.message, alert);
-        }
-      }
-    };
-    fetchData();
-  }, [alert]);
-
+  const fetchData = await getLiquidations();
   return (
     <>
       <div className="flex md:justify-between justify-center flex-col md:flex-row">
@@ -56,8 +37,7 @@ export const LiquidationResultList = async () => {
           </Link>
         </div>
       </div>
-
-      {liquidationData && liquidationData.length > 0 ? (
+      {fetchData && fetchData.length > 0 ? (
         <Card className="mt-3">
           <table className="text-left">
             {/* デスクトップ表示 */}
@@ -82,7 +62,7 @@ export const LiquidationResultList = async () => {
               </tr>
             </thead>
             <tbody>
-              {liquidationData.map((liquidation: Liquidation, index) => {
+              {fetchData.map((liquidation: Liquidation, index) => {
                 // billingUsersのamount合計を計算
                 const totalAmount = liquidation.billingUsers.reduce(
                   (sum, user) =>

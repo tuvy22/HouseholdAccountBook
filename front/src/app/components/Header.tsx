@@ -32,13 +32,13 @@ const Header = () => {
   return (
     <header className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-gray-800 text-white">
       <div className="flex-1 flex justify-between w-full">
-        <Link href="/income-and-expense?page=1">
+        <Link href="/income-and-expense">
           <Logo />
         </Link>
       </div>
       <nav className="hidden md:flex flex-[2] items-center justify-between">
         <Link
-          href="/income-and-expense?page=1"
+          href="/income-and-expense"
           className="py-5 flex-1 flex justify-center items-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
         >
           <MenuBookIcon />
@@ -49,7 +49,6 @@ const Header = () => {
         <Link
           href="/liquidation/search"
           className="py-5 flex-1 flex justify-center items-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
-          prefetch={false}
         >
           <AccountBalanceWalletIcon />
           <Typography variant="h2" className="text-xl">
@@ -59,7 +58,6 @@ const Header = () => {
         <Link
           href="/dashboard"
           className="py-5 flex-1 flex justify-center items-center gap-3 text-center cursor-pointer hover:bg-blue-gray-600"
-          prefetch={false}
         >
           <LineAxisIcon />
           <Typography variant="h2" className="text-xl">
