@@ -9,3 +9,5 @@
 /local/*.crt
 
 */.DS_Store
+
+/app/kinetic-road.json

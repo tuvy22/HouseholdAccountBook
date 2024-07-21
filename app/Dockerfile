@@ -1,5 +1,5 @@
 # ベースとなるイメージを指定
-FROM golang:1.21.3-alpine3.17
+FROM golang:1.22.4-alpine3.20
 
 WORKDIR /go/src
 COPY . .

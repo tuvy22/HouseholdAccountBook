@@ -11,6 +11,7 @@ import {
   PasswordChange,
   IncomeAndExpenseCreate,
   IncomeAndExpenseUpdate,
+  Receipt,
 } from "@/app/util/types";
 import axios from "axios";
 import { apiHandleError } from "./apiHandleError";
@@ -311,6 +312,20 @@ export const replaceAllCategorys = async (
         },
       }
     );
+  } catch (error) {
+    throw new Error(apiHandleError(error));
+  }
+};
+
+export const postOcrImageReceipt = async (formData: FormData) => {
+  try {
+    const response = await axios.post("/api/private/ocr/receipt", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    const result: Receipt = response.data;
+    return result;
   } catch (error) {
     throw new Error(apiHandleError(error));
   }
