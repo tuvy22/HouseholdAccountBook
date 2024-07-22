@@ -99,3 +99,8 @@ export interface Category {
   groupId: number;
   isExpense: boolean;
 }
+
+export interface Receipt {
+  storeName: string;
+  totalAmount: number;
+}

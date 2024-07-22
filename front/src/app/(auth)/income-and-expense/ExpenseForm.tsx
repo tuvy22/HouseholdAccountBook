@@ -21,9 +21,11 @@ import AmountForm from "./AmountForm";
 import MemoForm from "./MemoForm";
 import { BillingUserFormType } from "./BillingUserFormType";
 import { BillingUserForm } from "./BillingUserForm";
-import { Category } from "@/app/util/types";
+import { Category, Receipt } from "@/app/util/types";
 import { getCategoryAllClient } from "@/app/util/apiClient";
 import { addError, useAlert } from "@/app/context/AlertProvider";
+import ReceiptOcr from "@/app/components/ReceiptOcr";
+import { Typography } from "@/app/materialTailwindExports";
 
 export const ExpenseForm = ({
   onSubmit,
@@ -44,6 +46,7 @@ export const ExpenseForm = ({
     handleSubmit,
     reset,
     getValues,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<IncomeExpenseSchema>({
@@ -51,6 +54,7 @@ export const ExpenseForm = ({
   });
 
   const [categorys, setCategorys] = useState<Category[]>([]);
+  const [receipt, setReceipt] = useState<Receipt>();
 
   const resetForm = useCallback(() => {
     const categoryValue = getValues().category;
@@ -61,9 +65,18 @@ export const ExpenseForm = ({
       memo: "",
     });
   }, [getValues, reset]);
+
   useEffect(() => {
     resetForm();
   }, [resetForm, triggerReset]);
+
+  useEffect(() => {
+    setValue(
+      "amount",
+      receipt?.totalAmount ? receipt.totalAmount.toString() : ""
+    );
+    setValue("memo", receipt?.storeName ? receipt.storeName : "");
+  }, [receipt, setValue]);
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -81,22 +94,31 @@ export const ExpenseForm = ({
 
   return (
     <>
-      <form onSubmit={(e) => handleSubmit((data) => onSubmit(data, true))(e)}>
-        <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
-          <DateForm errors={errors} register={register} />
-          <CategoryForm errors={errors} control={control} options={categorys} />
-          <AmountForm errors={errors} register={register} />
-          <MemoForm errors={errors} register={register} />
-          <BillingUserForm
-            watch={watch}
-            billingUsers={billingUsers}
-            setBillingUsers={setBillingUsers}
-            isUpdate={false}
-          />
-        </div>
-
-        <SubmitButtonForm buttonName={"登録"} buttonColor={"red"} />
-      </form>
+      <div className="flex gap-4 flex-col">
+        <ReceiptOcr setReceipt={setReceipt} />
+        <form
+          onSubmit={(e) => handleSubmit((data) => onSubmit(data, true))(e)}
+          className="flex-1"
+        >
+          <div className="flex flex-col flex-wrap justify-between gap-3 md:flex-row">
+            <DateForm errors={errors} register={register} />
+            <CategoryForm
+              errors={errors}
+              control={control}
+              options={categorys}
+            />
+            <AmountForm errors={errors} register={register} />
+            <MemoForm errors={errors} register={register} />
+            <BillingUserForm
+              watch={watch}
+              billingUsers={billingUsers}
+              setBillingUsers={setBillingUsers}
+              isUpdate={false}
+            />
+          </div>
+          <SubmitButtonForm buttonName={"登録"} buttonColor={"red"} />
+        </form>
+      </div>
     </>
   );
 };

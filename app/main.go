@@ -64,11 +64,14 @@ func main() {
 	groupUsecase := usecase.NewGroupUsecase(groupRepo, originalConfig, groupValidator)
 	groupHandler := handler.NewGroupHandler(groupUsecase)
 
+	ocrUsecase := usecase.NewOcrUsecase()
+	ocrHandler := handler.NewOcrHandler(ocrUsecase)
+
 	middlewareHandler := handler.NewMiddlewareHandler(userUsecase, groupUsecase)
 
 	responsedOKHandler := handler.NewResponsedOKHandler()
 
-	r := router.NewRouter(originalConfig, userHandler, groupHandler, incomeAndExpenseHandler, liquidationHandler, categoryHandler, responsedOKHandler, middlewareHandler)
+	r := router.NewRouter(originalConfig, userHandler, groupHandler, incomeAndExpenseHandler, liquidationHandler, categoryHandler, ocrHandler, responsedOKHandler, middlewareHandler)
 
 	r.Run(":8080")
 }
