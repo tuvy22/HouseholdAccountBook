@@ -43,20 +43,20 @@ func (u *ocrUsecaseImpl) GetTotalAndStoreFromReceipt(imageBytes []byte) (entity.
 	ctx := context.Background()
 
 	var creds string
-	if os.Getenv("ENV") != "development" {
-		awsCreds, err := setGoogleCredentialsFromAWS()
-		if err != nil {
-			return entity.Receipt{}, err
-		}
-		creds = awsCreds
+	// if os.Getenv("ENV") != "development" {
+	// 	awsCreds, err := setGoogleCredentialsFromAWS()
+	// 	if err != nil {
+	// 		return entity.Receipt{}, err
+	// 	}
+	// 	creds = awsCreds
 
-	} else {
-		decodedCreds, err := base64.StdEncoding.DecodeString(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON_BASE64"))
-		if err != nil {
-			return entity.Receipt{}, err
-		}
-		creds = string(decodedCreds)
+	// } else {
+	decodedCreds, err := base64.StdEncoding.DecodeString(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON_BASE64"))
+	if err != nil {
+		return entity.Receipt{}, err
 	}
+	creds = string(decodedCreds)
+	// }
 
 	client, err := documentai.NewDocumentProcessorClient(ctx, option.WithCredentialsJSON([]byte(creds)))
 	if err != nil {
