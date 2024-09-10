@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -131,7 +132,17 @@ func (u *ocrUsecaseImpl) GetTotalAndStoreFromReceipt(imageBytes []byte) (entity.
 			break
 		}
 	}
+	// total_amount が見つからない場合、テキスト全体を使って手動で抽出
+	if totalAmount == "" {
+		totalAmount = u.extractTotalAmountFromText(resp.GetDocument())
+	}
+	// 除去
+	totalAmount = strings.ReplaceAll(totalAmount, ",", "")
+	totalAmount = strings.ReplaceAll(totalAmount, " ", "")
+	totalAmount = strings.ReplaceAll(totalAmount, "¥", "")
+	totalAmount = strings.ReplaceAll(totalAmount, "円", "")
 
+	//数値に変換
 	totalAmountInt, err := strconv.ParseInt(totalAmount, 10, 32)
 	if err != nil {
 		totalAmountInt = 0
@@ -230,4 +241,16 @@ func abs(x float32) float32 {
 		return -x
 	}
 	return x
+}
+
+func (u *ocrUsecaseImpl) extractTotalAmountFromText(document *documentaipb.Document) string {
+	text := document.GetText()
+
+	// "合計"または"税込"の後に続く金額を正規表現で探す
+	r := regexp.MustCompile(`(合計|税込)\s*([\d,]+)`)
+	matches := r.FindStringSubmatch(text)
+	if len(matches) > 2 {
+		return matches[2]
+	}
+	return ""
 }
