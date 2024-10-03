@@ -19,4 +19,4 @@
 --     PRIMARY KEY (id)
 -- );
 
-default-time-zone = '+09:00'
+SET time_zone = '+09:00';
