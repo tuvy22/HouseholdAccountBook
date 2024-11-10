@@ -20,6 +20,7 @@ import {
   BillingUserFormType,
   convertBillingUserToBillingUserForms,
   convertUserToBillingUserForms,
+  distributionAmount,
 } from "./BillingUserFormType";
 import { addError, useAlert } from "@/app/context/AlertProvider";
 
@@ -52,7 +53,7 @@ export function BillingUserForm({
       }
     };
     fetchData();
-  }, [alert]);
+  }, []);
 
   useEffect(() => {
     if (isUpdate) {
@@ -154,18 +155,11 @@ export function BillingUserForm({
       return user.amountLock ? total + parseInt(user.amount, 10) || 0 : total;
     }, 0);
 
-    // 総額からロックされた金額を引く
+    // 総額からロックされた金額を引く（ロックされてない金額）
     const remainingAmount = totalAmount - lockedAmountTotal;
-    const amountPerUser = Math.floor(remainingAmount / unlockedUsers.length);
-    const remainder = remainingAmount % unlockedUsers.length;
 
-    // ロックされていないユーザー間で余りを分配
-    unlockedUsers.forEach((user, index) => {
-      user.amount =
-        index < remainder
-          ? (amountPerUser + 1).toString()
-          : amountPerUser.toString();
-    });
+    //アンロックユーザー間で金額を分配する
+    distributionAmount(unlockedUsers, remainingAmount);
 
     return billingUsers;
   };

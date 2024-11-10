@@ -26,6 +26,7 @@ import { getCategoryAllClient } from "@/app/util/apiClient";
 import { addError, useAlert } from "@/app/context/AlertProvider";
 import ReceiptOcr from "@/app/components/ReceiptOcr";
 import { Typography } from "@/app/materialTailwindExports";
+import UploadCsv from "@/app/components/UploadCsv";
 
 export const ExpenseForm = ({
   onSubmit,
@@ -90,12 +91,15 @@ export const ExpenseForm = ({
     };
 
     fetchCategory();
-  }, [alert]);
+  }, []);
 
   return (
     <>
       <div className="flex gap-4 flex-col">
-        <ReceiptOcr setReceipt={setReceipt} />
+        <div className="flex flex-col flex-wrap gap-3 md:flex-row">
+          <ReceiptOcr setReceipt={setReceipt} />
+          <UploadCsv />
+        </div>
         <form
           onSubmit={(e) => handleSubmit((data) => onSubmit(data, true))(e)}
           className="flex-1"

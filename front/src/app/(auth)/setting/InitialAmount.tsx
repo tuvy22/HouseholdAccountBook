@@ -52,7 +52,7 @@ export function InitialAmount() {
       }
     };
     fetch();
-  }, [alert, reset]);
+  }, [reset]);
 
   const onSubmit = async (data: InitialAmountSchema) => {
     try {

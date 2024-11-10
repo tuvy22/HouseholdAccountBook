@@ -130,11 +130,16 @@ func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(data entity.IncomeA
 	if err != nil {
 		return err
 	}
+	// フォーマットを指定して文字列を日付型に変換
+	parsedDate, err := time.Parse("2006-01-02", data.Date)
+	if err != nil {
+		return err
+	}
 
 	incomeAndExpense := entity.IncomeAndExpense{
 		Category:       data.Category,
 		Memo:           data.Memo,
-		Date:           data.Date,
+		Date:           parsedDate,
 		RegisterUserID: data.RegisterUserID,
 		BillingUsers:   data.BillingUsers,
 	}
@@ -165,10 +170,14 @@ func (u *incomeAndExpenseUsecaseImpl) UpdateIncomeAndExpense(updateID uint, data
 	if err != nil {
 		return err
 	}
+	parsedDate, err := u.stringToDate(data.Date)
+	if err != nil {
+		return err
+	}
 
 	//更新値の設定
 	preIncomeAndExpense.Category = data.Category
-	preIncomeAndExpense.Date = data.Date
+	preIncomeAndExpense.Date = parsedDate
 	preIncomeAndExpense.Memo = data.Memo
 
 	preBuMap := make(map[uint]entity.IncomeAndExpenseBillingUser)
@@ -480,7 +489,7 @@ func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAn
 			Category:         incomeAndExpense.Category,
 			Amount:           toalAmount,
 			Memo:             incomeAndExpense.Memo,
-			Date:             incomeAndExpense.Date,
+			Date:             u.dateToString(incomeAndExpense.Date),
 			RegisterUserID:   incomeAndExpense.RegisterUserID,
 			RegisterUserName: userName,
 			BillingUsers:     billingUsers,
@@ -490,4 +499,17 @@ func (u *incomeAndExpenseUsecaseImpl) convertToIncomeAndExpenseResponse(incomeAn
 
 	return resultResponses
 
+}
+
+func (u *incomeAndExpenseUsecaseImpl) stringToDate(dateStr string) (time.Time, error) {
+	// フォーマットを指定して文字列を日付型に変換
+	parsedDate, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return parsedDate, err
+	}
+	return parsedDate, nil
+}
+func (u *incomeAndExpenseUsecaseImpl) dateToString(t time.Time) string {
+	str := t.Format("2006-01-02")
+	return str
 }
