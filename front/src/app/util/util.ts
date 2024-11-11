@@ -1,10 +1,45 @@
+import { format, parse } from "date-fns";
+
 export const isMinus = (amount: number) => {
   return amount < 0;
 };
 
-export function toDateObject(dateString: string): Date {
-  // YYYY-MM-DD 形式をそのままDateオブジェクトに変換
-  return new Date(dateString);
+export function parseDate(dateString: string): Date {
+  return parseDateLogic(["yyyy-MM-dd"], dateString);
+}
+export function parseDateAllFormat(dateString: string): Date {
+  return parseDateLogic([], dateString);
+}
+function parseDateLogic(formats: string[], dateString: string): Date {
+  if (formats.length === 0) {
+    formats = [
+      "yyyy-MM-dd",
+      "MM-dd",
+      "MM/dd/yyyy",
+      "dd-MM-yyyy",
+      "yyyy/MM/dd",
+      "MM/dd",
+      "MMM dd, yyyy",
+      "dd MMM yyyy",
+      "yyyyMMdd",
+      "MMdd",
+      "yyyy年MM月dd日",
+      "yyyy年M月d日",
+      "M月d日yyyy年",
+      "M月d日",
+      "MM月dd日",
+    ];
+  }
+
+  for (const format of formats) {
+    const parsedDate = parse(dateString, format, new Date());
+    if (!isNaN(parsedDate.getTime())) {
+      return parsedDate;
+    }
+  }
+
+  // 解析できなかった場合
+  return new Date();
 }
 
 function formatDate(date: Date, format: string): string {

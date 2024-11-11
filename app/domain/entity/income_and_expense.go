@@ -15,19 +15,19 @@ type IncomeAndExpense struct {
 	BillingUsers   []IncomeAndExpenseBillingUser
 }
 type IncomeAndExpenseCreate struct {
-	Category       string    `json:"category" validate:"required"`
-	Amount         int       `json:"amount" validate:"gte=-99999999,lte=99999999"`
-	Memo           string    `json:"memo" validate:"max=50"`
-	Date           time.Time `json:"date" validate:"required"`
-	RegisterUserID string    `json:"registerUserID"`
+	Category       string `json:"category" validate:"required"`
+	Amount         int    `json:"amount" validate:"gte=-99999999,lte=99999999"`
+	Memo           string `json:"memo" validate:"max=50"`
+	Date           string `json:"date" validate:"required"`
+	RegisterUserID string `json:"registerUserID"`
 	BillingUsers   []IncomeAndExpenseBillingUser
 }
 
 type IncomeAndExpenseUpdate struct {
-	Category     string    `json:"category" validate:"required"`
-	Amount       int       `json:"amount" validate:"gte=-99999999,lte=99999999"`
-	Memo         string    `json:"memo" validate:"max=50"`
-	Date         time.Time `json:"date" validate:"required"`
+	Category     string `json:"category" validate:"required"`
+	Amount       int    `json:"amount" validate:"gte=-99999999,lte=99999999"`
+	Memo         string `json:"memo" validate:"max=50"`
+	Date         string `json:"date" validate:"required"`
 	BillingUsers []IncomeAndExpenseBillingUser
 }
 
@@ -36,7 +36,7 @@ type IncomeAndExpenseResponse struct {
 	Category         string                                `json:"category"`
 	Amount           int                                   `json:"amount"`
 	Memo             string                                `json:"memo"`
-	Date             time.Time                             `json:"date"`
+	Date             string                                `json:"date"`
 	RegisterUserID   string                                `json:"registerUserID"`
 	RegisterUserName string                                `json:"registerUserName"`
 	BillingUsers     []IncomeAndExpenseBillingUserResponse `json:"billingUsers"`

@@ -99,3 +99,23 @@ export function convertToBillingUsers(
   });
   return result;
 }
+
+//金額分配関数
+export function distributionAmount(
+  billingUsers: BillingUserFormType[] | IncomeAndExpenseBillingUser[],
+  remainingAmount: number
+) {
+  const remainder = remainingAmount % billingUsers.length; //余り
+  const amountPerUser = Math.floor(remainingAmount / billingUsers.length); //分配金額
+
+  // 余りは上から分配する
+  billingUsers.forEach((user, index) => {
+    const amount =
+      index < Math.abs(remainder) ? amountPerUser + 1 : amountPerUser;
+    if ("onlyBillingUserFormTypeProp" in user) {
+      user.amount = amount.toString();
+    } else {
+      user.amount = amount;
+    }
+  });
+}

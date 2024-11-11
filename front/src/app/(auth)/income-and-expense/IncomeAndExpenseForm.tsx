@@ -12,7 +12,7 @@ import { postIncomeAndExpense } from "@/app/util/apiClient";
 import { IncomeAndExpenseCreate } from "@/app/util/types";
 import { addError, useAlert } from "@/app/context/AlertProvider";
 import { Spinner } from "@/app/materialTailwindExports";
-import { toDateObject } from "@/app/util/util";
+import { parseDate } from "@/app/util/util";
 import {
   BillingUserFormType,
   convertToBillingUsers,
@@ -35,7 +35,7 @@ export const IncomeAndExpenseForm = () => {
       category: data.category,
       amount: isMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
-      date: toDateObject(data.date),
+      date: data.date,
       registerUserID: loginUser.id,
       billingUsers: convertToBillingUsers(billingUsers, isMinus),
     };

@@ -61,7 +61,7 @@ export default function CategoryList({ isExpense }: { isExpense: boolean }) {
       }
     };
     getAllCategory();
-  }, [alert, isExpense, reset]);
+  }, [isExpense, reset]);
   const onSubmit = async (data: CategoryFormData) => {
     let datas: Category[] = [];
 

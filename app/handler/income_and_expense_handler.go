@@ -240,7 +240,6 @@ func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpenseCreate(c *gin.Context)
 	if err := c.BindJSON(&result); err != nil {
 		return result, err
 	}
-
 	return result, nil
 }
 func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpenseUpdate(c *gin.Context) (entity.IncomeAndExpenseUpdate, error) {

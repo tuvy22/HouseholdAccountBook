@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"time"
+
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
@@ -39,9 +41,13 @@ func (u *liquidationUsecaseImpl) CreateLiquidation(data entity.LiquidationCreate
 	if err != nil {
 		return err
 	}
+	parsedDate, err := u.stringToDate(data.Date)
+	if err != nil {
+		return err
+	}
 
 	createData := entity.Liquidation{
-		Date:           data.Date,
+		Date:           parsedDate,
 		RegisterUserID: data.RegisterUserID,
 		TargetUserID:   data.TargetUserID,
 	}
@@ -205,7 +211,7 @@ func (u *liquidationUsecaseImpl) convertToLiquidations(liquidations []entity.Liq
 
 		response := entity.LiquidationResponse{
 			ID:               liquidation.ID,
-			Date:             liquidation.Date,
+			Date:             u.dateToString(liquidation.Date),
 			RegisterUserID:   liquidation.RegisterUserID,
 			RegisterUserName: registerUserName,
 			TargetUserID:     liquidation.TargetUserID,
@@ -244,4 +250,16 @@ func (u *liquidationUsecaseImpl) convertToBillingUsersResponse(billingUsers []en
 
 	return resultResponses
 
+}
+func (u *liquidationUsecaseImpl) stringToDate(dateStr string) (time.Time, error) {
+	// フォーマットを指定して文字列を日付型に変換
+	parsedDate, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return parsedDate, err
+	}
+	return parsedDate, nil
+}
+func (u *liquidationUsecaseImpl) dateToString(t time.Time) string {
+	str := t.Format("2006-01-02")
+	return str
 }

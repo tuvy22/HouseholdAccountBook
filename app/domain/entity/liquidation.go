@@ -14,14 +14,14 @@ type Liquidation struct {
 }
 
 type LiquidationCreate struct {
-	Date            time.Time `json:"date" validate:"required"`
-	RegisterUserID  string    `json:"registerUserID"`
-	TargetUserID    string    `json:"targetUserID"`
-	BillingUsersIds []uint    `json:"billingUsersIds"`
+	Date            string `json:"date" validate:"required"`
+	RegisterUserID  string `json:"registerUserID"`
+	TargetUserID    string `json:"targetUserID"`
+	BillingUsersIds []uint `json:"billingUsersIds"`
 }
 type LiquidationResponse struct {
 	ID               uint                                  `json:"id" `
-	Date             time.Time                             `json:"date"`
+	Date             string                                `json:"date"`
 	RegisterUserID   string                                `json:"registerUserID"`
 	RegisterUserName string                                `json:"registerUserName"`
 	TargetUserID     string                                `json:"targetUserID"`

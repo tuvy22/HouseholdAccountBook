@@ -10,7 +10,7 @@ export interface IncomeAndExpense {
 }
 
 export interface IncomeAndExpenseCreate {
-  date: Date;
+  date: string;
   category: string;
   amount: number;
   memo: string;

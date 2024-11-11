@@ -38,20 +38,20 @@ export default function ReceiptOcr({
   return (
     <form>
       <div className="flex gap-2 items-center">
-        <label htmlFor="file-upload">
+        <label htmlFor="ocr-file-upload">
           <FilterCenterFocusIcon
             className="cursor-pointer hover:transform hover:scale-125 transition-transform duration-300"
             fontSize="large"
           />
         </label>
         <input
-          id="file-upload"
+          id="ocr-file-upload"
           type="file"
           accept="image/*"
           onChange={handleFileChange}
           style={{ display: "none" }}
         />
-        <label htmlFor="file-upload">
+        <label htmlFor="ocr-file-upload">
           <Typography variant="small" className="cursor-pointer">
             レシート読み取り
           </Typography>
