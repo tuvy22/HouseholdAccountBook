@@ -18,7 +18,7 @@ import {
   IncomeExpenseSchema,
   incomeExpenseSchema,
 } from "./IncomeAndExpenseSchema";
-import { isMinus, toDateObject, toDateString } from "@/app/util/util";
+import { isMinus, parseDate, toDateString } from "@/app/util/util";
 import { IncomeAndExpenseTabs } from "../../components/IncomeAndExpenseTabs";
 import { useForm } from "react-hook-form";
 import DateForm from "./DateForm";
@@ -98,14 +98,14 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
     };
 
     fetchCategory();
-  }, [alert, isDialogMinus]);
+  }, [isDialogMinus]);
 
   const onSubmit = (data: IncomeExpenseSchema) => {
     const newIncomeAndExpense: IncomeAndExpenseUpdate = {
       category: data.category,
       amount: isDialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
-      date: toDateObject(data.date),
+      date: parseDate(data.date),
       billingUsers: convertToBillingUsers(billingUsers, isDialogMinus),
     };
     handleUpdate(updatedIncomeAndExpense.id, newIncomeAndExpense);

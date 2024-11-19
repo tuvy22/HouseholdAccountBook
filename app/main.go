@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
@@ -20,6 +21,14 @@ import (
 )
 
 func init() {
+	// Asia/Tokyo のロケーションを取得
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		panic(err)
+	}
+	// デフォルトのタイムゾーンを設定
+	time.Local = loc
+
 	// gob に UserSession 型を登録
 	gob.Register(entity.UserSession{})
 }

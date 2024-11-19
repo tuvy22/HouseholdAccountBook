@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { AlertContext, AlertContextProps } from "./AlertContext";
 import { AlertValue, Alerts } from "../components/AlertCustoms";
 
@@ -30,7 +30,11 @@ export const addSuccess = (msg: string, context: AlertContextProps) => {
     value: msg,
   };
 
-  context.setAlertValues([...context.alertValues, newAlertValue]);
+  // context.setAlertValues([...context.alertValues, newAlertValue]);
+  context.setAlertValues((prevAlertValues) => [
+    ...prevAlertValues,
+    newAlertValue,
+  ]);
 };
 
 export const addError = (errMsg: string, context: AlertContextProps) => {
@@ -39,5 +43,9 @@ export const addError = (errMsg: string, context: AlertContextProps) => {
     value: errMsg,
   };
 
-  context.setAlertValues([...context.alertValues, newAlertValue]);
+  // context.setAlertValues([...context.alertValues, newAlertValue]);
+  context.setAlertValues((prevAlertValues) => [
+    ...prevAlertValues,
+    newAlertValue,
+  ]);
 };

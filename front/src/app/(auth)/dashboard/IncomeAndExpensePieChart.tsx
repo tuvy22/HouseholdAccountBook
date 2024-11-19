@@ -72,7 +72,7 @@ export const IncomeAndExpensePieChart = ({
     };
 
     fetchData();
-  }, [alert, isMinus, yearMonth]);
+  }, [isMinus, yearMonth]);
   useEffect(() => {
     setTotalCategoryAmount(
       data.reduce((sum, item) => sum + item.categoryAmount, 0)
