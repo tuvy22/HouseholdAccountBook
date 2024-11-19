@@ -136,7 +136,7 @@ export default function UploadCsv() {
     } else {
       //メッセージ表示
       addSuccess(
-        "一部エラーがあり、エラー以前のデータは正常に登録成功しました。：" +
+        "一部エラーがあり、エラーより前のデータは正常に登録成功しました。：" +
           successCount +
           "件目まで登録",
         alert
