@@ -105,7 +105,7 @@ export const UpdateExpenseDialog: React.FC<Props> = ({
       category: data.category,
       amount: isDialogMinus ? -parseInt(data.amount) : parseInt(data.amount),
       memo: data.memo,
-      date: parseDate(data.date),
+      date: data.date,
       billingUsers: convertToBillingUsers(billingUsers, isDialogMinus),
     };
     handleUpdate(updatedIncomeAndExpense.id, newIncomeAndExpense);

@@ -131,7 +131,7 @@ func (u *incomeAndExpenseUsecaseImpl) CreateIncomeAndExpense(data entity.IncomeA
 		return err
 	}
 	// フォーマットを指定して文字列を日付型に変換
-	parsedDate, err := time.Parse("2006-01-02", data.Date)
+	parsedDate, err := u.stringToDate(data.Date)
 	if err != nil {
 		return err
 	}
