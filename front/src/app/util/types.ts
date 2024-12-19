@@ -18,7 +18,7 @@ export interface IncomeAndExpenseCreate {
   billingUsers: IncomeAndExpenseBillingUser[];
 }
 export interface IncomeAndExpenseUpdate {
-  date: Date;
+  date: string;
   category: string;
   amount: number;
   memo: string;
