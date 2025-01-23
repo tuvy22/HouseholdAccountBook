@@ -6,12 +6,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customlogger"
 )
 
 func errorResponder(c *gin.Context, paramErr error) {
 	var customErr *customerrors.CustomError
+	var customErrSystem *customerrors_unknown.CustomErrorUnknown
 	var statusCode int
+	var stack string
 
 	if errors.As(paramErr, &customErr) {
 		// カスタムエラーの場合、エラーコードに基づいてステータスコードを設定
@@ -45,22 +48,27 @@ func errorResponder(c *gin.Context, paramErr error) {
 		default:
 			statusCode = http.StatusInternalServerError
 		}
+	} else if errors.As(paramErr, &customErrSystem) {
+		statusCode = http.StatusInternalServerError
 	} else {
 		// 未知のエラーの場合、500 Internal Server Error を返す
 		statusCode = http.StatusInternalServerError
 	}
 
+	//エラー時のスタックを設定
+	stack = customErrSystem.Stack
+
 	//ログインデータ取得
 	userID := ""
 	loginUser, err := GetLoginUser(c)
-	if err != nil {
+	if err == nil {
 		userID = loginUser.ID
 	}
 
 	//ログ出力
 	logger := customlogger.NewLogrusLogger()
 	if statusCode >= http.StatusInternalServerError {
-		logger.Error(userID, paramErr)
+		logger.ErrorStack(userID, stack)
 	} else {
 		logger.Warn(userID, paramErr.Error())
 	}

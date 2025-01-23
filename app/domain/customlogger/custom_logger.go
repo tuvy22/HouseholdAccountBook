@@ -1,15 +1,14 @@
 package customlogger
 
 import (
-	"runtime"
-
 	"github.com/sirupsen/logrus"
 )
 
 type Logger interface {
 	Info(userId string, msg string)
 	Warn(userId string, msg string)
-	Error(userId string, err error)
+	ErrorStack(userId string, stack string)
+	Error(userId string, err error, stack string)
 	ErrorMsg(userId string, msg string)
 }
 
@@ -37,27 +36,31 @@ func (l *logrusLoggerImpl) Warn(userId string, code string) {
 		"login_id": userId,
 	}).Warn(code)
 }
-func (l *logrusLoggerImpl) Error(userId string, err error) {
-	l.error(userId, err.Error())
+func (l *logrusLoggerImpl) ErrorStack(userId string, stack string) {
+	l.error(userId, "", stack)
+}
+func (l *logrusLoggerImpl) Error(userId string, err error, stack string) {
+	l.error(userId, err.Error(), stack)
 }
 func (l *logrusLoggerImpl) ErrorMsg(userId string, msg string) {
-	l.error(userId, msg)
+	l.error(userId, msg, "")
 }
 
-func (l *logrusLoggerImpl) error(userId string, code string) {
+func (l *logrusLoggerImpl) error(userId string, msg string, stack string) {
 	l.Logger.WithFields(logrus.Fields{
 		"login_id":    userId,
-		"stack_trace": getStackTrace(),
+		"error_msg":   msg,
+		"stack_trace": stack,
 	}).Error()
 }
 
-func getStackTrace() string {
-	buf := make([]byte, 1024)
-	for {
-		n := runtime.Stack(buf, false)
-		if n < len(buf) {
-			return string(buf[:n])
-		}
-		buf = make([]byte, len(buf)*2)
-	}
-}
+// func getStackTrace() string {
+// 	buf := make([]byte, 1024)
+// 	for {
+// 		n := runtime.Stack(buf, false)
+// 		if n < len(buf) {
+// 			return string(buf[:n])
+// 		}
+// 		buf = make([]byte, len(buf)*2)
+// 	}
+// }

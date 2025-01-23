@@ -1,5 +1,7 @@
 package customerrors
 
+import "runtime/debug"
+
 type ErrorCode string
 
 const (
@@ -34,7 +36,8 @@ const (
 )
 
 type CustomError struct {
-	Code ErrorCode
+	Code  ErrorCode
+	Stack string
 }
 
 func (e *CustomError) Error() string {
@@ -43,6 +46,7 @@ func (e *CustomError) Error() string {
 
 func NewCustomError(code ErrorCode) *CustomError {
 	return &CustomError{
-		Code: code,
+		Code:  code,
+		Stack: string(debug.Stack()),
 	}
 }

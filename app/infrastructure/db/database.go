@@ -2,6 +2,7 @@ package db
 
 import (
 	"os"
+	"runtime/debug"
 
 	"github.com/joho/godotenv"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customlogger"
@@ -36,7 +37,7 @@ func init() {
 	var err error
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Error("", err)
+		log.Error("", err, string(debug.Stack()))
 		os.Exit(1) // エラー発生時にプログラムを終了
 	}
 	// ドロップ

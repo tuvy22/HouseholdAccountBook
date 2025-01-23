@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
@@ -505,7 +506,7 @@ func (u *incomeAndExpenseUsecaseImpl) stringToDate(dateStr string) (time.Time, e
 	// フォーマットを指定して文字列を日付型に変換
 	parsedDate, err := time.Parse("2006-01-02", dateStr)
 	if err != nil {
-		return parsedDate, err
+		return parsedDate, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return parsedDate, nil
 }
