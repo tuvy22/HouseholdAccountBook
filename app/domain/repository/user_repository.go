@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"gorm.io/gorm"
 )
@@ -26,13 +27,13 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 func (r *userRepositoryImpl) GetAllUser(users *[]entity.User) error {
 
 	if err := r.DB.Order("id").Find(&users).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
 func (r *userRepositoryImpl) CountUserByID(userID string, count *int64) error {
 	if err := r.DB.Model(&entity.User{}).Where("ID = ?", userID).Count(count).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
@@ -40,7 +41,7 @@ func (r *userRepositoryImpl) CountUserByID(userID string, count *int64) error {
 func (r *userRepositoryImpl) GetAllUserByGroupId(groupId uint, users *[]entity.User) error {
 
 	if err := r.DB.Where("group_id = ?", groupId).Order("id").Find(&users).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 
@@ -48,7 +49,7 @@ func (r *userRepositoryImpl) GetAllUserByGroupId(groupId uint, users *[]entity.U
 
 func (r *userRepositoryImpl) GetUser(id string, user *entity.User) error {
 	if err := r.DB.Where("id = ?", id).First(&user).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return nil
@@ -57,21 +58,21 @@ func (r *userRepositoryImpl) GetUser(id string, user *entity.User) error {
 func (r *userRepositoryImpl) CreateUser(user *entity.User) error {
 
 	if err := r.DB.Create(&user).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
 func (r *userRepositoryImpl) UpdateUser(user *entity.User) error {
 
 	if err := r.DB.Save(&user).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
 func (r *userRepositoryImpl) DeleteUser(id string) error {
 
 	if err := r.DB.Where("id = ?", id).Delete(&entity.User{}).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }

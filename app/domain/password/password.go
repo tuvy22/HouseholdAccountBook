@@ -1,6 +1,7 @@
 package password
 
 import (
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,7 +19,7 @@ func NewPassWord() Password {
 func (p *passwordImpl) HashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", err
+		return "", customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return string(hashedPassword), nil
 }
@@ -26,7 +27,7 @@ func (p *passwordImpl) HashPassword(password string) (string, error) {
 func (p *passwordImpl) CheckPassword(hashedPassword, password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }

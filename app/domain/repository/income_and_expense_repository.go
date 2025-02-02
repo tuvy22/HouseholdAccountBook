@@ -3,6 +3,7 @@ package repository
 import (
 	"time"
 
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"gorm.io/gorm"
 )
@@ -48,14 +49,14 @@ func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpense(incomeAndExpense
 
 	// クエリの実行
 	if err := query.Find(&incomeAndExpenses).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
 func (r *incomeAndExpenseRepositoryImpl) GetAllIncomeAndExpenseCount(count *int64, registerUserIDs []string) error {
 	err := r.DB.Model(&entity.IncomeAndExpense{}).Where("register_user_id IN ?", registerUserIDs).Count(count).Error
 	if err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
@@ -80,7 +81,7 @@ func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeA
 
 	// 結果を取得
 	if err := query.Find(incomeAndExpenses).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	// それぞれのIncomeAndExpenseに対して、条件に一致するBillingUsersを取得
@@ -88,7 +89,7 @@ func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeA
 
 		buQuery := r.DB.Model(&entity.IncomeAndExpenseBillingUser{}).Where("income_and_expense_id = ?", (*incomeAndExpenses)[i].ID)
 		if err := buQuery.Find(&(*incomeAndExpenses)[i].BillingUsers).Error; err != nil {
-			return err
+			return customerrors_unknown.NewCustomErrorUnknown(err)
 		}
 	}
 
@@ -98,7 +99,7 @@ func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpenseLiquidations(incomeA
 func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpense(id uint, incomeAndExpense *entity.IncomeAndExpense) error {
 
 	if err := r.DB.Preload("BillingUsers").Where("id = ?", id).First(&incomeAndExpense).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
@@ -106,7 +107,7 @@ func (r *incomeAndExpenseRepositoryImpl) GetIncomeAndExpense(id uint, incomeAndE
 func (r *incomeAndExpenseRepositoryImpl) CreateIncomeAndExpense(incomeAndExpense *entity.IncomeAndExpense) error {
 
 	if err := r.DB.Create(&incomeAndExpense).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
@@ -118,11 +119,11 @@ func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpense(incomeAndExpense
 	// IncomeAndExpense の更新
 	if err := tx.Save(&incomeAndExpense).Error; err != nil {
 		tx.Rollback()
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	//一旦全削除
 	if err := tx.Unscoped().Where("income_and_expense_id = ?", incomeAndExpense.ID).Delete(&entity.IncomeAndExpenseBillingUser{}).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	// BillingUsers 再作成
@@ -130,7 +131,7 @@ func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpense(incomeAndExpense
 		bu.ID = 0
 		if err := tx.Create(&bu).Error; err != nil {
 			tx.Rollback()
-			return err
+			return customerrors_unknown.NewCustomErrorUnknown(err)
 		}
 	}
 
@@ -143,11 +144,11 @@ func (r *incomeAndExpenseRepositoryImpl) UpdateIncomeAndExpenseUserID(oldUserID 
 
 	err := tx.Model(&entity.IncomeAndExpense{}).Where("register_user_id = ?", oldUserID).Update("register_user_id", newUserID).Error
 	if err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	err = tx.Model(&entity.IncomeAndExpenseBillingUser{}).Where("user_id = ?", oldUserID).Update("user_id", newUserID).Error
 	if err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	// トランザクションのコミット
@@ -159,10 +160,10 @@ func (r *incomeAndExpenseRepositoryImpl) DeleteIncomeAndExpense(id uint) error {
 	tx := r.DB.Begin()
 
 	if err := tx.Unscoped().Where("income_and_expense_id = ?", id).Delete(&entity.IncomeAndExpenseBillingUser{}).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	if err := tx.Unscoped().Where("id = ?", id).Delete(&entity.IncomeAndExpense{}).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	// トランザクションのコミット
 	return tx.Commit().Error
@@ -196,7 +197,7 @@ func (r *incomeAndExpenseRepositoryImpl) GetMonthlyTotal(monthlyTotals *[]entity
 	`
 
 	if err := r.DB.Raw(sql, userIDs, userIDs).Scan(&monthlyTotals).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return nil
@@ -218,7 +219,7 @@ func (r *incomeAndExpenseRepositoryImpl) GetMonthlyCategory(monthlyCategorys *[]
 		queryBuilder = queryBuilder.Where("iebu.amount >= ?", 0)
 	}
 	if err := queryBuilder.Find(&monthlyCategorys).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return nil

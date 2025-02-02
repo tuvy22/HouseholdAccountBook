@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -87,7 +88,7 @@ func (h *liquidationHandlerImpl) GetAllLiquidation(c *gin.Context) {
 func (h *liquidationHandlerImpl) bindCreateLiquidation(c *gin.Context) (entity.LiquidationCreate, error) {
 	liquidationCreate := entity.LiquidationCreate{}
 	if err := c.BindJSON(&liquidationCreate); err != nil {
-		return liquidationCreate, err
+		return liquidationCreate, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return liquidationCreate, nil
@@ -96,7 +97,7 @@ func (h *liquidationHandlerImpl) getID(c *gin.Context) (uint, error) {
 	idstr := c.Param("id")
 	val, err := strconv.ParseUint(idstr, 10, 64)
 	if err != nil {
-		return 0, err
+		return 0, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return uint(val), nil
 }

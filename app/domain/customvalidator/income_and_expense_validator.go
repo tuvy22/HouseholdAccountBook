@@ -3,6 +3,7 @@ package customvalidator
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 )
 
@@ -56,7 +57,7 @@ func (v *incomeAndExpenseValidatorImpl) billingUsersValidate(billingUsers []enti
 		}
 		err := v.dataValidate.Struct(valvalidateBu)
 		if err != nil {
-			return err
+			return customerrors_unknown.NewCustomErrorUnknown(err)
 		}
 	}
 

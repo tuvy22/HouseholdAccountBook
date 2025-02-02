@@ -18,6 +18,7 @@ import (
 
 	documentai "cloud.google.com/go/documentai/apiv1"
 	"cloud.google.com/go/documentai/apiv1/documentaipb"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"google.golang.org/api/option"
 )
@@ -54,14 +55,14 @@ func (u *ocrUsecaseImpl) GetTotalAndStoreFromReceipt(imageBytes []byte) (entity.
 	// } else {
 	decodedCreds, err := base64.StdEncoding.DecodeString(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON_BASE64"))
 	if err != nil {
-		return entity.Receipt{}, err
+		return entity.Receipt{}, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	creds = string(decodedCreds)
 	// }
 
 	client, err := documentai.NewDocumentProcessorClient(ctx, option.WithCredentialsJSON([]byte(creds)))
 	if err != nil {
-		return entity.Receipt{}, err
+		return entity.Receipt{}, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	defer client.Close()
 
@@ -81,7 +82,7 @@ func (u *ocrUsecaseImpl) GetTotalAndStoreFromReceipt(imageBytes []byte) (entity.
 
 	resp, err := client.ProcessDocument(ctx, req)
 	if err != nil {
-		return entity.Receipt{}, err
+		return entity.Receipt{}, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	//結果を解析して店名と合計金額を抽出
@@ -161,7 +162,7 @@ func setGoogleCredentialsFromAWS() (string, error) {
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
 	if err != nil {
-		return "", err
+		return "", customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	svc := secretsmanager.NewFromConfig(cfg)
@@ -173,7 +174,7 @@ func setGoogleCredentialsFromAWS() (string, error) {
 
 	result, err := svc.GetSecretValue(context.TODO(), input)
 	if err != nil {
-		return "", err
+		return "", customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	var secretString string = *result.SecretString
@@ -181,13 +182,13 @@ func setGoogleCredentialsFromAWS() (string, error) {
 	var creds map[string]interface{}
 	err = json.Unmarshal([]byte(secretString), &creds)
 	if err != nil {
-		return "", err
+		return "", customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	// 環境変数にJSONを設定
 	credsBytes, err := json.Marshal(creds)
 	if err != nil {
-		return "", err
+		return "", customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return string(credsBytes), nil

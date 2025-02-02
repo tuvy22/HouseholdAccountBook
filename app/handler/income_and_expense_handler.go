@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -45,7 +46,7 @@ func (h *incomeAndExpenseHandlerImpl) GetAllIncomeAndExpense(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	page, err := strconv.ParseUint(pageStr, 10, 64)
 	if err != nil {
-		errorResponder(c, err)
+		errorResponder(c, customerrors_unknown.NewCustomErrorUnknown(err))
 		return
 	}
 
@@ -216,7 +217,7 @@ func (h *incomeAndExpenseHandlerImpl) GetMonthlyCategory(c *gin.Context) {
 	yearMonth := c.DefaultQuery("yearMonth", "")
 	isMinus, err := strconv.ParseBool(c.DefaultQuery("isMinus", ""))
 	if err != nil {
-		errorResponder(c, err)
+		errorResponder(c, customerrors_unknown.NewCustomErrorUnknown(err))
 		return
 	}
 	// ログインデータ取得
@@ -238,14 +239,14 @@ func (h *incomeAndExpenseHandlerImpl) GetMonthlyCategory(c *gin.Context) {
 func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpenseCreate(c *gin.Context) (entity.IncomeAndExpenseCreate, error) {
 	result := entity.IncomeAndExpenseCreate{}
 	if err := c.BindJSON(&result); err != nil {
-		return result, err
+		return result, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return result, nil
 }
 func (h *incomeAndExpenseHandlerImpl) bindIncomeAndExpenseUpdate(c *gin.Context) (entity.IncomeAndExpenseUpdate, error) {
 	result := entity.IncomeAndExpenseUpdate{}
 	if err := c.BindJSON(&result); err != nil {
-		return result, err
+		return result, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return result, nil
@@ -255,7 +256,7 @@ func (h *incomeAndExpenseHandlerImpl) getID(c *gin.Context) (uint, error) {
 	idstr := c.Param("id")
 	val, err := strconv.ParseUint(idstr, 10, 64)
 	if err != nil {
-		return 0, err
+		return 0, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return uint(val), nil
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/password"
@@ -577,7 +578,7 @@ func (u *userUsecaseImpl) getInitCategory(groupID uint, isExpense bool) ([]entit
 
 	dir, err := os.Getwd()
 	if err != nil {
-		return categories, err
+		return categories, customerrors_unknown.NewCustomErrorUnknown(err)
 
 	}
 	var fileName string
@@ -591,12 +592,12 @@ func (u *userUsecaseImpl) getInitCategory(groupID uint, isExpense bool) ([]entit
 	// JSONファイルの読み込み
 	data, err := os.ReadFile(dir + "/infrastructure/data/" + fileName)
 	if err != nil {
-		return categories, err
+		return categories, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	// JSONをCategoryスライスにデシリアライズ
 	if err := json.Unmarshal(data, &categories); err != nil {
-		return categories, err
+		return categories, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	//設定

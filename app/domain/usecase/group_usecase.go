@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/customvalidator"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/repository"
@@ -58,7 +59,7 @@ func (u *groupUsecaseImpl) GetUserInviteUrl(groupId uint) (entity.InviteUrl, err
 
 	tokenString, err := token.SignedString(u.config.InviteJWTKey)
 	if err != nil {
-		return entity.InviteUrl{}, err
+		return entity.InviteUrl{}, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	// 生成したトークンをURLに組み込む
 	inviteURLString := fmt.Sprintf("https://%s/user-invite?token=%s", os.Getenv("DOMAIN"), tokenString)

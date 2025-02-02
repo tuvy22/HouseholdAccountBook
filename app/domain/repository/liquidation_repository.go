@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"gorm.io/gorm"
 )
@@ -28,16 +29,16 @@ func (r *liquidationRepositoryImpl) CreateLiquidationAndUpdateBillingUser(liquid
 
 	if err := tx.Create(&liquidation).Error; err != nil {
 		tx.Rollback()
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	if err := tx.Model(&entity.IncomeAndExpenseBillingUser{}).Where("id IN ?", updateBillingUserIDs).Update("liquidation_id", liquidation.ID).Error; err != nil {
 		tx.Rollback() // エラーが発生した場合、ロールバック
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	// トランザクションをコミット
 	if err := tx.Commit().Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return nil
@@ -49,17 +50,17 @@ func (r *liquidationRepositoryImpl) DeleteLiquidationAndUpdateBillingUser(id uin
 
 	if err := tx.Unscoped().Where("id = ?", id).Delete(&entity.Liquidation{}).Error; err != nil {
 		tx.Rollback()
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	if err := tx.Model(&entity.IncomeAndExpenseBillingUser{}).Where("id IN ?", updateBillingUserIDs).Update("liquidation_id", entity.NoneLiquidationID).Error; err != nil {
 		tx.Rollback() // エラーが発生した場合、ロールバック
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	// トランザクションをコミット
 	if err := tx.Commit().Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return nil
@@ -68,7 +69,7 @@ func (r *liquidationRepositoryImpl) DeleteLiquidationAndUpdateBillingUser(id uin
 func (r *liquidationRepositoryImpl) GetLiquidation(id uint, liquidation *entity.Liquidation) error {
 
 	if err := r.DB.Where("id = ?", id).First(&liquidation).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
@@ -79,14 +80,14 @@ func (r *liquidationRepositoryImpl) GetAllLiquidation(liquidations *[]entity.Liq
 
 	query := r.DB.Where("register_user_id IN ?", userIDs).Or("id IN (?)", subQuery)
 	if err := query.Order("Date desc, id desc").Find(&liquidations).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
 
 func (r *liquidationRepositoryImpl) GetAllLiquidationBillingUserByID(incomeAndExpenseBillingUser *[]entity.IncomeAndExpenseBillingUser, liquidationID uint) error {
 	if err := r.DB.Where("liquidation_id = ?", liquidationID).Order("id desc").Find(&incomeAndExpenseBillingUser).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
@@ -95,11 +96,11 @@ func (r *liquidationRepositoryImpl) UpdateLiquidationUserID(oldUserID string, ne
 
 	err := r.DB.Model(&entity.Liquidation{}).Where("register_user_id = ?", oldUserID).Update("register_user_id", newUserID).Error
 	if err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	err = r.DB.Model(&entity.Liquidation{}).Where("target_user_id = ?", oldUserID).Update("target_user_id", newUserID).Error
 	if err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }

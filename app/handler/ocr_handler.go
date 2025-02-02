@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/nfnt/resize"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
 
@@ -30,7 +31,7 @@ func (h *ocrHandlerImpl) GetTotalAndStoreFromReceipt(c *gin.Context) {
 	// フォームからファイルを取得
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {
-		errorResponder(c, err)
+		errorResponder(c, customerrors_unknown.NewCustomErrorUnknown(err))
 		return
 	}
 	defer file.Close()
@@ -38,7 +39,7 @@ func (h *ocrHandlerImpl) GetTotalAndStoreFromReceipt(c *gin.Context) {
 	// ファイルの内容を読み取り、バイトスライスに変換
 	imageBytes, err := io.ReadAll(file)
 	if err != nil {
-		errorResponder(c, err)
+		errorResponder(c, customerrors_unknown.NewCustomErrorUnknown(err))
 		return
 	}
 
@@ -62,7 +63,7 @@ func resizeImage(imageBytes []byte, width uint) ([]byte, error) {
 	// 画像データをデコード
 	img, format, err := image.Decode(bytes.NewReader(imageBytes))
 	if err != nil {
-		return nil, err
+		return nil, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	// 元の画像サイズを取得
@@ -88,7 +89,7 @@ func resizeImage(imageBytes []byte, width uint) ([]byte, error) {
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return buf.Bytes(), nil

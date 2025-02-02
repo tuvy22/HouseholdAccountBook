@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"gorm.io/gorm"
 )
@@ -22,7 +23,7 @@ func NewGroupRepository(db *gorm.DB) GroupRepository {
 
 func (r *groupRepositoryImpl) GetGroup(id uint, Group *entity.Group) error {
 	if err := r.DB.Where("id = ?", id).First(&Group).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return nil
@@ -31,21 +32,21 @@ func (r *groupRepositoryImpl) GetGroup(id uint, Group *entity.Group) error {
 func (r *groupRepositoryImpl) CreateGroup(Group *entity.Group) error {
 
 	if err := r.DB.Create(&Group).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
 func (r *groupRepositoryImpl) UpdateGroup(Group *entity.Group) error {
 
 	if err := r.DB.Save(&Group).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
 func (r *groupRepositoryImpl) DeleteGroup(id uint) error {
 	// 論理削除
 	if err := r.DB.Unscoped().Where("id = ?", id).Delete(&entity.Group{}).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }

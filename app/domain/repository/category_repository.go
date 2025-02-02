@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"gorm.io/gorm"
 )
@@ -22,14 +23,14 @@ func NewCategoryRepository(db *gorm.DB) CategoryRepository {
 
 func (r *categoryRepositoryImpl) GetAllCategory(categorys *[]entity.Category, groupID uint, isExpense bool) error {
 	if err := r.DB.Where("group_id = ?", groupID).Where("is_Expense = ?", isExpense).Order("id").Find(&categorys).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
 
 func (r *categoryRepositoryImpl) GetCategory(id uint, Category *entity.Category) error {
 	if err := r.DB.Where("id = ?", id).First(&Category).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
@@ -37,7 +38,7 @@ func (r *categoryRepositoryImpl) GetCategory(id uint, Category *entity.Category)
 func (r *categoryRepositoryImpl) CreateCategory(Category *entity.Category) error {
 
 	if err := r.DB.Create(&Category).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }
@@ -45,7 +46,7 @@ func (r *categoryRepositoryImpl) CreateCategory(Category *entity.Category) error
 func (r *categoryRepositoryImpl) DeleteAllCategory(isExpense bool, groupID uint) error {
 
 	if err := r.DB.Unscoped().Where("is_expense = ?", isExpense).Where("group_id = ?", groupID).Delete(&entity.Category{}).Error; err != nil {
-		return err
+		return customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return nil
 }

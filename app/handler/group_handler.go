@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -109,7 +110,7 @@ func (h *groupHandlerImpl) UpdateInitialAmount(c *gin.Context) {
 func (h *groupHandlerImpl) bindInviteToken(c *gin.Context) (entity.InviteToken, error) {
 	inviteToken := entity.InviteToken{}
 	if err := c.ShouldBindJSON(&inviteToken); err != nil {
-		return inviteToken, err
+		return inviteToken, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return inviteToken, nil
 }
@@ -117,7 +118,7 @@ func (h *groupHandlerImpl) bindInviteToken(c *gin.Context) (entity.InviteToken, 
 func (h *groupHandlerImpl) bindInitialAmount(c *gin.Context) (entity.InitialAmount, error) {
 	initialAmount := entity.InitialAmount{}
 	if err := c.ShouldBindJSON(&initialAmount); err != nil {
-		return initialAmount, err
+		return initialAmount, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return initialAmount, nil
 }

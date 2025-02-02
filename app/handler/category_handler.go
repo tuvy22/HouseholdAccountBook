@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ten313/HouseholdAccountBook/app/domain/customerrors_unknown"
 	"github.com/ten313/HouseholdAccountBook/app/domain/entity"
 	"github.com/ten313/HouseholdAccountBook/app/domain/usecase"
 )
@@ -104,7 +105,7 @@ func (h *categoryHandlerImpl) GetAllExpenseCategory(c *gin.Context) {
 func (h *categoryHandlerImpl) bindCreateCategorys(c *gin.Context) ([]entity.Category, error) {
 	CategoryCreates := []entity.Category{}
 	if err := c.BindJSON(&CategoryCreates); err != nil {
-		return CategoryCreates, err
+		return CategoryCreates, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 
 	return CategoryCreates, nil
@@ -113,7 +114,7 @@ func (h *categoryHandlerImpl) getID(c *gin.Context) (uint, error) {
 	idstr := c.Param("id")
 	val, err := strconv.ParseUint(idstr, 10, 64)
 	if err != nil {
-		return 0, err
+		return 0, customerrors_unknown.NewCustomErrorUnknown(err)
 	}
 	return uint(val), nil
 }
